@@ -85,40 +85,11 @@ nav a:hover {
 }
 
 .hero {
-  text-align: center;
-  padding: 120px 20px;
-}
-
-.hero h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
-}
-
-.hero p {
-  font-size: 18px;
-  margin-bottom: 30px;
-  color: #666;
-}
-
-.hero a {
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: yellow;
-  color: #000;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: 0.3s;
-}
-
-.hero a:hover {
-  transform: scale(1.05);
-}
-
-.hero img {
-  width: 100%;
-  max-width: 700px;
-  margin: 30px 0;
-  border-radius: 12px;
+  height: 400px;
+  background-image: url("../image/banner/banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 @media (max-width: 768px) {
