@@ -81,6 +81,7 @@ nav a {
 nav a:hover {
   background-color: #333;
   color: #fff;
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
