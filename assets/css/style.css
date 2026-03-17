@@ -86,7 +86,7 @@ nav a:hover {
 
 .hero {
   text-align: center;
-  padding: 100px 20px;
+  padding: 120px 20px;
 }
 
 .hero h1 {
@@ -97,6 +97,7 @@ nav a:hover {
 .hero p {
   font-size: 18px;
   margin-bottom: 30px;
+  color: #666;
 }
 
 .hero a {
@@ -106,6 +107,18 @@ nav a:hover {
   color: #000;
   text-decoration: none;
   border-radius: 6px;
+  transition: 0.3s;
+}
+
+.hero a:hover {
+  transform: scale(1.05);
+}
+
+.hero img {
+  width: 100%;
+  max-width: 700px;
+  margin: 30px 0;
+  border-radius: 12px;
 }
 
 @media (max-width: 768px) {
