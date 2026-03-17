@@ -70,22 +70,9 @@ body {
   cursor: pointer;
 }
 
-nav a {
-  padding: 10px 20px;
-  text-decoration: none;
-  color: #333;
-  transition: 0.3s;
-  border-radius: 5px;
-}
-
-nav a:hover {
-  background-color: #333;
-  color: #fff;
-  transform: scale(1.05);
-}
-
 .hero {
-  height: 400px;
+  height: 300px;
+  max-height: 40vh;
   background-image: url("../image/banner/banner.png");
   background-size: cover;
   background-position: center;
