@@ -84,6 +84,30 @@ nav a:hover {
   transform: scale(1.05);
 }
 
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.hero a {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: yellow;
+  color: #000;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
 @media (max-width: 768px) {
   .nav-inner {
     grid-template-columns: 1fr auto;
