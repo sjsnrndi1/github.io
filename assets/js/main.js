@@ -1,1 +1,6 @@
-console.log("사이트 JS 연결 성공");
+const menuToggle = document.getElementById("menu-toggle");
+const navLinks = document.getElementById("nav-links");
+
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+});

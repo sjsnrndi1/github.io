@@ -4,36 +4,110 @@ body {
 }
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #333;
-  padding: 15px 20px;
   position: sticky;
   top: 0;
   z-index: 1000;
+  background-color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .logo {
   color: white;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
-.nav-links li a {
+.nav-links li {
+  display: flex;
+}
+
+.nav-btn {
+  display: inline-block;
   text-decoration: none;
   color: white;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: 0.3s ease;
 }
 
-.nav-links li a:hover {
-  color: #ffcc00;
+.nav-btn:hover {
+  background-color: #ffcc00;
+  color: #222;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* 가운데 정렬 더 자연스럽게 */
+.nav-inner .logo {
+  min-width: 120px;
+}
+
+.nav-inner .nav-links {
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .nav-inner {
+    flex-wrap: wrap;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding-bottom: 10px;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-btn {
+    width: 90%;
+    text-align: center;
+    background-color: #444;
+    border-radius: 12px;
+  }
+
+  .nav-btn:hover {
+    background-color: #ffcc00;
+    color: #222;
+  }
 }
