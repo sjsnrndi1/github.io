@@ -67,6 +67,8 @@ fetch(`${API_BASE}/posts/${postId}`)
             alert("다운로드 실패");
           });
       });
+    } else {
+      attachmentWrapper.style.display = "none";
     }
   })
   .catch((error) => {
