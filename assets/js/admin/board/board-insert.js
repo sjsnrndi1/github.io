@@ -10,11 +10,13 @@ saveBtn.addEventListener("click", () => {
 
   if (!title) {
     alert("제목을 입력하세요.");
+    titleInput.focus();
     return;
   }
 
   if (!content) {
     alert("내용을 입력하세요.");
+    contentInput.focus();
     return;
   }
 
