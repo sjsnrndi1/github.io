@@ -226,3 +226,26 @@ button:hover {
 #delete-btn:hover {
   background: #e03131;
 }
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+  /* ID */
+  width: 10%;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  /* 제목 */
+  width: 60%;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  /* 작성일 */
+  width: 30%;
+}
