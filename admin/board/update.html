@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>게시글 수정</title>
+    <link rel="stylesheet" href="/github.io/assets/css/admin/style.css" />
+    <link rel="stylesheet" href="/github.io/assets/css/admin/board/style.css" />
+  </head>
+  <body>
+    <div id="header-container"></div>
+    <main class="admin-main">
+      <section class="admin-card">
+        <h2>글 수정</h2>
+
+        <div class="admin-form">
+          <input type="text" id="title" placeholder="제목 입력" />
+          <textarea id="content" placeholder="내용 입력"></textarea>
+          <input type="file" id="file" />
+
+          <div class="btn-group">
+            <button id="saveBtn">수정</button>
+            <button id="cancelBtn">취소</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/github.io/assets/js/admin/common.js"></script>
+    <script src="/github.io/assets/js/admin/header.js"></script>
+    <script src="/github.io/assets/js/admin/board/board-update.js"></script>
+  </body>
+</html>
