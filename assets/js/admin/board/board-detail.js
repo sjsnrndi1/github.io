@@ -36,9 +36,12 @@ fetch(`${API_BASE}/posts/${postId}`)
 
     if (post.attachmentUrl && post.attachmentOriginalName) {
       attachmentEl.innerHTML = `
-        <a href="${post.attachmentUrl}" download="${post.attachmentOriginalName}" target="_blank">
-          ${post.attachmentOriginalName}
-        </a>
+        <div class="file-box">
+          <span class="file-name">${post.attachmentOriginalName}</span>
+          <a href="${post.attachmentUrl}" target="_blank" class="download-btn">
+            다운로드 ⬇
+          </a>
+        </div>
       `;
     } else {
       attachmentEl.textContent = "첨부파일 없음";

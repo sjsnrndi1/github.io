@@ -155,3 +155,57 @@ button:hover {
   display: flex;
   gap: 10px;
 }
+
+.file-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.file-name {
+  font-size: 14px;
+}
+
+.download-btn {
+  text-decoration: none;
+  font-size: 14px;
+  color: #333;
+}
+
+.download-btn:hover {
+  text-decoration: underline;
+}
+
+.button-group {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center; /* 🔥 가운데 정렬 */
+  gap: 16px;
+}
+
+.button-group button {
+  padding: 12px 24px; /* 🔥 크기 증가 */
+  border-radius: 25px; /* 🔥 둥글게 */
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+/* 버튼 스타일 차별화 (추천) */
+#list-btn {
+  background: #e9ecef;
+}
+
+#edit-btn {
+  background: #4c6ef5;
+  color: white;
+}
+
+#delete-btn {
+  background: #fa5252;
+  color: white;
+}
