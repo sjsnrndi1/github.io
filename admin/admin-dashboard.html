@@ -12,7 +12,7 @@
       <nav class="admin-nav">
         <a href="admin-dashboard.html">대시보드</a>
         <a href="admin-post.html">글 관리</a>
-        <a href="admin.html">로그아웃</a>
+        <a href="#" id="logout-btn">로그아웃</a>
       </nav>
     </header>
 
@@ -30,5 +30,14 @@
       alert("로그인이 필요합니다.");
       window.location.href = "/github.io/admin/admin.html";
     }
+
+    const logoutBtn = document.getElementById("logout-btn");
+
+    logoutBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      localStorage.removeItem("isAdminLoggedIn");
+      alert("로그아웃되었습니다.");
+      window.location.href = "/github.io/admin/admin.html";
+    });
   </script>
 </html>
