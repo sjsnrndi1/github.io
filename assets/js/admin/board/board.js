@@ -1,10 +1,19 @@
-// 게시글 불러오기
 const posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
 const tbody = document.getElementById("postTableBody");
+const emptyMessage = document.getElementById("emptyMessage");
 
 function renderPosts() {
   tbody.innerHTML = "";
+
+  if (posts.length === 0) {
+    document.querySelector(".admin-table").style.display = "none";
+    emptyMessage.style.display = "block";
+    return;
+  }
+
+  document.querySelector(".admin-table").style.display = "table";
+  emptyMessage.style.display = "none";
 
   posts.forEach((post, index) => {
     const row = `
@@ -20,7 +29,6 @@ function renderPosts() {
 
 renderPosts();
 
-// 글 작성 버튼
 document.getElementById("writeBtn").addEventListener("click", () => {
   window.location.href = "./write.html";
 });

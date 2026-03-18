@@ -1,0 +1,78 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #f4f6f8;
+  font-family: Arial, sans-serif;
+}
+
+.admin-main {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.admin-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-card h2 {
+  margin: 0 0 20px;
+  font-size: 28px;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-btn {
+  background: #2d6cdf;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.admin-btn:hover {
+  opacity: 0.9;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 10px;
+  background: white;
+}
+
+.admin-table thead {
+  background: #f1f3f5;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e9ecef;
+  text-align: left;
+}
+
+.admin-table th {
+  font-weight: 700;
+}
+
+.admin-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  background: #fafafa;
+  border: 1px dashed #ddd;
+  border-radius: 10px;
+  margin-top: 20px;
+}
