@@ -171,13 +171,17 @@ button:hover {
 }
 
 .download-btn {
-  text-decoration: none;
-  font-size: 14px;
-  color: #333;
+  padding: 8px 14px;
+  background: #495057;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
 }
 
 .download-btn:hover {
-  text-decoration: underline;
+  background: #343a40;
 }
 
 .button-group {
