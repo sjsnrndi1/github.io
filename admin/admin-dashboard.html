@@ -26,16 +26,7 @@
     window.location.href = "/github.io/admin/admin.html";
   }
 
-  const logoutBtn = document.getElementById("logout-btn");
-
-  logoutBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    localStorage.removeItem("isAdminLoggedIn");
-    alert("로그아웃되었습니다.");
-    window.location.href = "/github.io/admin/admin.html";
-  });
-
-  fetch("/admin/header.html")
+  fetch("./header.html")
     .then((res) => res.text())
     .then((data) => {
       document.getElementById("header-container").innerHTML = data;
