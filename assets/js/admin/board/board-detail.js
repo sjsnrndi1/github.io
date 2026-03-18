@@ -60,7 +60,7 @@ fetch(`${API_BASE}/posts/${postId}`)
           });
       });
     } else {
-      attachmentWrapper.style.display = "none";
+      //attachmentWrapper.style.display = "none";
     }
   })
   .catch((error) => {
