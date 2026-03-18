@@ -38,11 +38,27 @@ fetch(`${API_BASE}/posts/${postId}`)
       attachmentEl.innerHTML = `
         <div class="file-box">
           <span class="file-name">${post.attachmentOriginalName}</span>
-          <a href="${post.attachmentUrl}" target="_blank" class="download-btn">
-            다운로드 ⬇
-          </a>
+          <button class="download-btn" id="download-btn">다운로드 ⬇</button>
         </div>
       `;
+
+      document.getElementById("download-btn").addEventListener("click", () => {
+        fetch(post.attachmentUrl)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = post.attachmentOriginalName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("다운로드 실패");
+          });
+      });
     } else {
       attachmentEl.textContent = "첨부파일 없음";
     }
