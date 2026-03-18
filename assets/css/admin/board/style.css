@@ -269,3 +269,11 @@ td:nth-child(3) {
 .btn-group button:hover {
   background: #345dc1;
 }
+
+.btn-cancel {
+  background: #343a40; /* 목록 버튼 색 */
+}
+
+.btn-cancel:hover {
+  background: #212529;
+}
