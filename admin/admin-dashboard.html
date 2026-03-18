@@ -7,15 +7,7 @@
     <link rel="stylesheet" href="../assets/css/admin/style.css" />
   </head>
   <body>
-    <header class="admin-header">
-      <h1>관리자 페이지</h1>
-      <nav class="admin-nav">
-        <a href="/admin/admin-dashboard.html">대시보드</a>
-        <a href="/admin/posts.html">게시글 관리</a>
-        <a href="/admin/users.html">사용자 관리</a>
-        <button id="logoutBtn">로그아웃</button>
-      </nav>
-    </header>
+    <div id="header-container"></div>
 
     <main class="admin-main">
       <section class="admin-card">
@@ -24,21 +16,34 @@
       </section>
     </main>
   </body>
-  <script>
-    const isLoggedIn = localStorage.getItem("isAdminLoggedIn");
-
-    if (isLoggedIn !== "true") {
-      alert("로그인이 필요합니다.");
-      window.location.href = "/github.io/admin/admin.html";
-    }
-
-    const logoutBtn = document.getElementById("logout-btn");
-
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      localStorage.removeItem("isAdminLoggedIn");
-      alert("로그아웃되었습니다.");
-      window.location.href = "/github.io/admin/admin.html";
-    });
-  </script>
 </html>
+
+<script>
+  const isLoggedIn = localStorage.getItem("isAdminLoggedIn");
+
+  if (isLoggedIn !== "true") {
+    alert("로그인이 필요합니다.");
+    window.location.href = "/github.io/admin/admin.html";
+  }
+
+  const logoutBtn = document.getElementById("logout-btn");
+
+  logoutBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    localStorage.removeItem("isAdminLoggedIn");
+    alert("로그아웃되었습니다.");
+    window.location.href = "/github.io/admin/admin.html";
+  });
+
+  fetch("/admin/header.html")
+    .then((res) => res.text())
+    .then((data) => {
+      document.getElementById("header-container").innerHTML = data;
+
+      // 로그아웃 버튼 이벤트 다시 연결
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("isAdminLoggedIn");
+        location.href = "/admin.html";
+      });
+    });
+</script>
