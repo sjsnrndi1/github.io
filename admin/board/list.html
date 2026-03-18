@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>게시글 관리</title>
+    <link rel="stylesheet" href="../assets/css/admin/style.css" />
+  </head>
+  <body>
+    <div id="header-container"></div>
+
+    <main class="admin-main">
+      <section class="admin-card">
+        <h2>게시글 관리</h2>
+
+        <button id="writeBtn">글 작성</button>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>제목</th>
+              <th>작성일</th>
+            </tr>
+          </thead>
+          <tbody id="postTableBody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="../assets/js/admin/header.js"></script>
+    <script src="../../assets/js/admin/board/board.js"></script>
+  </body>
+</html>
