@@ -18,7 +18,7 @@ form.addEventListener("submit", async (e) => {
 
     if (response.ok) {
       message.textContent = "로그인 성공";
-      window.location.href = "admin-dashboard.html";
+      window.location.href = "admin/admin-dashboard.html";
     } else {
       message.textContent = "아이디 또는 비밀번호가 틀렸습니다.";
     }
