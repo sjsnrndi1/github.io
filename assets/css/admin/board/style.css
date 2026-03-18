@@ -95,3 +95,41 @@ body {
   min-height: 200px;
   resize: vertical;
 }
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#post-title {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#post-date {
+  color: #888;
+  margin-bottom: 20px;
+}
+
+#post-content {
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+#post-attachment a {
+  color: blue;
+  text-decoration: underline;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
