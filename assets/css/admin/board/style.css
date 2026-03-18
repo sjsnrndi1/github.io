@@ -197,7 +197,8 @@ button:hover {
 
 /* 버튼 스타일 차별화 (추천) */
 #list-btn {
-  background: #e9ecef;
+  background: #495057;
+  color: white;
 }
 
 #edit-btn {
@@ -208,4 +209,16 @@ button:hover {
 #delete-btn {
   background: #fa5252;
   color: white;
+}
+
+#list-btn:hover {
+  background: #343a40;
+}
+
+#edit-btn:hover {
+  background: #3b5bdb;
+}
+
+#delete-btn:hover {
+  background: #e03131;
 }
