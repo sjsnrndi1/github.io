@@ -89,7 +89,7 @@ deleteBtn.addEventListener("click", () => {
         throw new Error("삭제 실패");
       }
       alert("삭제되었습니다.");
-      location.href = "/github.io/admin/baord/list.html";
+      location.href = "/github.io/admin/board/list.html";
     })
     .catch((error) => {
       console.error(error);
