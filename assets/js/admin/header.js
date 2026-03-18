@@ -23,7 +23,7 @@ fetch("/github.io/admin/header.html")
     let currentPage = "";
 
     if (currentPath.includes("dashboard")) currentPage = "dashboard";
-    else if (currentPath.includes("posts")) currentPage = "posts";
+    else if (currentPath.includes("board")) currentPage = "board";
     else if (currentPath.includes("users")) currentPage = "users";
 
     document.querySelectorAll(".admin-nav a").forEach((menu) => {
