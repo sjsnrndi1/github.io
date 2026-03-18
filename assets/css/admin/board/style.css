@@ -249,3 +249,23 @@ td:nth-child(3) {
   /* 작성일 */
   width: 30%;
 }
+
+.btn-group {
+  display: flex;
+  gap: 10px; /* 버튼 사이 간격 */
+}
+
+.btn-group button {
+  flex: 1; /* 50%씩 나눔 */
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #3b6dcc;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-group button:hover {
+  background: #345dc1;
+}
