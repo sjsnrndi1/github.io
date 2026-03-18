@@ -30,5 +30,5 @@ function renderPosts() {
 renderPosts();
 
 document.getElementById("writeBtn").addEventListener("click", () => {
-  window.location.href = "./write.html";
+  window.location.href = "/github.io/admin/board/insert.html";
 });
