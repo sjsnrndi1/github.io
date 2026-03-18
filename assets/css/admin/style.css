@@ -1,0 +1,35 @@
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #222;
+  color: white;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-nav a,
+.admin-nav button {
+  text-decoration: none;
+  background: #444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.admin-nav a:hover,
+.admin-nav button:hover {
+  background: #666;
+}
