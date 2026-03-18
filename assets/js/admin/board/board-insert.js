@@ -6,8 +6,13 @@ saveBtn.addEventListener("click", () => {
   const title = titleInput.value.trim();
   const content = contentInput.value.trim();
 
-  if (!title || !content) {
-    alert("제목과 내용을 입력하세요.");
+  if (!title) {
+    alert("제목을 입력하세요.");
+    return;
+  }
+
+  if (!content) {
+    alert("내용을 입력하세요.");
     return;
   }
 
