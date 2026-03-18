@@ -21,7 +21,7 @@ function renderPosts(posts) {
         <td>
           <a href="/github.io/admin/board/detail.html?id=${post.id}">${post.title}</a>
         </td>
-        <td>${post.createdAt ? post.createdAt.replace("T", " ").substring(0, 16) : ""}</td>
+        <td>${formatDate(post.createdAt)}</td>
       </tr>
     `;
     tbody.innerHTML += row;
