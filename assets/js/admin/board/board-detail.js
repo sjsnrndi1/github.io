@@ -17,11 +17,19 @@ if (!postId) {
 }
 
 fetch(`${API_BASE}/posts/${postId}`)
-  .then((response) => {
+  .then(async (response) => {
+    console.log("요청 URL:", `${API_BASE}/posts/${postId}`);
+    console.log("status:", response.status);
+    console.log("ok:", response.ok);
+
+    const text = await response.text();
+    console.log("응답 본문:", text);
+
     if (!response.ok) {
-      throw new Error("게시글 조회 실패");
+      throw new Error(`게시글 조회 실패: ${response.status}`);
     }
-    return response.json();
+
+    return JSON.parse(text);
   })
   .then((post) => {
     titleEl.textContent = post.title || "제목 없음";
@@ -58,8 +66,6 @@ fetch(`${API_BASE}/posts/${postId}`)
             alert("다운로드 실패");
           });
       });
-    } else {
-      //attachmentWrapper.style.display = "none";
     }
   })
   .catch((error) => {
