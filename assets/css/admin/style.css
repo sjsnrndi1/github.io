@@ -38,3 +38,7 @@ body {
 .admin-nav button:hover {
   background: #666;
 }
+
+.admin-nav a.active {
+  background: #888;
+}

@@ -37,4 +37,18 @@
         location.href = "/admin.html";
       });
     });
+
+  const currentPath = window.location.pathname;
+
+  let currentPage = "";
+
+  if (currentPath.includes("dashboard")) currentPage = "dashboard";
+  else if (currentPath.includes("posts")) currentPage = "posts";
+  else if (currentPath.includes("users")) currentPage = "users";
+
+  document.querySelectorAll(".admin-nav a").forEach((menu) => {
+    if (menu.dataset.page === currentPage) {
+      menu.classList.add("active");
+    }
+  });
 </script>
