@@ -10,6 +10,7 @@ const attachmentEl = document.getElementById("post-attachment");
 const listBtn = document.getElementById("list-btn");
 const editBtn = document.getElementById("edit-btn");
 const deleteBtn = document.getElementById("delete-btn");
+const attachmentWrapper = document.getElementById("attachment-wrapper");
 
 if (!postId) {
   alert("잘못된 접근입니다.");
@@ -59,7 +60,7 @@ fetch(`${API_BASE}/posts/${postId}`)
           });
       });
     } else {
-      attachmentEl.style.display = "none";
+      attachmentWrapper.style.display = "none";
     }
   })
   .catch((error) => {
