@@ -29,7 +29,7 @@ fetch(`${API_BASE}/posts/${postId}`)
     contentEl.textContent = post.content || "내용 없음";
 
     if (post.createdAt) {
-      dateEl.textContent = post.createdAt;
+      dateEl.textContent = formatDate(post.createdAt);
     } else {
       dateEl.textContent = "";
     }
