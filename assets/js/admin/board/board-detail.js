@@ -7,7 +7,6 @@ const titleEl = document.getElementById("post-title");
 const dateEl = document.getElementById("post-date");
 const contentEl = document.getElementById("post-content");
 const attachmentEl = document.getElementById("post-attachment");
-
 const listBtn = document.getElementById("list-btn");
 const editBtn = document.getElementById("edit-btn");
 const deleteBtn = document.getElementById("delete-btn");
@@ -60,7 +59,7 @@ fetch(`${API_BASE}/posts/${postId}`)
           });
       });
     } else {
-      attachmentEl.textContent = "첨부파일 없음";
+      attachmentEl.style.display = "none";
     }
   })
   .catch((error) => {
