@@ -20,10 +20,10 @@ form.addEventListener("submit", async (e) => {
       localStorage.setItem("isAdminLoggedIn", "true");
       window.location.href = "/github.io/admin/admin-dashboard.html";
     } else {
-      message.textContent = "아이디 또는 비밀번호가 틀렸습니다.";
+      message.textContent = "아이디 또는 비밀번호가 올바르지 않습니다.";
     }
   } catch (error) {
-    message.textContent = "서버 연결 실패";
+    message.textContent = "서버 연결에 실패했습니다.";
     console.error(error);
   }
 });
