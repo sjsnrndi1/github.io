@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로그인 | MySite</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="member-page">
+    <main class="member-shell">
+      <section class="member-visual" aria-label="로그인 안내">
+        <a class="logo member-logo" href="/github.io/index.html" aria-label="MySite 홈">
+          <span class="logo-mark">M</span>
+          <span>MySite</span>
+        </a>
+
+        <div class="member-visual-copy">
+          <p class="eyebrow">Welcome Back</p>
+          <h1>다시 만나서 반가워요.</h1>
+          <p>로그인하면 최신 게시글과 개인화된 소식을 더 빠르게 확인할 수 있습니다.</p>
+        </div>
+      </section>
+
+      <section class="member-panel" aria-label="로그인">
+        <div class="member-card">
+          <div class="member-card-head">
+            <p class="eyebrow">Sign In</p>
+            <h2>로그인</h2>
+            <p>계정 정보를 입력해 주세요.</p>
+          </div>
+
+          <form class="member-form" data-auth-form data-auth-type="login">
+            <label for="login-email">
+              이메일
+              <input id="login-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+            </label>
+
+            <label for="login-password">
+              비밀번호
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                placeholder="비밀번호"
+                autocomplete="current-password"
+                required
+              />
+            </label>
+
+            <div class="form-options">
+              <label class="check-label">
+                <input type="checkbox" name="remember" />
+                로그인 유지
+              </label>
+              <a href="#">비밀번호 찾기</a>
+            </div>
+
+            <button type="submit" class="member-submit">로그인</button>
+          </form>
+
+          <p class="member-message" data-auth-message role="alert" aria-live="polite"></p>
+
+          <p class="member-switch">아직 계정이 없나요? <a href="/github.io/signup.html">회원가입</a></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+  </body>
+</html>
