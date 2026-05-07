@@ -2,20 +2,39 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>게시글 수정</title>
     <link rel="stylesheet" href="/github.io/assets/css/admin/style.css" />
     <link rel="stylesheet" href="/github.io/assets/css/admin/board/style.css" />
   </head>
-  <body>
+  <body class="admin-app-page">
     <div id="header-container"></div>
-    <main class="admin-main">
-      <section class="admin-card">
-        <h2>글 수정</h2>
 
+    <main class="admin-main board-main">
+      <section class="board-page-head">
+        <div>
+          <p class="dashboard-eyebrow">Edit Post</p>
+          <h2>게시글 수정</h2>
+          <p>내용을 변경한 뒤 저장하면 상세 화면에서 바로 확인할 수 있습니다.</p>
+        </div>
+      </section>
+
+      <section class="admin-card board-form-card">
         <div class="admin-form">
-          <input type="text" id="title" placeholder="제목 입력" />
-          <textarea id="content" placeholder="내용 입력"></textarea>
-          <input type="file" id="file" />
+          <label for="title">
+            제목
+            <input type="text" id="title" placeholder="제목을 입력하세요" />
+          </label>
+
+          <label for="content">
+            내용
+            <textarea id="content" placeholder="내용을 입력하세요"></textarea>
+          </label>
+
+          <label for="file">
+            첨부파일
+            <input type="file" id="file" />
+          </label>
 
           <div class="btn-group">
             <button id="saveBtn">수정</button>

@@ -7,23 +7,22 @@
     <link rel="stylesheet" href="/github.io/assets/css/admin/style.css" />
     <link rel="stylesheet" href="/github.io/assets/css/admin/board/style.css" />
   </head>
-  <body>
+  <body class="admin-app-page">
     <div id="header-container"></div>
 
-    <div class="container">
-      <div class="card">
-        <h1 id="post-title"></h1>
-        <p id="post-date"></p>
+    <main class="admin-main board-main">
+      <article class="admin-card post-detail-card">
+        <div class="post-detail-head">
+          <p class="dashboard-eyebrow">Post Detail</p>
+          <h1 id="post-title"></h1>
+          <p id="post-date"></p>
+        </div>
 
-        <hr />
-
-        <div class="section">
+        <div class="section post-content-section">
           <div id="post-content"></div>
         </div>
 
-        <div class="section" id="attachment-wrapper">
-          <hr />
-
+        <div class="section attachment-section" id="attachment-wrapper">
           <h3>첨부파일</h3>
           <div id="post-attachment"></div>
         </div>
@@ -33,8 +32,8 @@
           <button id="edit-btn">수정</button>
           <button id="delete-btn">삭제</button>
         </div>
-      </div>
-    </div>
+      </article>
+    </main>
 
     <script src="/github.io/assets/js/admin/common.js"></script>
     <script src="/github.io/assets/js/admin/header.js"></script>

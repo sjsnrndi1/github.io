@@ -39,6 +39,6 @@ saveBtn.addEventListener("click", () => {
     })
     .catch((err) => {
       console.error(err);
-      alert("저장 실패");
+      alert("저장에 실패했습니다.");
     });
 });

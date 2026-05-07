@@ -2,34 +2,46 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>게시글 관리</title>
     <link rel="stylesheet" href="/github.io/assets/css/admin/style.css" />
     <link rel="stylesheet" href="/github.io/assets/css/admin/board/style.css" />
   </head>
-  <body>
+  <body class="admin-app-page">
     <div id="header-container"></div>
 
-    <main class="admin-main">
-      <section class="admin-card">
-        <div class="admin-topbar">
+    <main class="admin-main board-main">
+      <section class="board-page-head">
+        <div>
+          <p class="dashboard-eyebrow">Board Management</p>
           <h2>게시글 관리</h2>
-          <button id="writeBtn" class="admin-btn">글 작성</button>
+          <p>등록된 게시글을 확인하고 상세 화면에서 수정하거나 삭제할 수 있습니다.</p>
+        </div>
+        <button id="writeBtn" class="admin-btn">글 작성</button>
+      </section>
+
+      <section class="admin-card board-table-card">
+        <div class="admin-topbar">
+          <div>
+            <span class="section-label">Posts</span>
+            <h3>게시글 목록</h3>
+          </div>
         </div>
 
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>제목</th>
-              <th>작성일</th>
-            </tr>
-          </thead>
-          <tbody id="postTableBody"></tbody>
-        </table>
-
-        <div id="emptyMessage" class="admin-empty" style="display: none">
-          게시글이 없습니다.
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>제목</th>
+                <th>작성일</th>
+              </tr>
+            </thead>
+            <tbody id="postTableBody"></tbody>
+          </table>
         </div>
+
+        <div id="emptyMessage" class="admin-empty" style="display: none">게시글이 없습니다.</div>
       </section>
     </main>
 

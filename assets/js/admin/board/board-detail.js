@@ -19,12 +19,7 @@ if (!postId) {
 
 fetch(`${API_BASE}/posts/${postId}`)
   .then(async (response) => {
-    console.log("요청 URL:", `${API_BASE}/posts/${postId}`);
-    console.log("status:", response.status);
-    console.log("ok:", response.ok);
-
     const text = await response.text();
-    console.log("응답 본문:", text);
 
     if (!response.ok) {
       throw new Error(`게시글 조회 실패: ${response.status}`);
@@ -46,7 +41,7 @@ fetch(`${API_BASE}/posts/${postId}`)
       attachmentEl.innerHTML = `
         <div class="file-box">
           <span class="file-name">${post.attachmentOriginalName}</span>
-          <button class="download-btn" id="download-btn">다운로드 ⬇</button>
+          <button class="download-btn" id="download-btn">다운로드</button>
         </div>
       `;
 
@@ -64,7 +59,7 @@ fetch(`${API_BASE}/posts/${postId}`)
           })
           .catch((err) => {
             console.error(err);
-            alert("다운로드 실패");
+            alert("다운로드에 실패했습니다.");
           });
       });
     } else {

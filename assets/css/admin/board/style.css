@@ -1,279 +1,361 @@
 body {
   margin: 0;
   padding: 0;
-  background: #f4f6f8;
-  font-family: Arial, sans-serif;
 }
 
-.admin-main {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
+.board-main {
+  display: grid;
+  gap: 24px;
+}
+
+.board-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 44px rgba(13, 27, 42, 0.08);
+}
+
+.board-page-head h2 {
+  margin: 0;
+  color: #101828;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.board-page-head p:last-child {
+  max-width: 620px;
+  margin: 14px 0 0;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .admin-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 44px rgba(13, 27, 42, 0.08);
 }
 
-.admin-card h2 {
-  margin: 0 0 20px;
-  font-size: 28px;
+.board-table-card,
+.board-form-card,
+.post-detail-card {
+  padding: 28px;
 }
 
 .admin-topbar {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
+  gap: 18px;
   margin-bottom: 20px;
 }
 
-.admin-btn {
-  background: #2d6cdf;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
+.admin-topbar h3 {
+  margin: 4px 0 0;
+  color: #101828;
+  font-size: 22px;
+  line-height: 1.2;
 }
 
-.admin-btn:hover {
-  opacity: 0.9;
+.section-label {
+  color: #386fa4;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-btn,
+.btn-group button,
+.button-group button,
+.download-btn {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: #102a43;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.admin-btn {
+  padding: 0 18px;
+}
+
+.admin-btn:hover,
+.btn-group button:hover,
+.button-group button:hover,
+.download-btn:hover {
+  background: #16466f;
+  box-shadow: 0 12px 28px rgba(16, 42, 67, 0.18);
+  transform: translateY(-1px);
+}
+
+.table-scroll {
+  overflow-x: auto;
 }
 
 .admin-table {
   width: 100%;
+  min-width: 680px;
   border-collapse: collapse;
-  overflow: hidden;
-  border-radius: 10px;
-  background: white;
+  border-spacing: 0;
 }
 
 .admin-table thead {
-  background: #f1f3f5;
+  background: #f8fafc;
 }
 
 .admin-table th,
 .admin-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e9ecef;
+  padding: 16px 18px;
+  border-bottom: 1px solid #eaecf0;
   text-align: left;
 }
 
 .admin-table th {
-  font-weight: 700;
+  color: #475467;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.admin-table td {
+  color: #344054;
+  font-size: 14px;
+}
+
+.admin-table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: #f9fbfc;
+}
+
+.admin-table a {
+  color: #102a43;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.admin-table a:hover {
+  color: #386fa4;
 }
 
 .admin-empty {
-  padding: 40px 20px;
+  padding: 46px 20px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #667085;
+  font-size: 15px;
+  font-weight: 800;
   text-align: center;
-  color: #666;
-  background: #fafafa;
-  border: 1px dashed #ddd;
-  border-radius: 10px;
-  margin-top: 20px;
 }
 
 .admin-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  gap: 18px;
+}
+
+.admin-form label {
+  display: grid;
+  gap: 8px;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .admin-form input,
 .admin-form textarea {
-  padding: 12px;
-  border: 1px solid #ddd;
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #d0d5dd;
   border-radius: 8px;
-  font-size: 14px;
+  background: #fff;
+  color: #101828;
+  font: inherit;
+  box-sizing: border-box;
+  outline: none;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus {
+  border-color: #386fa4;
+  box-shadow: 0 0 0 4px rgba(56, 111, 164, 0.14);
 }
 
 .admin-form textarea {
-  min-height: 200px;
+  min-height: 260px;
   resize: vertical;
+  line-height: 1.7;
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-#post-title {
-  font-size: 28px;
-  font-weight: bold;
-}
-
-#post-date {
-  color: #888;
-  margin-bottom: 20px;
-}
-
-#post-content {
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-#post-attachment a {
-  color: blue;
-  text-decoration: underline;
-}
-
-button {
-  padding: 8px 14px;
-  border: none;
-  background-color: #333;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #555;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.section {
-  margin-top: 24px;
-}
-
-.section h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-
+.btn-group,
 .button-group {
-  margin-top: 30px;
   display: flex;
   gap: 10px;
 }
 
-.file-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 18px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-}
-
-.file-name {
-  font-size: 14px;
-}
-
-.download-btn {
-  padding: 8px 14px;
-  background: #495057;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.download-btn:hover {
-  background: #343a40;
-}
-
-.button-group {
-  margin-top: 40px;
-  display: flex;
-  justify-content: center; /* 🔥 가운데 정렬 */
-  gap: 16px;
-}
-
-.button-group button {
-  padding: 12px 24px; /* 🔥 크기 증가 */
-  border-radius: 25px; /* 🔥 둥글게 */
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-}
-
-/* 버튼 스타일 차별화 (추천) */
-#list-btn {
-  background: #495057;
-  color: white;
-}
-
-#edit-btn {
-  background: #4c6ef5;
-  color: white;
-}
-
-#delete-btn {
-  background: #fa5252;
-  color: white;
-}
-
-#list-btn:hover {
-  background: #343a40;
-}
-
-#edit-btn:hover {
-  background: #3b5bdb;
-}
-
-#delete-btn:hover {
-  background: #e03131;
-}
-
-table {
-  width: 100%;
-  table-layout: fixed;
-}
-
-th:nth-child(1),
-td:nth-child(1) {
-  /* ID */
-  width: 10%;
-}
-
-th:nth-child(2),
-td:nth-child(2) {
-  /* 제목 */
-  width: 60%;
-}
-
-th:nth-child(3),
-td:nth-child(3) {
-  /* 작성일 */
-  width: 30%;
-}
-
 .btn-group {
-  display: flex;
-  gap: 10px; /* 버튼 사이 간격 */
+  margin-top: 8px;
 }
 
 .btn-group button {
-  flex: 1; /* 50%씩 나눔 */
-  padding: 14px;
-  border: none;
+  flex: 1;
+  padding: 0 16px;
+}
+
+.btn-group .btn-cancel,
+#list-btn {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #344054;
+}
+
+.btn-group .btn-cancel:hover,
+#list-btn:hover {
+  background: #f2f4f7;
+  color: #102a43;
+}
+
+.post-detail-card {
+  display: grid;
+  gap: 24px;
+}
+
+.post-detail-head {
+  padding-bottom: 22px;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.post-detail-head h1 {
+  margin: 0;
+  color: #101828;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+#post-date {
+  margin: 14px 0 0;
+  color: #667085;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.section {
+  margin: 0;
+}
+
+.post-content-section {
+  min-height: 240px;
+  padding: 24px;
   border-radius: 8px;
-  background: #3b6dcc;
-  color: white;
+  background: #f8fafc;
+}
+
+#post-content {
+  color: #344054;
   font-size: 16px;
-  cursor: pointer;
+  line-height: 1.8;
+  white-space: pre-wrap;
 }
 
-.btn-group button:hover {
-  background: #345dc1;
+.attachment-section {
+  padding: 22px;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  background: #fff;
 }
 
-.btn-cancel {
-  background: #343a40; /* 목록 버튼 색 */
+.attachment-section h3 {
+  margin: 0 0 14px;
+  color: #101828;
+  font-size: 18px;
 }
 
-.btn-cancel:hover {
-  background: #212529;
+.file-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.file-name {
+  color: #344054;
+  font-size: 14px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.download-btn {
+  min-width: 110px;
+  padding: 0 14px;
+}
+
+.button-group {
+  justify-content: flex-end;
+  padding-top: 6px;
+}
+
+.button-group button {
+  min-width: 96px;
+  padding: 0 16px;
+}
+
+#delete-btn {
+  background: #b42318;
+}
+
+#delete-btn:hover {
+  background: #912018;
+}
+
+@media (max-width: 860px) {
+  .board-page-head {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 24px 20px;
+  }
+
+  .board-page-head .admin-btn {
+    width: 100%;
+  }
+
+  .board-table-card,
+  .board-form-card,
+  .post-detail-card {
+    padding: 22px;
+  }
+
+  .btn-group,
+  .button-group,
+  .file-box {
+    flex-direction: column;
+  }
+
+  .button-group button,
+  .download-btn {
+    width: 100%;
+  }
 }

@@ -14,7 +14,6 @@ if (!postId) {
   location.href = "/github.io/admin/board/list.html";
 }
 
-// 기존 글 조회
 fetch(`${API_BASE}/posts/${postId}`)
   .then((response) => {
     if (!response.ok) {
@@ -32,7 +31,6 @@ fetch(`${API_BASE}/posts/${postId}`)
     location.href = "/github.io/admin/board/list.html";
   });
 
-// 수정 저장
 saveBtn.addEventListener("click", () => {
   const title = titleInput.value.trim();
   const content = contentInput.value.trim();
@@ -78,7 +76,6 @@ saveBtn.addEventListener("click", () => {
     });
 });
 
-// 취소
 cancelBtn.addEventListener("click", () => {
   location.href = `/github.io/admin/board/detail.html?id=${postId}`;
 });
