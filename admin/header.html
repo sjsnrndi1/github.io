@@ -1,11 +1,15 @@
 <header class="admin-header">
-  <h1>관리자 페이지</h1>
-  <nav class="admin-nav">
-    <a href="/github.io/admin/admin-dashboard.html" data-page="dashboard"
-      >대시보드</a
-    >
+  <a class="admin-header-brand" href="/github.io/admin/admin-dashboard.html">
+    <span class="brand-mark">A</span>
+    <span>
+      <strong>Admin Console</strong>
+      <small>관리자 페이지</small>
+    </span>
+  </a>
+
+  <nav class="admin-nav" aria-label="관리자 메뉴">
+    <a href="/github.io/admin/admin-dashboard.html" data-page="dashboard">대시보드</a>
     <a href="/github.io/admin/board/list.html" data-page="board">게시글 관리</a>
-    <a href="/github.io/admin/users.html" data-page="users">사용자 관리</a>
-    <button id="logoutBtn">로그아웃</button>
+    <button id="logoutBtn" type="button">로그아웃</button>
   </nav>
 </header>

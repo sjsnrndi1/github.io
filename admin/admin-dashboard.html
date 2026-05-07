@@ -6,13 +6,77 @@
     <title>관리자 대시보드</title>
     <link rel="stylesheet" href="../assets/css/admin/style.css" />
   </head>
-  <body>
+  <body class="admin-app-page">
     <div id="header-container"></div>
 
-    <main class="admin-main">
-      <section class="admin-card">
-        <h2>대시보드</h2>
-        <p>관리자 메뉴를 통해 글 작성 및 관리를 진행할 수 있습니다.</p>
+    <main class="admin-main dashboard-main">
+      <section class="dashboard-hero">
+        <div>
+          <p class="dashboard-eyebrow">Admin Dashboard</p>
+          <h2>오늘의 관리 업무를 빠르게 시작하세요.</h2>
+          <p>게시글 작성, 목록 확인, 운영 메뉴 이동을 한 화면에서 처리할 수 있습니다.</p>
+        </div>
+
+        <a class="dashboard-primary-action" href="/github.io/admin/board/insert.html">새 게시글 작성</a>
+      </section>
+
+      <section class="dashboard-stats" aria-label="관리 현황">
+        <article class="stat-card">
+          <span class="stat-label">게시글 관리</span>
+          <strong>Board</strong>
+          <p>등록된 게시글을 확인하고 수정합니다.</p>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">빠른 작성</span>
+          <strong>Write</strong>
+          <p>공지와 콘텐츠를 바로 등록합니다.</p>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">접근 상태</span>
+          <strong>Active</strong>
+          <p>관리자 로그인 세션이 유지 중입니다.</p>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="admin-panel dashboard-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="dashboard-eyebrow">Shortcuts</p>
+              <h3>빠른 메뉴</h3>
+            </div>
+          </div>
+
+          <div class="shortcut-list">
+            <a href="/github.io/admin/board/list.html">
+              <span>게시글 목록</span>
+              <small>작성된 게시글 확인 및 관리</small>
+            </a>
+            <a href="/github.io/admin/board/insert.html">
+              <span>게시글 작성</span>
+              <small>새 콘텐츠 등록</small>
+            </a>
+            <a href="/github.io/index.html">
+              <span>사이트 바로가기</span>
+              <small>사용자 화면 확인</small>
+            </a>
+          </div>
+        </article>
+
+        <article class="admin-panel dashboard-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="dashboard-eyebrow">Guide</p>
+              <h3>운영 안내</h3>
+            </div>
+          </div>
+
+          <ul class="dashboard-guide">
+            <li>게시글을 등록한 뒤 사용자 화면에서 노출 상태를 확인하세요.</li>
+            <li>수정이 필요한 글은 게시글 목록에서 상세 화면으로 이동해 관리합니다.</li>
+            <li>작업을 마쳤다면 우측 상단 로그아웃 버튼으로 세션을 종료하세요.</li>
+          </ul>
+        </article>
       </section>
     </main>
 
