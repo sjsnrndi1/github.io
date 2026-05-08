@@ -165,11 +165,66 @@
         background: rgba(79, 111, 82, 0.1);
       }
 
+      .nav-links > .nav-item > .nav-submenu {
+        display: none;
+      }
+
       .nav-item:hover > .nav-submenu,
       .nav-item:focus-within > .nav-submenu {
         opacity: 1;
         pointer-events: auto;
         transform: translate(-50%, 0);
+      }
+
+      .mega-menu {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        z-index: 20;
+        width: 100vw;
+        padding: 32px max(24px, calc((100vw - 1120px) / 2));
+        display: grid;
+        grid-template-columns: repeat(5, minmax(120px, 1fr));
+        gap: 36px;
+        border-top: 1px solid rgba(221, 215, 202, 0.9);
+        border-bottom: 1px solid rgba(221, 215, 202, 0.9);
+        background: rgba(255, 253, 248, 0.97);
+        box-shadow: 0 24px 60px rgba(50, 45, 35, 0.12);
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, 10px);
+        transition:
+          opacity 0.16s ease,
+          transform 0.16s ease;
+      }
+
+      .nav-links:hover + .mega-menu,
+      .nav-links:focus-within + .mega-menu,
+      .mega-menu:hover,
+      .mega-menu:focus-within {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(-50%, 0);
+      }
+
+      .mega-group h3 {
+        margin: 0 0 12px;
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.3;
+      }
+
+      .mega-group a {
+        display: block;
+        padding: 4px 0;
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .mega-group a:hover,
+      .mega-group a.is-current {
+        color: var(--green);
       }
 
       .auth-actions {
@@ -343,6 +398,7 @@
           min-width: 0;
           margin: 6px 0 8px;
           padding: 6px 0 6px 14px;
+          display: grid;
           border: 0;
           border-left: 1px solid var(--line);
           border-radius: 0;
@@ -351,6 +407,14 @@
           opacity: 1;
           pointer-events: auto;
           transform: none;
+        }
+
+        .nav-links > .nav-item > .nav-submenu {
+          display: grid;
+        }
+
+        .mega-menu {
+          display: none;
         }
 
         .reason-page {
@@ -416,6 +480,37 @@
             </ul>
           </li>
         </ul>
+
+        <div class="mega-menu" aria-label="전체 메뉴">
+          <div class="mega-group">
+            <h3>연습장 소개</h3>
+            <a href="first-reason.html" class="is-current">처음 펼친 이유</a>
+            <a href="frequent-things.html">자주 꺼내두는 것들</a>
+            <a href="index.html#contact">바뀐 흔적</a>
+          </div>
+          <div class="mega-group">
+            <h3>공책</h3>
+            <a href="index.html#about">배운 것들</a>
+            <a href="index.html#about">막혔던 부분</a>
+            <a href="index.html#about">다시 보기</a>
+            <a href="index.html#about">작은 정리</a>
+          </div>
+          <div class="mega-group">
+            <h3>발자국</h3>
+            <a href="index.html#contact">남겨둔 흐름</a>
+          </div>
+          <div class="mega-group">
+            <h3>실험실</h3>
+            <a href="index.html#contact">해본 것들</a>
+          </div>
+          <div class="mega-group">
+            <h3>스크랩</h3>
+            <a href="index.html#contact">주워온 링크</a>
+            <a href="index.html#contact">마음에 남은 디자인</a>
+            <a href="index.html#contact">밑줄 친 문장</a>
+            <a href="index.html#contact">저장해둔 조각</a>
+          </div>
+        </div>
 
         <div class="auth-actions" aria-label="회원 메뉴">
           <a href="/github.io/user/login.html" class="auth-link">로그인</a>
