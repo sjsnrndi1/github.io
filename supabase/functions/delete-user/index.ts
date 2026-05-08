@@ -3,8 +3,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-api-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
+  Vary: "Origin, Access-Control-Request-Headers",
 };
 
 Deno.serve(async (request) => {
@@ -24,13 +26,13 @@ Deno.serve(async (request) => {
       Deno.env.get("SERVICE_ROLE_KEY") ||
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    console.log("SUPABASE_URL:", !!supabaseUrl);
-    console.log("SERVICE_ROLE_KEY:", !!serviceRoleKey);
+    console.log("SUPABASE_URL:", Boolean(supabaseUrl));
+    console.log("SERVICE_ROLE_KEY:", Boolean(serviceRoleKey));
 
     const authHeader = request.headers.get("Authorization") || "";
     const accessToken = authHeader.replace("Bearer ", "").trim();
 
-    console.log("TOKEN EXISTS:", !!accessToken);
+    console.log("TOKEN EXISTS:", Boolean(accessToken));
 
     if (!supabaseUrl || !serviceRoleKey) {
       return createJsonResponse(
@@ -92,7 +94,7 @@ Deno.serve(async (request) => {
 
     return createJsonResponse(
       {
-        message: err?.message || "알 수 없는 오류",
+        message: err instanceof Error ? err.message : "알 수 없는 오류",
       },
       500,
     );
@@ -104,7 +106,7 @@ function createJsonResponse(body: Record<string, unknown>, status = 200) {
     status,
     headers: {
       ...corsHeaders,
-      "Content-Type": "application/json",
+      "Content-Type": "application/json; charset=utf-8",
     },
   });
 }

@@ -545,6 +545,10 @@ async function initMyPage() {
       const accessToken =
         session?.access_token || localStorage.getItem("token") || "";
 
+      if (!accessToken) {
+        throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+      }
+
       if (session?.access_token) {
         localStorage.setItem("token", session.access_token);
       }
@@ -560,12 +564,18 @@ async function initMyPage() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             apikey: APP_SUPABASE_ANON_KEY,
-            // "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({}),
         },
       );
-      const result = await response.json().catch(() => ({}));
+      const responseText = await response.text();
+      let result = {};
+      try {
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch (error) {
+        console.error("delete-user response is not JSON:", responseText);
+      }
 
       if (!response.ok) {
         throw new Error(
