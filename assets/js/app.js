@@ -526,6 +526,10 @@ async function initMyPage() {
   });
 
   withdrawButton?.addEventListener("click", async () => {
+    Deno.serve(async (request) => {
+  console.log("FUNCTION START");
+
+  try {
     const message = document.querySelector("[data-withdraw-message]");
     const confirmInput = document.querySelector("[data-withdraw-confirm]");
 
@@ -603,6 +607,23 @@ async function initMyPage() {
         true,
       );
     }
+    } catch (err) {
+  console.error("FUNCTION ERROR:", err);
+
+  return new Response(
+    JSON.stringify({
+      error: String(err),
+      message: err?.message || "Unknown error",
+    }),
+    {
+      status: 500,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
   });
 }
 
