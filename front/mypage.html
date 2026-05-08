@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이페이지 | 연습장</title>
+    <link rel="stylesheet" href="../assets/css/app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/app.js"></script>
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <main>
+      <header class="page-head">
+        <p class="breadcrumb">
+          <a href="../index.html">연습장</a>
+          <span>/</span>
+          <strong>마이페이지</strong>
+        </p>
+        <h1>마이페이지</h1>
+        <nav class="sub-tabs" aria-label="마이페이지 메뉴">
+          <a href="mypage.html" class="is-current">회원정보 수정</a>
+          <a href="#withdraw">회원탈퇴</a>
+        </nav>
+      </header>
+
+      <section class="mypage-shell" aria-label="회원 정보">
+        <article class="mypage-card">
+          <div class="mypage-head">
+            <span class="mypage-avatar" data-mypage-avatar aria-hidden="true">연</span>
+            <div>
+              <p class="eyebrow">Profile</p>
+              <h2 data-mypage-name>연습장 사용자</h2>
+              <p data-mypage-email>로그인 정보를 확인하고 있습니다.</p>
+            </div>
+          </div>
+
+          <form class="mypage-form" data-profile-form>
+            <label for="profile-name">
+              이름
+              <input id="profile-name" name="name" type="text" placeholder="이름을 입력해주세요" autocomplete="name" required />
+            </label>
+
+            <label for="profile-password">
+              새 비밀번호
+              <input
+                id="profile-password"
+                name="password"
+                type="password"
+                placeholder="변경할 때만 입력"
+                autocomplete="new-password"
+                minlength="8"
+              />
+            </label>
+
+            <p class="form-help">비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 모두 포함해야 합니다.</p>
+
+            <button type="submit" class="member-submit">회원정보 수정</button>
+          </form>
+
+          <p class="member-message" data-profile-message role="alert" aria-live="polite"></p>
+        </article>
+
+        <article class="mypage-card danger-card" id="withdraw">
+          <div class="mypage-section-title">
+            <p class="eyebrow">Withdraw</p>
+            <h2>회원탈퇴</h2>
+            <p>
+              계정을 삭제하면 저장된 로그인 정보가 사라지고 다시 복구하기 어렵습니다.
+            </p>
+          </div>
+
+          <label class="check-label danger-check">
+            <input type="checkbox" data-withdraw-confirm />
+            회원탈퇴 안내를 확인했습니다.
+          </label>
+
+          <button type="button" class="danger-button" data-withdraw-button>회원탈퇴</button>
+          <p class="member-message" data-withdraw-message role="alert" aria-live="polite"></p>
+        </article>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+  </body>
+</html>

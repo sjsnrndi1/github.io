@@ -2,11 +2,15 @@
 
 const isFrontPage = window.location.pathname.includes("/front/");
 const componentBase = isFrontPage ? "../" : "";
+const APP_SUPABASE_URL = "https://nrlkhbgeynmiqesglhgt.supabase.co";
+const APP_SUPABASE_ANON_KEY = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
+const SUPABASE_SDK_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
 document.addEventListener("DOMContentLoaded", () => {
   renderAuthCallbackResult();
   loadHeader();
   loadFooter();
+  initMyPage();
 });
 
 function translateSupabaseMessage(message, fallbackMessage) {
@@ -119,6 +123,7 @@ async function loadHeader() {
 
   headerRoot.innerHTML = html;
   applyHeaderLinks(headerRoot);
+  renderHeaderAuth(headerRoot);
   initMenu();
 }
 
@@ -140,6 +145,277 @@ function applyHeaderLinks(headerRoot) {
 
     if (isSamePage) {
       link.classList.add("is-current");
+    }
+  });
+}
+
+function getStoredUser() {
+  const rawUser = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
+
+  if (!rawUser || !token) return null;
+
+  try {
+    return JSON.parse(rawUser);
+  } catch (error) {
+    console.error(error);
+    localStorage.removeItem("user");
+    return null;
+  }
+}
+
+function getUserDisplayName(user) {
+  const metadataName = user?.user_metadata?.name;
+  const email = user?.email;
+
+  if (metadataName) return metadataName;
+  if (email) return email.split("@")[0];
+  return "연습장";
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function loadSupabaseSdk() {
+  if (window.supabase) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    const existingScript = document.querySelector(`script[src="${SUPABASE_SDK_URL}"]`);
+
+    if (existingScript) {
+      existingScript.addEventListener("load", resolve, { once: true });
+      existingScript.addEventListener("error", reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = SUPABASE_SDK_URL;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+async function signOutSupabaseSession() {
+  await loadSupabaseSdk();
+
+  const supabaseClient = window.supabase.createClient(APP_SUPABASE_URL, APP_SUPABASE_ANON_KEY);
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    throw error;
+  }
+}
+
+async function getAuthedSupabaseClient() {
+  await loadSupabaseSdk();
+
+  const supabaseClient = window.supabase.createClient(APP_SUPABASE_URL, APP_SUPABASE_ANON_KEY);
+  const accessToken = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (accessToken && refreshToken) {
+    await supabaseClient.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+  }
+
+  return supabaseClient;
+}
+
+function clearStoredAuth() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user");
+  localStorage.removeItem("pendingVerifyEmail");
+}
+
+function renderHeaderAuth(headerRoot) {
+  const authActions = headerRoot.querySelector(".auth-actions");
+  if (!authActions) return;
+
+  const user = getStoredUser();
+
+  if (!user) {
+    authActions.innerHTML = `
+      <a data-path="front/login/login.html" href="${componentBase}front/login/login.html" class="auth-link auth-login">로그인</a>
+      <a data-path="front/login/signup.html" href="${componentBase}front/login/signup.html" class="auth-link auth-join">가입</a>
+    `;
+    return;
+  }
+
+  const displayName = getUserDisplayName(user);
+  const safeDisplayName = escapeHtml(displayName);
+  const safeInitial = escapeHtml(displayName.slice(0, 1));
+
+  authActions.innerHTML = `
+    <a class="user-summary" href="${componentBase}front/mypage.html" aria-label="마이페이지로 이동">
+      <span class="user-avatar" aria-hidden="true">${safeInitial}</span>
+      <span class="user-name">${safeDisplayName}</span>
+    </a>
+    <button type="button" class="auth-link logout-button" data-logout>로그아웃</button>
+  `;
+
+  const logoutButton = authActions.querySelector("[data-logout]");
+  logoutButton?.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    logoutButton.textContent = "로그아웃 중";
+
+    try {
+      await signOutSupabaseSession();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      clearStoredAuth();
+    }
+
+    window.location.href = `${componentBase}index.html`;
+  });
+}
+
+function isStrongPassword(password) {
+  const hasLetter = /[A-Za-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+  return password.length >= 8 && hasLetter && hasNumber && hasSpecial;
+}
+
+function setPageMessage(element, message, isError = false) {
+  if (!element) return;
+
+  element.textContent = message;
+  element.classList.toggle("is-error", isError);
+}
+
+function updateStoredUser(user) {
+  if (!user) return;
+
+  localStorage.setItem("user", JSON.stringify(user));
+}
+
+function renderMyPageProfile(user) {
+  const displayName = getUserDisplayName(user);
+  const nameText = document.querySelector("[data-mypage-name]");
+  const emailText = document.querySelector("[data-mypage-email]");
+  const avatar = document.querySelector("[data-mypage-avatar]");
+  const nameInput = document.getElementById("profile-name");
+
+  if (nameText) nameText.textContent = displayName;
+  if (emailText) emailText.textContent = user?.email || "이메일 정보가 없습니다.";
+  if (avatar) avatar.textContent = displayName.slice(0, 1);
+  if (nameInput) nameInput.value = user?.user_metadata?.name || "";
+}
+
+async function initMyPage() {
+  const profileForm = document.querySelector("[data-profile-form]");
+  const withdrawButton = document.querySelector("[data-withdraw-button]");
+  const storedUser = getStoredUser();
+
+  if (!profileForm && !withdrawButton) return;
+
+  if (!storedUser) {
+    window.location.href = `${componentBase}front/login/login.html`;
+    return;
+  }
+
+  renderMyPageProfile(storedUser);
+
+  profileForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const message = document.querySelector("[data-profile-message]");
+    const formData = new FormData(profileForm);
+    const name = String(formData.get("name") || "").trim();
+    const password = String(formData.get("password") || "");
+    const updatePayload = {
+      data: {
+        name,
+      },
+    };
+
+    if (!name) {
+      setPageMessage(message, "이름은 공백 없이 입력해주세요.", true);
+      return;
+    }
+
+    if (password) {
+      if (!isStrongPassword(password)) {
+        setPageMessage(message, "비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 모두 포함해야 합니다.", true);
+        return;
+      }
+
+      updatePayload.password = password;
+    }
+
+    try {
+      setPageMessage(message, "회원정보를 수정하고 있습니다.");
+
+      const supabaseClient = await getAuthedSupabaseClient();
+      const { data, error } = await supabaseClient.auth.updateUser(updatePayload);
+
+      if (error) {
+        throw error;
+      }
+
+      updateStoredUser(data.user);
+      renderMyPageProfile(data.user);
+      profileForm.reset();
+      document.getElementById("profile-name").value = name;
+      setPageMessage(message, "회원정보가 수정되었습니다.");
+      loadHeader();
+    } catch (error) {
+      console.error(error);
+      setPageMessage(message, translateSupabaseMessage(error?.message || error, "회원정보 수정 중 오류가 발생했습니다."), true);
+    }
+  });
+
+  withdrawButton?.addEventListener("click", async () => {
+    const message = document.querySelector("[data-withdraw-message]");
+    const confirmInput = document.querySelector("[data-withdraw-confirm]");
+
+    if (!confirmInput?.checked) {
+      setPageMessage(message, "회원탈퇴 안내를 먼저 확인해주세요.", true);
+      return;
+    }
+
+    try {
+      withdrawButton.disabled = true;
+      setPageMessage(message, "회원탈퇴를 요청하고 있습니다.");
+
+      const response = await fetch(`${APP_SUPABASE_URL}/functions/v1/delete-user`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("delete-user Edge Function is not ready");
+      }
+
+      clearStoredAuth();
+      setPageMessage(message, "회원탈퇴가 완료되었습니다. 메인 화면으로 이동합니다.");
+      window.setTimeout(() => {
+        window.location.href = `${componentBase}index.html`;
+      }, 900);
+    } catch (error) {
+      console.error(error);
+      withdrawButton.disabled = false;
+      setPageMessage(
+        message,
+        "회원탈퇴를 완료하려면 Supabase delete-user Edge Function이 필요합니다. 지금은 계정 삭제 요청 화면까지만 준비되어 있습니다.",
+        true
+      );
     }
   });
 }

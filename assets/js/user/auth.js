@@ -128,6 +128,7 @@ function validateSignupForm(formData) {
 
 function saveSupabaseAuth(data) {
   const token = data.session?.access_token;
+  const refreshToken = data.session?.refresh_token;
   const user = data.user;
 
   if (!token || !user) {
@@ -135,6 +136,9 @@ function saveSupabaseAuth(data) {
   }
 
   localStorage.setItem("token", token);
+  if (refreshToken) {
+    localStorage.setItem("refreshToken", refreshToken);
+  }
   localStorage.setItem("user", JSON.stringify(user));
 }
 
