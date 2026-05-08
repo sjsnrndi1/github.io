@@ -227,9 +227,40 @@
         border: 10px solid var(--white);
         border-radius: 8px;
         background:
-          linear-gradient(rgba(35, 33, 29, 0.08), rgba(35, 33, 29, 0.16)),
-          url("assets/images/banner/banner.png") center / cover;
+          linear-gradient(90deg, rgba(79, 111, 82, 0.14) 0 2px, transparent 2px 100%),
+          repeating-linear-gradient(180deg, transparent 0 42px, rgba(79, 111, 82, 0.16) 43px 44px),
+          linear-gradient(135deg, #fffdf8 0%, #f3efe5 54%, #e6e1d6 100%);
+        background-size: 100% 100%, 100% 100%, 100% 100%;
         box-shadow: var(--shadow);
+      }
+
+      .desk-photo::before {
+        content: "";
+        position: absolute;
+        left: 54px;
+        top: 58px;
+        width: 54%;
+        height: 12px;
+        border-radius: 99px;
+        background: rgba(183, 117, 76, 0.44);
+        box-shadow:
+          0 42px 0 rgba(35, 33, 29, 0.14),
+          0 84px 0 rgba(35, 33, 29, 0.1),
+          0 126px 0 rgba(79, 111, 82, 0.18),
+          0 168px 0 rgba(35, 33, 29, 0.1);
+      }
+
+      .desk-photo::after {
+        content: "";
+        position: absolute;
+        right: 52px;
+        bottom: 66px;
+        width: 26px;
+        height: 178px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--green-dark), var(--green));
+        box-shadow: 12px 10px 0 rgba(35, 33, 29, 0.1);
+        transform: rotate(34deg);
       }
 
       .note-card {
@@ -237,7 +268,7 @@
         left: 0;
         bottom: 34px;
         width: min(82%, 360px);
-        padding: 24px;
+        padding: 30px 30px 30px 34px;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: rgba(255, 253, 248, 0.94);
@@ -330,19 +361,9 @@
         color: var(--muted);
       }
 
-      .posts-section {
-        padding-top: 40px;
-      }
-
-      .post-list {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px;
-      }
-
       .contact-section {
         width: min(1120px, calc(100% - 32px));
-        margin: 20px auto 80px;
+        margin: 0 auto 80px;
         padding: 36px;
         display: flex;
         align-items: center;
@@ -440,13 +461,11 @@
           aspect-ratio: 5 / 4;
         }
 
-        .feature-grid,
-        .post-list {
+        .feature-grid {
           grid-template-columns: 1fr;
         }
 
-        .feature-card,
-        .post-card {
+        .feature-card {
           min-height: auto;
         }
 
@@ -484,7 +503,7 @@
 
         .note-card {
           width: 92%;
-          padding: 20px;
+          padding: 24px 24px 24px 28px;
         }
       }
     </style>
@@ -506,7 +525,6 @@
         <ul class="nav-links" id="nav-links">
           <li><a href="#home" class="nav-btn">처음</a></li>
           <li><a href="#about" class="nav-btn">기록 방식</a></li>
-          <li><a href="#posts" class="nav-btn">최근 메모</a></li>
           <li><a href="#contact" class="nav-btn">마무리</a></li>
         </ul>
 
@@ -527,8 +545,8 @@
             가볍게 남기는 개인 기록 공간입니다.
           </p>
           <div class="hero-actions">
-            <a class="primary-link" href="#posts">최근 메모 보기</a>
-            <a class="secondary-link" href="#about">어떻게 쓰는지</a>
+            <a class="primary-link" href="#about">기록 방식 보기</a>
+            <a class="secondary-link" href="#contact">마무리 보기</a>
           </div>
         </div>
 
@@ -572,21 +590,6 @@
         </div>
       </section>
 
-      <section class="section-wrap posts-section" id="posts">
-        <div class="section-heading">
-          <p class="eyebrow">Latest Notes</p>
-          <h2>최근에 적은 것들</h2>
-        </div>
-
-        <div class="post-list" id="post-list">
-          <article class="post-card is-loading">
-            <span>불러오는 중</span>
-            <h3>아직 표시할 메모를 준비하고 있어요.</h3>
-            <p>관리자 화면에서 글을 추가하면 이곳에 차곡차곡 나타납니다.</p>
-          </article>
-        </div>
-      </section>
-
       <section class="contact-section" id="contact">
         <div>
           <p class="eyebrow">Keep Practicing</p>
@@ -600,58 +603,6 @@
     <script>
       const menuToggle = document.getElementById("menu-toggle");
       const navLinks = document.getElementById("nav-links");
-      const postList = document.getElementById("post-list");
-
-      function formatPostDate(dateString) {
-        if (!dateString) return "";
-
-        const date = new Date(dateString);
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const dd = String(date.getDate()).padStart(2, "0");
-
-        return `${yyyy}.${mm}.${dd}`;
-      }
-
-      function escapeHtml(value) {
-        return String(value)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      function renderPosts(posts) {
-        const latestPosts = Array.isArray(posts) ? posts.slice(0, 3) : [];
-
-        if (latestPosts.length === 0) {
-          postList.innerHTML = `
-            <article class="post-card">
-              <span>Empty</span>
-              <h3>아직 등록된 메모가 없어요.</h3>
-              <p>관리자 화면에서 첫 번째 기록을 남기면 이곳에 표시됩니다.</p>
-            </article>
-          `;
-          return;
-        }
-
-        postList.innerHTML = latestPosts
-          .map((post) => {
-            const title = escapeHtml(post.title || "제목 없음");
-            const content = escapeHtml(post.content ? post.content.slice(0, 80) : "내용 없음");
-
-            return `
-              <article class="post-card">
-                <span>Note</span>
-                <h3>${title}</h3>
-                <p>${content}</p>
-                <time>${formatPostDate(post.createdAt)}</time>
-              </article>
-            `;
-          })
-          .join("");
-      }
 
       menuToggle.addEventListener("click", () => {
         const isActive = navLinks.classList.toggle("active");
@@ -664,21 +615,6 @@
           menuToggle.setAttribute("aria-expanded", "false");
         });
       });
-
-      fetch("http://localhost:8081/posts")
-        .then((res) => res.json())
-        .then((posts) => {
-          renderPosts(posts);
-        })
-        .catch(() => {
-          postList.innerHTML = `
-            <article class="post-card">
-              <span>Offline</span>
-              <h3>지금은 메모를 불러오지 못했어요.</h3>
-              <p>서버가 켜져 있으면 최근 기록이 이 자리에 나타납니다.</p>
-            </article>
-          `;
-        });
     </script>
   </body>
 </html>
