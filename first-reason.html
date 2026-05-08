@@ -95,7 +95,9 @@
       }
 
       .nav-links {
-        gap: clamp(26px, 4.8vw, 64px);
+        width: min(760px, calc(100vw - 360px));
+        justify-content: space-between;
+        gap: 0;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -179,18 +181,18 @@
 
       .mega-menu {
         position: absolute;
-        top: calc(100% - 1px);
+        top: 100%;
         left: 50%;
         z-index: 20;
-        width: min(760px, calc(100vw - 32px));
-        padding: 10px 0 18px;
+        width: 100vw;
+        padding: 28px max(24px, calc((100vw - 760px) / 2)) 32px;
         display: grid;
-        grid-template-columns: 1.25fr 1fr 0.7fr 0.7fr 1.25fr;
-        gap: clamp(18px, 3.8vw, 54px);
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0;
         border-top: 1px solid rgba(221, 215, 202, 0.9);
         border-bottom: 1px solid rgba(221, 215, 202, 0.9);
-        background: rgba(255, 253, 248, 0.97);
-        box-shadow: 0 14px 34px rgba(50, 45, 35, 0.1);
+        background: rgba(248, 248, 247, 0.98);
+        box-shadow: none;
         opacity: 0;
         pointer-events: none;
         transform: translate(-50%, 0);
@@ -214,7 +216,7 @@
 
       .mega-group a {
         display: block;
-        padding: 5px 0;
+        padding: 4px 0;
         color: var(--muted);
         font-size: 15px;
         font-weight: 700;
@@ -238,9 +240,35 @@
         width: min(1120px, calc(100% - 32px));
         min-height: calc(100vh - 74px);
         margin: 0 auto;
-        display: grid;
-        place-items: center;
         padding: 72px 0;
+      }
+
+      .page-head {
+        padding: 30px 0 36px;
+        text-align: center;
+      }
+
+      .breadcrumb {
+        margin: 0 0 22px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .breadcrumb span {
+        color: var(--clay);
+      }
+
+      .page-head h1 {
+        margin: 0;
+        font-size: clamp(34px, 4.8vw, 58px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
       }
 
       .reason-page {
@@ -268,6 +296,16 @@
           rgba(255, 253, 248, 0.72);
       }
 
+      .reason-side p {
+        max-width: 280px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1.7;
+        word-break: keep-all;
+      }
+
       .eyebrow {
         margin: 0 0 14px;
         color: var(--clay);
@@ -275,15 +313,6 @@
         font-weight: 800;
         letter-spacing: 0;
         text-transform: uppercase;
-      }
-
-      h1 {
-        max-width: 360px;
-        margin: 0;
-        font-size: clamp(42px, 6vw, 74px);
-        line-height: 1.02;
-        letter-spacing: 0;
-        word-break: keep-all;
       }
 
       .reason-mark {
@@ -333,6 +362,42 @@
         font-weight: 800;
         line-height: 1.8;
         word-break: keep-all;
+      }
+
+      .site-footer {
+        background: #23211d;
+        color: rgba(255, 253, 248, 0.72);
+      }
+
+      .footer-inner {
+        width: min(1120px, calc(100% - 32px));
+        min-height: 86px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .footer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--white);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .footer-logo {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 auto;
+      }
+
+      .footer-copy {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 700;
       }
 
       @media (max-width: 920px) {
@@ -422,6 +487,13 @@
         .reason-side,
         .reason-note {
           min-height: auto;
+        }
+
+        .footer-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          justify-content: center;
+          padding: 18px 0;
         }
       }
     </style>
@@ -518,11 +590,18 @@
     </nav>
 
     <main>
+      <header class="page-head">
+        <p class="breadcrumb">
+          <a href="index.html">연습장 소개</a>
+          <span>/</span>
+          <strong>처음 펼친 이유</strong>
+        </p>
+        <h1>처음 펼친 이유</h1>
+      </header>
+
       <section class="reason-page">
         <aside class="reason-side">
-          <div>
-            <h1>처음 펼친 이유</h1>
-          </div>
+          <p>연습장을 처음 열어둔 마음을 남겨둔 페이지입니다.</p>
           <svg class="reason-mark" viewBox="0 0 140 140" aria-hidden="true">
             <path d="M35 24h56c10 0 18 8 18 18v72H47c-10 0-18-8-18-18V30c0-3 3-6 6-6z" />
             <path d="M47 44h44M47 62h36M47 80h42" />
@@ -543,6 +622,24 @@
         </article>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg class="footer-logo" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+            <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#dce8d8" stroke-width="2.5" />
+            <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+            <path d="M32.5 13.5l6.9 6.9" stroke="#dce8d8" stroke-width="2.7" stroke-linecap="round" />
+            <path d="M18.7 28.7l6.2 6.2-8.1 1.9 1.9-8.1z" fill="#f7f4ed" stroke="#dce8d8" stroke-width="1.7" stroke-linejoin="round" />
+            <circle cx="34" cy="34" r="7" fill="#4f6f52" />
+            <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>연습장</span>
+        </div>
+        <p class="footer-copy">© 2026 연습장. All rights reserved.</p>
+      </div>
+    </footer>
 
     <script>
       const menuToggle = document.getElementById("menu-toggle");
