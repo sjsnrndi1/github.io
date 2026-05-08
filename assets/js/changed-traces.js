@@ -1,18 +1,13 @@
-﻿const menuToggle = document.getElementById("menu-toggle");
-const navLinks = document.getElementById("nav-links");
-
-menuToggle.addEventListener("click", () => {
-  const isActive = navLinks.classList.toggle("active");
-  menuToggle.setAttribute("aria-expanded", String(isActive));
-});
-
 const supabaseUrl = "https://nrlkhbgeynmiqesglhgt.supabase.co";
 const supabaseKey = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+document.addEventListener("DOMContentLoaded", loadChangedTraces);
+
 async function loadChangedTraces() {
   const traceBoard = document.getElementById("traceBoard");
+  if (!traceBoard) return;
 
   const { data, error } = await supabaseClient
     .from("NOTE_CHANGED_TRACES")
@@ -26,7 +21,7 @@ async function loadChangedTraces() {
   }
 
   const groupedByYear = data.reduce((acc, item) => {
-    const rawDate = String(item.date); // 예: 20260508
+    const rawDate = String(item.date);
     const year = rawDate.slice(0, 4);
 
     if (!acc[year]) acc[year] = [];
@@ -44,15 +39,15 @@ async function loadChangedTraces() {
         <div class="trace-list">
           ${items
             .map((item) => {
-              const rawDate = String(item.date); // 20260508
-
-              const year = rawDate.slice(0, 4);
-              const month = rawDate.slice(5, 7);
-              const day = rawDate.slice(8, 10);
+              const rawDate = String(item.date);
+              const isHyphenDate = rawDate.includes("-");
+              const itemYear = rawDate.slice(0, 4);
+              const month = isHyphenDate ? rawDate.slice(5, 7) : rawDate.slice(4, 6);
+              const day = isHyphenDate ? rawDate.slice(8, 10) : rawDate.slice(6, 8);
 
               return `
                 <article class="trace-item">
-                  <time class="trace-date" datetime="${year}-${month}-${day}">
+                  <time class="trace-date" datetime="${itemYear}-${month}-${day}">
                     ${month}.${day}
                   </time>
 
@@ -69,5 +64,3 @@ async function loadChangedTraces() {
     })
     .join("");
 }
-
-loadChangedTraces();

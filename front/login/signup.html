@@ -3,55 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>회원가입 | MySite</title>
+    <title>회원가입 | 연습장</title>
     <link rel="stylesheet" href="../../assets/css/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-      const supabaseUrl = "https://nrlkhbgeynmiqesglhgt.supabase.co";
-      const supabaseKey = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
-
-      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-      async function signUp() {
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        const { data, error } = await supabaseClient.auth.signUp({
-          name: name,
-          email: email,
-          password: password,
-        });
-
-        if (error) {
-          console.error(error);
-          alert(error.message);
-          return;
-        }
-
-        console.log(data);
-        alert("회원가입 성공");
-      }
-    </script>
   </head>
   <body class="member-page">
     <main class="member-shell">
       <section class="member-visual signup-visual" aria-label="회원가입 안내">
-        <a
-          class="logo member-logo"
-          href="../../index.html"
-          aria-label="MySite 홈"
-        >
-          <span class="logo-mark">M</span>
-          <span>MySite</span>
+        <a class="member-logo" href="../../index.html" aria-label="연습장 홈">
+          <span class="member-logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" focusable="false">
+              <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#4f6f52" stroke-width="2.5" />
+              <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+              <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span>연습장</span>
         </a>
 
         <div class="member-visual-copy">
           <p class="eyebrow">Create Account</p>
-          <h1>새로운 계정을 만들어 보세요.</h1>
+          <h1>내 연습장을 새로 펼칩니다.</h1>
           <p>
-            회원가입 후 더 편하게 콘텐츠를 확인하고 업데이트 소식을 받아볼 수
-            있습니다.
+            배운 것, 막혔던 것, 다시 보고 싶은 조각들을
+            천천히 쌓아둘 작은 공간을 준비합니다.
           </p>
         </div>
       </section>
@@ -59,34 +35,23 @@
       <section class="member-panel" aria-label="회원가입">
         <div class="member-card">
           <div class="member-card-head">
-            <p class="eyebrow">Join Us</p>
+            <p class="eyebrow">Join</p>
             <h2>회원가입</h2>
-            <p>사용할 계정 정보를 입력해 주세요.</p>
+            <p>연습장에 남길 이름과 계정 정보를 입력해주세요.</p>
           </div>
 
           <form class="member-form" data-auth-form data-auth-type="signup">
             <label for="signup-name">
               이름
-              <input
-                id="signup-name"
-                name="name"
-                type="text"
-                placeholder="홍길동"
-                autocomplete="name"
-                required
-              />
+              <input id="signup-name" name="name" type="text" placeholder="홍길동" autocomplete="name" required />
             </label>
 
             <label for="signup-email">
               이메일
-              <input
-                id="signup-email"
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                autocomplete="email"
-                required
-              />
+              <span class="email-check-row">
+                <input id="signup-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+                <button class="member-sub-button" type="button" data-email-check>중복 확인</button>
+              </span>
             </label>
 
             <label for="signup-password">
@@ -108,7 +73,7 @@
                 id="signup-password-confirm"
                 name="passwordConfirm"
                 type="password"
-                placeholder="비밀번호 재입력"
+                placeholder="비밀번호를 한 번 더 입력"
                 autocomplete="new-password"
                 minlength="8"
                 required
@@ -117,22 +82,15 @@
 
             <label class="check-label agree-label">
               <input type="checkbox" name="terms" required />
-              서비스 이용약관과 개인정보 처리방침에 동의합니다.
+              연습장 이용을 위한 기본 약관에 동의합니다.
             </label>
 
             <button type="submit" class="member-submit">회원가입</button>
           </form>
 
-          <p
-            class="member-message"
-            data-auth-message
-            role="alert"
-            aria-live="polite"
-          ></p>
+          <p class="member-message" data-auth-message role="alert" aria-live="polite"></p>
 
-          <p class="member-switch">
-            이미 계정이 있나요? <a href="login.html">로그인</a>
-          </p>
+          <p class="member-switch">이미 계정이 있나요? <a href="login.html">로그인</a></p>
         </div>
       </section>
     </main>

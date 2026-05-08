@@ -1,65 +1,19 @@
 <nav class="navbar">
   <div class="nav-inner">
-    <a class="logo" href="#home" aria-label="연습장 홈">
-      <svg
-        class="logo-mark"
-        viewBox="0 0 48 48"
-        role="img"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <rect
-          x="7"
-          y="6"
-          width="27"
-          height="34"
-          rx="5"
-          fill="#fffdf8"
-          stroke="#4f6f52"
-          stroke-width="2.5"
-        />
-        <path
-          d="M14 15h13M14 22h10M14 29h12"
-          stroke="#ddd7ca"
-          stroke-width="2.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z"
-          fill="#b7754c"
-        />
-        <path
-          d="M32.5 13.5l6.9 6.9"
-          stroke="#314c35"
-          stroke-width="2.7"
-          stroke-linecap="round"
-        />
-        <path
-          d="M18.7 28.7l6.2 6.2-8.1 1.9 1.9-8.1z"
-          fill="#f7f4ed"
-          stroke="#314c35"
-          stroke-width="1.7"
-          stroke-linejoin="round"
-        />
+    <a class="logo" data-path="index.html" href="index.html" aria-label="연습장 홈">
+      <svg class="logo-mark" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+        <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#4f6f52" stroke-width="2.5" />
+        <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+        <path d="M32.5 13.5l6.9 6.9" stroke="#314c35" stroke-width="2.7" stroke-linecap="round" />
+        <path d="M18.7 28.7l6.2 6.2-8.1 1.9 1.9-8.1z" fill="#f7f4ed" stroke="#314c35" stroke-width="1.7" stroke-linejoin="round" />
         <circle cx="34" cy="34" r="7" fill="#4f6f52" />
-        <path
-          d="M31 34.2l2.1 2.1 4-4.5"
-          fill="none"
-          stroke="#fffdf8"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
+        <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
       <span class="logo-text">연습장</span>
     </a>
 
-    <button
-      class="menu-toggle"
-      id="menu-toggle"
-      aria-label="메뉴 열기"
-      aria-expanded="false"
-    >
+    <button class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기" aria-expanded="false">
       <span></span>
       <span></span>
       <span></span>
@@ -67,75 +21,42 @@
 
     <ul class="nav-links" id="nav-links">
       <li class="nav-item">
-        <a href="front/first-reason.html" class="nav-btn">연습장 소개</a>
+        <a data-path="front/first-reason.html" href="front/first-reason.html" class="nav-btn">연습장 소개</a>
         <ul class="nav-submenu" aria-label="연습장 소개 하위 메뉴">
-          <li><a href="front/first-reason.html">처음 펼친 이유</a></li>
-          <li>
-            <a href="front/frequent-thing.html">자주 꺼내두는 것들</a>
-          </li>
-          <li><a href="front/changed-traces.html">바뀐 흔적</a></li>
+          <li><a data-path="front/first-reason.html" href="front/first-reason.html">처음 펼친 이유</a></li>
+          <li><a data-path="front/frequent-thing.html" href="front/frequent-thing.html">자주 꺼내두는 것들</a></li>
+          <li><a data-path="front/changed-traces.html" href="front/changed-traces.html">바뀐 흔적</a></li>
         </ul>
       </li>
       <li class="nav-item">
-        <a href="#about" class="nav-btn">공책</a>
+        <a data-path="index.html#about" href="index.html#about" class="nav-btn">공책</a>
         <ul class="nav-submenu" aria-label="공책 하위 메뉴">
-          <li><a href="#about">배운 것들</a></li>
-          <li><a href="#about">막혔던 부분</a></li>
-          <li><a href="#about">다시 보기</a></li>
-          <li><a href="#about">작은 정리</a></li>
+          <li><a data-path="index.html#about" href="index.html#about">배운 것들</a></li>
+          <li><a data-path="index.html#about" href="index.html#about">막혔던 부분</a></li>
+          <li><a data-path="index.html#about" href="index.html#about">다시 보기</a></li>
+          <li><a data-path="index.html#about" href="index.html#about">작은 정리</a></li>
         </ul>
       </li>
       <li class="nav-item">
-        <a href="#contact" class="nav-btn">발자국</a>
+        <a data-path="index.html#contact" href="index.html#contact" class="nav-btn">발자국</a>
       </li>
       <li class="nav-item">
-        <a href="#contact" class="nav-btn">실험실</a>
+        <a data-path="index.html#contact" href="index.html#contact" class="nav-btn">실험실</a>
       </li>
       <li class="nav-item">
-        <a href="#contact" class="nav-btn">스크랩</a>
+        <a data-path="index.html#contact" href="index.html#contact" class="nav-btn">스크랩</a>
         <ul class="nav-submenu" aria-label="스크랩 하위 메뉴">
-          <li><a href="#contact">주워온 링크</a></li>
-          <li><a href="#contact">마음에 남은 디자인</a></li>
-          <li><a href="#contact">밑줄 친 문장</a></li>
-          <li><a href="#contact">저장해둔 조각</a></li>
+          <li><a data-path="index.html#contact" href="index.html#contact">주워온 링크</a></li>
+          <li><a data-path="index.html#contact" href="index.html#contact">마음에 남은 디자인</a></li>
+          <li><a data-path="index.html#contact" href="index.html#contact">밑줄 친 문장</a></li>
+          <li><a data-path="index.html#contact" href="index.html#contact">저장해둔 조각</a></li>
         </ul>
       </li>
     </ul>
 
-    <div class="mega-menu" aria-label="전체 메뉴">
-      <div class="mega-group">
-        <h3>연습장 소개</h3>
-        <a href="front/first-reason.html">처음 펼친 이유</a>
-        <a href="front/frequent-thing.html">자주 꺼내두는 것들</a>
-        <a href="front/changed-traces.html">바뀐 흔적</a>
-      </div>
-      <div class="mega-group">
-        <h3>공책</h3>
-        <a href="#about">배운 것들</a>
-        <a href="#about">막혔던 부분</a>
-        <a href="#about">다시 보기</a>
-        <a href="#about">작은 정리</a>
-      </div>
-      <div class="mega-group">
-        <h3>발자국</h3>
-        <a href="#contact">남겨둔 흐름</a>
-      </div>
-      <div class="mega-group">
-        <h3>실험실</h3>
-        <a href="#contact">해본 것들</a>
-      </div>
-      <div class="mega-group">
-        <h3>스크랩</h3>
-        <a href="#contact">주워온 링크</a>
-        <a href="#contact">마음에 남은 디자인</a>
-        <a href="#contact">밑줄 친 문장</a>
-        <a href="#contact">저장해둔 조각</a>
-      </div>
-    </div>
-
     <div class="auth-actions" aria-label="회원 메뉴">
-      <a href="front/login/login.html" class="auth-link auth-login">로그인</a>
-      <a href="front/login/signup.html" class="auth-link auth-join">가입</a>
+      <a data-path="front/login/login.html" href="front/login/login.html" class="auth-link auth-login">로그인</a>
+      <a data-path="front/login/signup.html" href="front/login/signup.html" class="auth-link auth-join">가입</a>
     </div>
   </div>
 </nav>
