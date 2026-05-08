@@ -893,35 +893,6 @@ body {
   color: #9b958a;
 }
 
-.email-check-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-}
-
-.member-sub-button {
-  min-height: 50px;
-  padding: 0 14px;
-  border: 1px solid #4f6f52;
-  border-radius: 8px;
-  background: rgba(79, 111, 82, 0.1);
-  color: #314c35;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 900;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.member-sub-button:hover {
-  background: rgba(79, 111, 82, 0.16);
-}
-
-.member-sub-button:disabled {
-  cursor: wait;
-  opacity: 0.62;
-}
-
 .form-options {
   display: flex;
   align-items: center;
@@ -1037,7 +1008,4 @@ body {
     flex-direction: column;
   }
 
-  .email-check-row {
-    grid-template-columns: 1fr;
-  }
 }
