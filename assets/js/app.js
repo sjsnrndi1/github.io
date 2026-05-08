@@ -3,7 +3,12 @@
 const isFrontPage = window.location.pathname.includes("/front/");
 const componentBase = isFrontPage ? "../" : "";
 const APP_SUPABASE_URL = "https://nrlkhbgeynmiqesglhgt.supabase.co";
+const APP_SUPABASE_DEFAULT_KEY =
+  "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 const APP_SUPABASE_ANON_KEY = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+  .eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGtoYmdleW5taXFlc2dsaGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM4NjYsImV4cCI6MjA4OTM1OTg2Nn0
+  .CEjcy6fm5tMz2iTZwOOowAPa1f2m5_LXdCP0ZkD8G2w;
 const SUPABASE_SDK_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -234,7 +239,7 @@ async function signOutSupabaseSession() {
 
   const supabaseClient = window.supabase.createClient(
     APP_SUPABASE_URL,
-    APP_SUPABASE_ANON_KEY,
+    APP_SUPABASE_DEFAULT_KEY,
   );
   const { error } = await supabaseClient.auth.signOut();
 
@@ -248,7 +253,7 @@ async function getAuthedSupabaseClient() {
 
   const supabaseClient = window.supabase.createClient(
     APP_SUPABASE_URL,
-    APP_SUPABASE_ANON_KEY,
+    APP_SUPABASE_DEFAULT_KEY,
   );
   const accessToken = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
@@ -553,23 +558,13 @@ async function initMyPage() {
         localStorage.setItem("refreshToken", session.refresh_token);
       }
 
-      // const response = await fetch(`${APP_SUPABASE_URL}/functions/v1/delete-user`, {
-      //   method: "POST",
-      //   headers: {
-      //     Authorization: `Bearer ${accessToken}`,
-      //     apikey: APP_SUPABASE_ANON_KEY,
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({}),
-      // });
-      // const result = await response.json().catch(() => ({}));
-
       const response = await fetch(
         `${APP_SUPABASE_URL}/functions/v1/delete-user`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            apikey: APP_SUPABASE_ANON_KEY,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({}),
