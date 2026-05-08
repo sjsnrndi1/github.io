@@ -527,103 +527,104 @@ async function initMyPage() {
 
   withdrawButton?.addEventListener("click", async () => {
     Deno.serve(async (request) => {
-  console.log("FUNCTION START");
+      console.log("FUNCTION START");
 
-  try {
-    const message = document.querySelector("[data-withdraw-message]");
-    const confirmInput = document.querySelector("[data-withdraw-confirm]");
+      try {
+        const message = document.querySelector("[data-withdraw-message]");
+        const confirmInput = document.querySelector("[data-withdraw-confirm]");
 
-    if (!confirmInput?.checked) {
-      setPageMessage(message, "회원탈퇴 안내를 먼저 확인해주세요.", true);
-      return;
-    }
+        if (!confirmInput?.checked) {
+          setPageMessage(message, "회원탈퇴 안내를 먼저 확인해주세요.", true);
+          return;
+        }
 
-    try {
-      withdrawButton.disabled = true;
-      setPageMessage(message, "회원탈퇴를 요청하고 있습니다.");
+        try {
+          withdrawButton.disabled = true;
+          setPageMessage(message, "회원탈퇴를 요청하고 있습니다.");
 
-      const supabaseClient = await getAuthedSupabaseClient();
-      const {
-        data: { session },
-      } = await supabaseClient.auth.getSession();
-      const accessToken =
-        session?.access_token || localStorage.getItem("token") || "";
+          const supabaseClient = await getAuthedSupabaseClient();
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
+          const accessToken =
+            session?.access_token || localStorage.getItem("token") || "";
 
-      if (session?.access_token) {
-        localStorage.setItem("token", session.access_token);
-      }
+          if (session?.access_token) {
+            localStorage.setItem("token", session.access_token);
+          }
 
-      if (session?.refresh_token) {
-        localStorage.setItem("refreshToken", session.refresh_token);
-      }
+          if (session?.refresh_token) {
+            localStorage.setItem("refreshToken", session.refresh_token);
+          }
 
-      const response = await fetch(
-        `${APP_SUPABASE_URL}/functions/v1/delete-user`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            apikey: APP_SUPABASE_ANON_KEY,
-            "Content-Type": "application/json",
+          const response = await fetch(
+            `${APP_SUPABASE_URL}/functions/v1/delete-user`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                apikey: APP_SUPABASE_ANON_KEY,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({}),
+            },
+          );
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(
+              result.message ||
+                result.error ||
+                "회원탈퇴 처리 중 오류가 발생했습니다.",
+            );
+          }
+
+          clearStoredAuth();
+          setPageMessage(
+            message,
+            "회원탈퇴가 완료되었습니다. 메인 화면으로 이동합니다.",
+          );
+          window.setTimeout(() => {
+            window.location.href = `${componentBase}index.html`;
+          }, 900);
+        } catch (error) {
+          console.error(error);
+          withdrawButton.disabled = false;
+          const isFetchFailed = String(error?.message || "")
+            .toLowerCase()
+            .includes("failed to fetch");
+          if (isFetchFailed) {
+            console.warn(
+              "delete-user Edge Function request failed. Check function deployment, verify_jwt=false, and CORS preflight settings.",
+            );
+          }
+          setPageMessage(
+            message,
+            isFetchFailed
+              ? "회원탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해주세요."
+              : error.message ||
+                  "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+            true,
+          );
+        }
+      } catch (err) {
+        console.error("FUNCTION ERROR:", err);
+
+        return new Response(
+          JSON.stringify({
+            error: String(err),
+            message: err?.message || "Unknown error",
+          }),
+          {
+            status: 500,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
           },
-          body: JSON.stringify({}),
-        },
-      );
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(
-          result.message ||
-            result.error ||
-            "회원탈퇴 처리 중 오류가 발생했습니다.",
         );
       }
-
-      clearStoredAuth();
-      setPageMessage(
-        message,
-        "회원탈퇴가 완료되었습니다. 메인 화면으로 이동합니다.",
-      );
-      window.setTimeout(() => {
-        window.location.href = `${componentBase}index.html`;
-      }, 900);
-    } catch (error) {
-      console.error(error);
-      withdrawButton.disabled = false;
-      const isFetchFailed = String(error?.message || "")
-        .toLowerCase()
-        .includes("failed to fetch");
-      if (isFetchFailed) {
-        console.warn(
-          "delete-user Edge Function request failed. Check function deployment, verify_jwt=false, and CORS preflight settings.",
-        );
-      }
-      setPageMessage(
-        message,
-        isFetchFailed
-          ? "회원탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해주세요."
-          : error.message ||
-              "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-        true,
-      );
-    }
-    } catch (err) {
-  console.error("FUNCTION ERROR:", err);
-
-  return new Response(
-    JSON.stringify({
-      error: String(err),
-      message: err?.message || "Unknown error",
-    }),
-    {
-      status: 500,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-}
+    });
   });
 }
 
