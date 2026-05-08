@@ -71,21 +71,22 @@
       .logo {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         font-size: 18px;
         font-weight: 800;
       }
 
       .logo-mark {
-        width: 36px;
-        height: 36px;
-        display: inline-grid;
-        place-items: center;
-        border: 1px solid var(--green);
-        border-radius: 50%;
-        color: var(--white);
-        background: var(--green);
-        font-size: 16px;
+        width: 42px;
+        height: 42px;
+        display: block;
+        flex: 0 0 auto;
+        filter: drop-shadow(0 8px 14px rgba(49, 76, 53, 0.16));
+      }
+
+      .logo-text {
+        color: var(--ink);
+        letter-spacing: 0;
       }
 
       .menu-toggle {
@@ -124,16 +125,6 @@
         background: rgba(79, 111, 82, 0.1);
       }
 
-      .auth-join {
-        color: var(--white);
-        background: var(--ink);
-      }
-
-      .auth-join:hover {
-        color: var(--white);
-        background: var(--green-dark);
-      }
-
       main {
         overflow: hidden;
       }
@@ -151,6 +142,7 @@
 
       .hero-content {
         max-width: 620px;
+        padding-left: clamp(18px, 4vw, 56px);
       }
 
       .eyebrow {
@@ -277,13 +269,19 @@
 
       .note-card h2 {
         margin: 0 0 12px;
+        color: #1f241f;
         font-size: 26px;
+        font-weight: 900;
         line-height: 1.2;
       }
 
       .note-card p {
         margin: 0;
         color: var(--muted);
+      }
+
+      .note-card .eyebrow {
+        color: #4f6f52;
       }
 
       .note-lines {
@@ -451,6 +449,10 @@
           gap: 34px;
         }
 
+        .hero-content {
+          padding-left: 0;
+        }
+
         .desk-visual {
           min-height: 430px;
         }
@@ -512,8 +514,16 @@
     <nav class="navbar">
       <div class="nav-inner">
         <a class="logo" href="#home" aria-label="연습장 홈">
-          <span class="logo-mark">연</span>
-          <span>연습장</span>
+          <svg class="logo-mark" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+            <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#4f6f52" stroke-width="2.5" />
+            <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+            <path d="M32.5 13.5l6.9 6.9" stroke="#314c35" stroke-width="2.7" stroke-linecap="round" />
+            <path d="M18.7 28.7l6.2 6.2-8.1 1.9 1.9-8.1z" fill="#f7f4ed" stroke="#314c35" stroke-width="1.7" stroke-linejoin="round" />
+            <circle cx="34" cy="34" r="7" fill="#4f6f52" />
+            <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="logo-text">연습장</span>
         </a>
 
         <button class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기" aria-expanded="false">
@@ -538,7 +548,6 @@
     <main>
       <section class="hero" id="home">
         <div class="hero-content">
-          <p class="eyebrow">Personal Study Notes</p>
           <h1>느낌 가는 대로 쌓아두는 연습장</h1>
           <p>
             공부하다가 알게 된 것, 직접 해보며 익힌 것, 언젠가 다시 꺼내 보고 싶은 생각들을
