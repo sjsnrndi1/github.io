@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>처음 펼친 이유 | 연습장</title>
+    <title>자주 꺼내두는 것들 | 연습장</title>
     <style>
       :root {
         --paper: #f7f4ed;
@@ -11,7 +11,6 @@
         --muted: #6f6a60;
         --line: #ddd7ca;
         --green: #4f6f52;
-        --green-dark: #314c35;
         --clay: #b7754c;
         --white: #fffdf8;
         --shadow: 0 24px 70px rgba(50, 45, 35, 0.12);
@@ -21,17 +20,13 @@
         box-sizing: border-box;
       }
 
-      html {
-        scroll-behavior: smooth;
-      }
-
       body {
         min-height: 100vh;
         margin: 0;
         color: var(--ink);
         background:
-          radial-gradient(circle at 14% 18%, rgba(183, 117, 76, 0.14), transparent 28%),
-          radial-gradient(circle at 78% 12%, rgba(79, 111, 82, 0.12), transparent 30%),
+          radial-gradient(circle at 16% 18%, rgba(183, 117, 76, 0.14), transparent 28%),
+          radial-gradient(circle at 78% 14%, rgba(79, 111, 82, 0.13), transparent 30%),
           linear-gradient(135deg, var(--paper), #ecebea);
         font-family:
           "Pretendard",
@@ -52,7 +47,7 @@
       .navbar {
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 20;
         border-bottom: 1px solid rgba(221, 215, 202, 0.9);
         background: rgba(247, 244, 237, 0.86);
         backdrop-filter: blur(18px);
@@ -185,101 +180,145 @@
         width: min(1120px, calc(100% - 32px));
         min-height: calc(100vh - 74px);
         margin: 0 auto;
+        padding: 54px 0;
         display: grid;
         place-items: center;
-        padding: 72px 0;
       }
 
-      .reason-page {
+      .things-stage {
+        position: relative;
         width: 100%;
-        display: grid;
-        grid-template-columns: minmax(260px, 0.82fr) minmax(360px, 1.18fr);
-        gap: 24px;
-        align-items: stretch;
-      }
-
-      .reason-side,
-      .reason-note {
+        min-height: 680px;
+        overflow: hidden;
         border: 1px solid var(--line);
         border-radius: 8px;
-      }
-
-      .reason-side {
-        min-height: 520px;
-        padding: 36px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
         background:
-          linear-gradient(135deg, rgba(79, 111, 82, 0.1), transparent 48%),
-          rgba(255, 253, 248, 0.72);
-      }
-
-      .eyebrow {
-        margin: 0 0 14px;
-        color: var(--clay);
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        max-width: 360px;
-        margin: 0;
-        font-size: clamp(42px, 6vw, 74px);
-        line-height: 1.02;
-        letter-spacing: 0;
-        word-break: keep-all;
-      }
-
-      .reason-mark {
-        width: 150px;
-        height: 150px;
-        color: rgba(79, 111, 82, 0.44);
-      }
-
-      .reason-mark path,
-      .reason-mark circle {
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 2.6;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      .reason-note {
-        position: relative;
-        min-height: 520px;
-        padding: clamp(34px, 6vw, 68px);
-        display: flex;
-        align-items: center;
-        background:
-          linear-gradient(90deg, rgba(183, 117, 76, 0.18) 0 2px, transparent 2px 100%),
-          repeating-linear-gradient(180deg, transparent 0 46px, rgba(79, 111, 82, 0.12) 47px 48px),
-          rgba(255, 253, 248, 0.92);
+          linear-gradient(90deg, rgba(79, 111, 82, 0.06) 0 1px, transparent 1px 100%),
+          repeating-linear-gradient(180deg, transparent 0 50px, rgba(79, 111, 82, 0.08) 51px 52px),
+          rgba(255, 253, 248, 0.62);
         box-shadow: var(--shadow);
       }
 
-      .reason-note::before {
-        content: "";
+      .center-note {
         position: absolute;
-        top: 28px;
+        z-index: 2;
         left: 50%;
-        width: 150px;
-        height: 18px;
-        border-radius: 999px;
-        background: rgba(183, 117, 76, 0.24);
-        transform: translateX(-50%) rotate(-2deg);
+        top: 50%;
+        width: min(620px, calc(100% - 48px));
+        padding: clamp(30px, 5vw, 52px);
+        border: 1px solid rgba(221, 215, 202, 0.92);
+        border-radius: 8px;
+        background: rgba(255, 253, 248, 0.92);
+        box-shadow: 0 20px 60px rgba(50, 45, 35, 0.16);
+        transform: translate(-50%, -50%);
+        text-align: center;
       }
 
-      .reason-note p {
-        margin: 0;
-        color: #2f2c26;
-        font-size: clamp(20px, 2.35vw, 30px);
-        font-weight: 800;
-        line-height: 1.8;
+      .center-note h1 {
+        margin: 0 0 18px;
+        font-size: clamp(34px, 5vw, 58px);
+        line-height: 1.12;
+        letter-spacing: 0;
         word-break: keep-all;
+      }
+
+      .center-note p {
+        margin: 0;
+        color: #333028;
+        font-size: clamp(19px, 2.3vw, 28px);
+        font-weight: 800;
+        line-height: 1.75;
+        word-break: keep-all;
+      }
+
+      .bubble-field {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      .thing {
+        position: absolute;
+        min-height: 38px;
+        padding: 9px 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid rgba(35, 33, 29, 0.1);
+        color: #2f2c26;
+        font-size: var(--size, 14px);
+        font-weight: 900;
+        white-space: nowrap;
+        box-shadow: 0 12px 26px rgba(50, 45, 35, 0.08);
+        transform: rotate(var(--rotate, 0deg));
+      }
+
+      .thing svg {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 auto;
+      }
+
+      .pill {
+        border-radius: 999px;
+      }
+
+      .cloud {
+        border-radius: 24px 30px 26px 18px;
+      }
+
+      .drop {
+        border-radius: 60% 45% 58% 42%;
+      }
+
+      .square {
+        border-radius: 8px;
+      }
+
+      .speech {
+        border-radius: 18px;
+      }
+
+      .speech::after {
+        content: "";
+        position: absolute;
+        left: 20px;
+        bottom: -7px;
+        width: 13px;
+        height: 13px;
+        background: inherit;
+        border-right: 1px solid rgba(35, 33, 29, 0.08);
+        border-bottom: 1px solid rgba(35, 33, 29, 0.08);
+        transform: rotate(45deg);
+      }
+
+      .green {
+        background: #dce8d8;
+      }
+
+      .clay {
+        background: #ead3c1;
+      }
+
+      .yellow {
+        background: #f1e5aa;
+      }
+
+      .blue {
+        background: #d9e4ed;
+      }
+
+      .pink {
+        background: #efd7d5;
+      }
+
+      .gray {
+        background: #e7e3da;
+      }
+
+      .mint {
+        background: #d8e8df;
       }
 
       @media (max-width: 920px) {
@@ -353,13 +392,13 @@
           transform: none;
         }
 
-        .reason-page {
-          grid-template-columns: 1fr;
+        .things-stage {
+          min-height: 780px;
         }
 
-        .reason-side,
-        .reason-note {
-          min-height: auto;
+        .thing {
+          opacity: 0.72;
+          font-size: 13px;
         }
       }
     </style>
@@ -390,8 +429,8 @@
           <li class="nav-item">
             <a href="index.html" class="nav-btn">연습장 소개</a>
             <ul class="nav-submenu" aria-label="연습장 소개 하위 메뉴">
-              <li><a href="first-reason.html" class="is-current">처음 펼친 이유</a></li>
-              <li><a href="frequent-things.html">자주 꺼내두는 것들</a></li>
+              <li><a href="first-reason.html">처음 펼친 이유</a></li>
+              <li><a href="frequent-things.html" class="is-current">자주 꺼내두는 것들</a></li>
               <li><a href="index.html#contact">바뀐 흔적</a></li>
             </ul>
           </li>
@@ -425,28 +464,48 @@
     </nav>
 
     <main>
-      <section class="reason-page">
-        <aside class="reason-side">
-          <div>
-            <h1>처음 펼친 이유</h1>
-          </div>
-          <svg class="reason-mark" viewBox="0 0 140 140" aria-hidden="true">
-            <path d="M35 24h56c10 0 18 8 18 18v72H47c-10 0-18-8-18-18V30c0-3 3-6 6-6z" />
-            <path d="M47 44h44M47 62h36M47 80h42" />
-            <path d="M32 112c10-9 23-13 38-13h39" />
-            <circle cx="102" cy="31" r="10" />
-          </svg>
-        </aside>
+      <section class="things-stage" aria-label="자주 꺼내두는 것들">
+        <div class="bubble-field" aria-hidden="true">
+          <span class="thing speech clay" style="left: 5%; top: 8%; --size: 21px; --rotate: -8deg;">HTML5</span>
+          <span class="thing drop blue" style="left: 24%; top: 6%; --size: 18px; --rotate: 5deg;">CSS3</span>
+          <span class="thing square yellow" style="left: 43%; top: 8%; --size: 22px; --rotate: -2deg;">JavaScript</span>
+          <span class="thing cloud green" style="left: 68%; top: 7%; --size: 18px; --rotate: 7deg;">Python</span>
+          <span class="thing pill gray" style="right: 5%; top: 16%; --size: 15px; --rotate: -6deg;">Oracle Database</span>
+          <span class="thing drop mint" style="left: 9%; top: 24%; --size: 17px; --rotate: 4deg;">SQL</span>
+          <span class="thing pill pink" style="left: 27%; top: 22%; --size: 15px; --rotate: -4deg;">Git</span>
+          <span class="thing speech gray" style="right: 26%; top: 22%; --size: 16px; --rotate: 3deg;">GitHub</span>
+          <span class="thing square blue" style="right: 8%; top: 30%; --size: 14px; --rotate: 9deg;">VSCode</span>
+          <span class="thing cloud green" style="left: 4%; top: 42%; --size: 14px; --rotate: -3deg;">REST API</span>
+          <span class="thing pill yellow" style="left: 20%; top: 39%; --size: 14px; --rotate: 8deg;">JSON</span>
+          <span class="thing drop clay" style="right: 17%; top: 43%; --size: 15px; --rotate: -7deg;">AJAX</span>
+          <span class="thing square gray" style="left: 8%; bottom: 30%; --size: 16px; --rotate: 5deg;">Linux</span>
+          <span class="thing speech blue" style="left: 28%; bottom: 24%; --size: 18px; --rotate: -5deg;">Docker</span>
+          <span class="thing pill green" style="right: 25%; bottom: 27%; --size: 15px; --rotate: 4deg;">Nginx</span>
+          <span class="thing cloud pink" style="right: 7%; bottom: 35%; --size: 15px; --rotate: -3deg;">Markdown</span>
+          <span class="thing drop clay" style="left: 5%; bottom: 14%; --size: 15px; --rotate: -8deg;">Postman</span>
+          <span class="thing square green" style="left: 20%; bottom: 9%; --size: 17px; --rotate: 4deg;">Node.js</span>
+          <span class="thing speech pink" style="left: 42%; bottom: 10%; --size: 15px; --rotate: -2deg;">Redis</span>
+          <span class="thing pill mint" style="right: 31%; bottom: 11%; --size: 15px; --rotate: 6deg;">Supabase</span>
+          <span class="thing drop yellow" style="right: 12%; bottom: 14%; --size: 16px; --rotate: -5deg;">JWT</span>
+          <span class="thing cloud blue" style="left: 36%; top: 31%; --size: 13px; --rotate: 8deg;">WebSocket</span>
+          <span class="thing pill gray" style="right: 38%; top: 34%; --size: 13px; --rotate: -6deg;">CryptoJS</span>
+          <span class="thing speech green" style="right: 5%; bottom: 23%; --size: 13px; --rotate: 6deg;">SHA-256</span>
 
-        <article class="reason-note">
-          <div>
-            <p>
-              생각나는 것들을 적고, 만들고, 남겨두며<br />
-              천천히 이 공간을 채워가고 있습니다.<br />
-              완성된 결과보다 배우고 만들어가는 과정,<br />
-              그리고 막히고 다시 고쳐가는 시간들을 오래 남겨두고 싶었습니다.
-            </p>
-          </div>
+          <span class="thing cloud clay" style="left: 14%; top: 56%; --size: 16px; --rotate: 2deg;">커피</span>
+          <span class="thing pill blue" style="left: 30%; top: 57%; --size: 14px; --rotate: -7deg;">새벽 시간</span>
+          <span class="thing drop gray" style="right: 31%; top: 56%; --size: 14px; --rotate: 6deg;">이어폰</span>
+          <span class="thing speech mint" style="right: 9%; top: 55%; --size: 14px; --rotate: -4deg;">조용한 음악</span>
+          <span class="thing square yellow" style="left: 2%; bottom: 43%; --size: 15px; --rotate: 7deg;">게임</span>
+          <span class="thing cloud green" style="left: 39%; bottom: 28%; --size: 14px; --rotate: -4deg;">산책</span>
+          <span class="thing pill pink" style="right: 15%; bottom: 45%; --size: 14px; --rotate: 4deg;">플레이리스트</span>
+        </div>
+
+        <article class="center-note">
+          <h1>자주 꺼내두는 것들</h1>
+          <p>
+            익숙한 것들과 아직 서툰 것들,<br />
+            그리고 자주 곁에 두게 되는 것들을 함께 모아두고 있습니다.
+          </p>
         </article>
       </section>
     </main>
