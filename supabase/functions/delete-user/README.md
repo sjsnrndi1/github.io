@@ -16,6 +16,6 @@ supabase functions deploy delete-user --no-verify-jwt
 Supabase Edge Function 환경에는 아래 값이 필요합니다.
 
 - `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `SERVICE_ROLE_KEY`
 
-`SUPABASE_SERVICE_ROLE_KEY`는 절대 프론트엔드에 노출하면 안 됩니다.
+`SERVICE_ROLE_KEY`는 절대 프론트엔드에 노출하면 안 됩니다.
