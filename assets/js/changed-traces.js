@@ -6,7 +6,7 @@ menuToggle.addEventListener("click", () => {
   menuToggle.setAttribute("aria-expanded", String(isActive));
 });
 
-const supabaseUrl = "https://nrlkhbgeynmiqesglhgt.supabase.co/rest/v1/";
+const supabaseUrl = "https://nrlkhbgeynmiqesglhgt.supabase.co";
 const supabaseKey = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
