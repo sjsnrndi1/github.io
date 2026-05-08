@@ -173,6 +173,10 @@ function getUserDisplayName(user) {
   return "연습장";
 }
 
+function getUserAvatarUrl(user) {
+  return user?.user_metadata?.avatar_url || "";
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
@@ -255,11 +259,10 @@ function renderHeaderAuth(headerRoot) {
 
   const displayName = getUserDisplayName(user);
   const safeDisplayName = escapeHtml(displayName);
-  const safeInitial = escapeHtml(displayName.slice(0, 1));
 
   authActions.innerHTML = `
     <a class="user-summary" href="${componentBase}front/mypage.html" aria-label="마이페이지로 이동">
-      <span class="user-avatar" aria-hidden="true">${safeInitial}</span>
+      <span class="user-avatar ${getUserAvatarUrl(user) ? "has-image" : ""}" aria-hidden="true">${createAvatarContent(user, displayName)}</span>
       <span class="user-name">${safeDisplayName}</span>
     </a>
     <button type="button" class="auth-link logout-button" data-logout>로그아웃</button>
@@ -303,17 +306,77 @@ function updateStoredUser(user) {
   localStorage.setItem("user", JSON.stringify(user));
 }
 
+function createAvatarContent(user, fallbackName) {
+  const avatarUrl = getUserAvatarUrl(user);
+  const initial = escapeHtml(String(fallbackName || "연").slice(0, 1));
+
+  if (avatarUrl) {
+    return `<img src="${escapeHtml(avatarUrl)}" alt="" />`;
+  }
+
+  return initial;
+}
+
+function renderAvatarElement(element, user, fallbackName) {
+  if (!element) return;
+
+  element.innerHTML = createAvatarContent(user, fallbackName);
+  element.classList.toggle("has-image", Boolean(getUserAvatarUrl(user)));
+}
+
 function renderMyPageProfile(user) {
   const displayName = getUserDisplayName(user);
   const nameText = document.querySelector("[data-mypage-name]");
   const emailText = document.querySelector("[data-mypage-email]");
   const avatar = document.querySelector("[data-mypage-avatar]");
+  const preview = document.querySelector("[data-profile-preview]");
   const nameInput = document.getElementById("profile-name");
 
   if (nameText) nameText.textContent = displayName;
   if (emailText) emailText.textContent = user?.email || "이메일 정보가 없습니다.";
-  if (avatar) avatar.textContent = displayName.slice(0, 1);
+  renderAvatarElement(avatar, user, displayName);
+  renderAvatarElement(preview, user, displayName);
   if (nameInput) nameInput.value = user?.user_metadata?.name || "";
+}
+
+function resizeProfileImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("이미지 파일만 등록할 수 있습니다."));
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      reject(new Error("프로필 이미지는 3MB 이하로 등록해주세요."));
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onload = () => {
+        const size = 240;
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        const cropSize = Math.min(image.width, image.height);
+        const cropX = (image.width - cropSize) / 2;
+        const cropY = (image.height - cropSize) / 2;
+
+        canvas.width = size;
+        canvas.height = size;
+        context.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
+        resolve(canvas.toDataURL("image/jpeg", 0.78));
+      };
+
+      image.onerror = () => reject(new Error("이미지를 불러오지 못했습니다."));
+      image.src = reader.result;
+    };
+
+    reader.onerror = () => reject(new Error("이미지를 읽지 못했습니다."));
+    reader.readAsDataURL(file);
+  });
 }
 
 async function initMyPage() {
@@ -330,6 +393,28 @@ async function initMyPage() {
 
   renderMyPageProfile(storedUser);
 
+  const profileImageInput = document.getElementById("profile-image");
+  profileImageInput?.addEventListener("change", async () => {
+    const message = document.querySelector("[data-profile-message]");
+    const file = profileImageInput.files?.[0];
+    const preview = document.querySelector("[data-profile-preview]");
+
+    if (!file) return;
+
+    try {
+      const previewUrl = await resizeProfileImage(file);
+      if (preview) {
+        preview.innerHTML = `<img src="${previewUrl}" alt="" />`;
+        preview.classList.add("has-image");
+      }
+      setPageMessage(message, "");
+    } catch (error) {
+      console.error(error);
+      profileImageInput.value = "";
+      setPageMessage(message, error.message || "프로필 이미지를 확인해주세요.", true);
+    }
+  });
+
   profileForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -337,8 +422,11 @@ async function initMyPage() {
     const formData = new FormData(profileForm);
     const name = String(formData.get("name") || "").trim();
     const password = String(formData.get("password") || "");
+    const avatarFile = formData.get("avatar");
+    const currentUser = getStoredUser() || storedUser;
     const updatePayload = {
       data: {
+        ...(currentUser?.user_metadata || {}),
         name,
       },
     };
@@ -359,6 +447,10 @@ async function initMyPage() {
 
     try {
       setPageMessage(message, "회원정보를 수정하고 있습니다.");
+
+      if (avatarFile?.size) {
+        updatePayload.data.avatar_url = await resizeProfileImage(avatarFile);
+      }
 
       const supabaseClient = await getAuthedSupabaseClient();
       const { data, error } = await supabaseClient.auth.updateUser(updatePayload);
@@ -396,11 +488,15 @@ async function initMyPage() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          apikey: APP_SUPABASE_ANON_KEY,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({}),
       });
+      const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error("delete-user Edge Function is not ready");
+        throw new Error(result.message || "회원탈퇴 처리 중 오류가 발생했습니다.");
       }
 
       clearStoredAuth();
@@ -413,7 +509,7 @@ async function initMyPage() {
       withdrawButton.disabled = false;
       setPageMessage(
         message,
-        "회원탈퇴를 완료하려면 Supabase delete-user Edge Function이 필요합니다. 지금은 계정 삭제 요청 화면까지만 준비되어 있습니다.",
+        error.message || "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
         true
       );
     }

@@ -19,10 +19,6 @@
           <strong>마이페이지</strong>
         </p>
         <h1>마이페이지</h1>
-        <nav class="sub-tabs" aria-label="마이페이지 메뉴">
-          <a href="mypage.html" class="is-current">회원정보 수정</a>
-          <a href="#withdraw">회원탈퇴</a>
-        </nav>
       </header>
 
       <section class="mypage-shell" aria-label="회원 정보">
@@ -37,6 +33,15 @@
           </div>
 
           <form class="mypage-form" data-profile-form>
+            <div class="profile-image-field">
+              <span class="profile-preview" data-profile-preview aria-hidden="true">연</span>
+              <label for="profile-image">
+                프로필 이미지
+                <input id="profile-image" name="avatar" type="file" accept="image/*" />
+                <span>작은 정사각형 이미지로 저장됩니다.</span>
+              </label>
+            </div>
+
             <label for="profile-name">
               이름
               <input id="profile-name" name="name" type="text" placeholder="이름을 입력해주세요" autocomplete="name" required />
