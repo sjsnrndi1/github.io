@@ -105,8 +105,23 @@
 
       .nav-item {
         position: relative;
-        padding-bottom: 10px;
-        margin-bottom: -10px;
+        padding-bottom: 16px;
+        margin-bottom: -16px;
+      }
+
+      .nav-item::after {
+        content: "";
+        position: absolute;
+        left: -28px;
+        right: -28px;
+        top: 100%;
+        height: 18px;
+        display: none;
+      }
+
+      .nav-item:hover::after,
+      .nav-item:focus-within::after {
+        display: block;
       }
 
       .nav-btn,
@@ -132,50 +147,57 @@
 
       .nav-submenu {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 12px);
         left: 50%;
-        min-width: 190px;
+        z-index: 30;
+        min-width: max-content;
         margin: 0;
-        padding: 10px;
-        display: grid;
-        gap: 4px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
         list-style: none;
         border: 1px solid var(--line);
-        border-radius: 8px;
-        background: rgba(255, 253, 248, 0.96);
-        box-shadow: 0 18px 42px rgba(50, 45, 35, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 253, 248, 0.98);
+        box-shadow: 0 14px 34px rgba(50, 45, 35, 0.12);
         opacity: 0;
         pointer-events: none;
-        transform: translate(-50%, 8px);
+        visibility: hidden;
+        transform: translate(-50%, -4px);
         transition:
           opacity 0.16s ease,
-          transform 0.16s ease;
+          transform 0.16s ease,
+          visibility 0.16s ease;
       }
 
       .nav-submenu a {
-        display: block;
-        padding: 9px 10px;
-        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0;
+        border-radius: 0;
         color: var(--muted);
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 800;
         white-space: nowrap;
       }
 
       .nav-submenu a:hover,
       .nav-submenu a.is-current {
-        color: var(--ink);
-        background: rgba(79, 111, 82, 0.1);
+        color: var(--green);
+        background: transparent;
       }
 
       .nav-links > .nav-item > .nav-submenu {
-        display: none;
+        display: flex;
       }
 
       .nav-item:hover > .nav-submenu,
       .nav-item:focus-within > .nav-submenu {
         opacity: 1;
         pointer-events: auto;
+        visibility: visible;
         transform: translate(-50%, 0);
       }
 
@@ -227,6 +249,10 @@
         color: var(--green);
       }
 
+      .mega-menu {
+        display: none;
+      }
+
       .auth-actions {
         position: absolute;
         right: 0;
@@ -245,39 +271,14 @@
 
       .page-head {
         position: relative;
-        width: 100vw;
-        margin-left: calc(50% - 50vw);
-        margin-bottom: 46px;
-        padding: 50px max(24px, calc((100vw - 1120px) / 2)) 0;
-        overflow: hidden;
-        background:
-          radial-gradient(circle at 29% 9%, rgba(79, 111, 82, 0.13) 0 54px, transparent 55px),
-          radial-gradient(circle at 72% 22%, rgba(183, 117, 76, 0.14) 0 76px, transparent 77px),
-          linear-gradient(135deg, #e9f2e3 0%, #f7f4ed 58%, #efe8dc 100%);
+        margin-bottom: 42px;
+        padding: 28px 0 0;
         text-align: center;
       }
 
-      .page-head::before {
-        content: "";
-        position: absolute;
-        left: 8%;
-        top: 32%;
-        width: 150px;
-        height: 150px;
-        border: 22px solid rgba(255, 253, 248, 0.48);
-        border-radius: 50%;
-      }
-
+      .page-head::before,
       .page-head::after {
-        content: "";
-        position: absolute;
-        right: 10%;
-        bottom: 26px;
-        width: 210px;
-        height: 120px;
-        border: 5px solid rgba(79, 111, 82, 0.17);
-        border-bottom: 0;
-        border-radius: 120px 120px 0 0;
+        content: none;
       }
 
       .breadcrumb {
@@ -310,26 +311,35 @@
       .sub-tabs {
         position: relative;
         z-index: 1;
-        width: min(920px, 100%);
-        min-height: 76px;
-        margin: 42px auto 0;
-        padding: 0 34px;
+        width: min(760px, 100%);
+        min-height: 56px;
+        margin: 28px auto 0;
+        padding: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: clamp(20px, 5vw, 58px);
-        border-radius: 24px 24px 0 0;
-        background: var(--green);
+        gap: 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 253, 248, 0.72);
       }
 
       .sub-tabs a {
-        color: rgba(255, 253, 248, 0.86);
-        font-size: 17px;
+        min-height: 38px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 15px;
         font-weight: 900;
+        white-space: nowrap;
       }
 
       .sub-tabs a.is-current {
         color: var(--white);
+        background: var(--green);
       }
 
       .reason-page {
@@ -419,7 +429,7 @@
       .reason-note p {
         margin: 0;
         color: #2f2c26;
-        font-size: clamp(20px, 2.35vw, 30px);
+        font-size: clamp(16px, 1.5vw, 20px);
         font-weight: 800;
         line-height: 1.8;
         word-break: keep-all;
@@ -551,13 +561,14 @@
         }
 
         .sub-tabs {
+          border-radius: 20px;
           flex-wrap: wrap;
-          gap: 12px 20px;
-          padding: 18px;
+          gap: 8px;
+          padding: 10px;
         }
 
         .sub-tabs a {
-          font-size: 15px;
+          font-size: 14px;
         }
 
         .footer-inner {
