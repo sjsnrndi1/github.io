@@ -4,7 +4,7 @@ const resendButton = document.querySelector("[data-resend-email]");
 const resendTimer = document.querySelector("[data-resend-timer]");
 const SUPABASE_URL = "https://nrlkhbgeynmiqesglhgt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
-const RESEND_WAIT_SECONDS = 120;
+const RESEND_WAIT_SECONDS = 300;
 
 let resendIntervalId = null;
 

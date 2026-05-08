@@ -756,6 +756,63 @@ body {
   background: rgba(125, 224, 190, 0.5);
 }
 
+.member-sketch {
+  position: relative;
+  z-index: 1;
+  width: min(430px, 94%);
+  margin: clamp(22px, 5vh, 48px) auto;
+  color: #314c35;
+  opacity: 0.96;
+}
+
+.member-sketch svg {
+  width: 100%;
+  display: block;
+  overflow: visible;
+  transform: rotate(-1.2deg);
+}
+
+.member-sketch path,
+.member-sketch circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.member-sketch .sketch-paper {
+  fill: rgba(255, 253, 248, 0.42);
+  stroke: #4f6f52;
+}
+
+.member-sketch .sketch-accent {
+  stroke: rgba(255, 206, 84, 0.9);
+  stroke-width: 12;
+  opacity: 0.72;
+}
+
+.member-sketch .sketch-pencil {
+  stroke: #b7754c;
+}
+
+.member-sketch .sketch-key {
+  stroke: #4f6f52;
+}
+
+.member-sketch .sketch-doodle {
+  stroke: rgba(183, 117, 76, 0.72);
+  stroke-width: 3;
+}
+
+.signup-sketch svg {
+  transform: rotate(1deg);
+}
+
+.signup-sketch .sketch-accent {
+  stroke: rgba(125, 224, 190, 0.78);
+}
+
 .member-logo {
   position: relative;
   z-index: 1;
@@ -1119,6 +1176,11 @@ body {
   .member-visual {
     min-height: 360px;
     padding: 30px 22px;
+  }
+
+  .member-sketch {
+    width: min(330px, 88%);
+    margin: 22px auto 18px;
   }
 
   .member-visual-copy h1 {
