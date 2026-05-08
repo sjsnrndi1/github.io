@@ -17,7 +17,8 @@ async function loadChangedTraces() {
   const { data, error } = await supabaseClient
     .from("NOTE_CHANGED_TRACES")
     .select("*")
-    .order("trace_date", { ascending: false });
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
