@@ -2070,6 +2070,37 @@ body {
         letter-spacing: 0;
       }
 
+      .reason-note p {
+        font-size: clamp(24px, 2.5vw, 34px);
+        line-height: 1.65;
+      }
+
+      .stage-copy,
+      .trace-text {
+        font-family: "Nanum Pen", "Noto Sans KR", system-ui, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
+      .stage-copy {
+        font-size: clamp(22px, 2.1vw, 29px);
+        line-height: 1.55;
+      }
+
+      .trace-text {
+        color: #4f493f;
+        font-size: 23px;
+        line-height: 1.55;
+      }
+
+      .hero-content > p:not(.eyebrow) {
+        font-size: clamp(24px, 2.2vw, 31px);
+      }
+
+      .note-card p:not(.eyebrow) {
+        font-size: 24px;
+      }
+
 
 /* First reason page styles */
 
@@ -4394,4 +4425,26 @@ body {
         }
       }
 
+      .reason-note p {
+        font-size: clamp(24px, 2.5vw, 34px);
+        line-height: 1.65;
+      }
+
+      .stage-copy,
+      .trace-text {
+        font-family: "Nanum Pen", "Noto Sans KR", system-ui, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
+      .stage-copy {
+        font-size: clamp(22px, 2.1vw, 29px);
+        line-height: 1.55;
+      }
+
+      .trace-text {
+        color: #4f493f;
+        font-size: 23px;
+        line-height: 1.55;
+      }
 
