@@ -560,7 +560,7 @@ async function initMyPage() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             apikey: APP_SUPABASE_ANON_KEY,
-            "Content-Type": "application/json",
+            // "Content-Type": "application/json",
           },
           body: JSON.stringify({}),
         },
