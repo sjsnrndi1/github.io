@@ -47,8 +47,8 @@ async function loadChangedTraces() {
               const rawDate = String(item.date); // 20260508
 
               const year = rawDate.slice(0, 4);
-              const month = rawDate.slice(4, 6);
-              const day = rawDate.slice(6, 8);
+              const month = rawDate.slice(5, 7);
+              const day = rawDate.slice(8, 10);
 
               return `
                 <article class="trace-item">
