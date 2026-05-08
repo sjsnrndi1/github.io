@@ -1,48 +1,41 @@
-﻿<main>
-  <header class="page-head">
-    <p class="breadcrumb">
-      <a href="../index.html">연습장 소개</a>
-      <span>/</span>
-      <strong>바뀐 흔적</strong>
-    </p>
-    <h1>바뀐 흔적</h1>
-    <nav class="sub-tabs" aria-label="연습장 소개 2차 메뉴">
-      <a href="first-reason.html">처음 펼친 이유</a>
-      <a href="frequent-thing.html">자주 꺼내두는 것들</a>
-      <a href="changed-traces.html" class="is-current">바뀐 흔적</a>
-    </nav>
-  </header>
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>바뀐 흔적 | 연습장</title>
+    <link rel="stylesheet" href="../assets/css/changed-traces.css" />
+    <script src="assets/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/changed-traces.js"></script>
+  </head>
+  <body>
+    <div id="header"></div>
 
-  <section aria-label="바뀐 흔적 기록">
-    <p class="trace-intro">만들고 고치며 지나온 시간들을 기록하고 있습니다.</p>
+    <main>
+      <header class="page-head">
+        <p class="breadcrumb">
+          <a href="../index.html">연습장 소개</a>
+          <span>/</span>
+          <strong>바뀐 흔적</strong>
+        </p>
+        <h1>바뀐 흔적</h1>
+        <nav class="sub-tabs" aria-label="연습장 소개 2차 메뉴">
+          <a href="first-reason.html">처음 펼친 이유</a>
+          <a href="frequent-thing.html">자주 꺼내두는 것들</a>
+          <a href="changed-traces.html" class="is-current">바뀐 흔적</a>
+        </nav>
+      </header>
 
-    <div class="trace-board" id="traceBoard"></div>
-    <!-- <div class="trace-board">
-          <section class="timeline-year" aria-labelledby="year-2026">
-            <h2 class="year-label" id="year-2026">2026</h2>
-            <div class="trace-list">
-              <article class="trace-item">
-                <time class="trace-date" datetime="2026-05-08">05.08</time>
-                <p class="trace-text">
-                  연습장 소개 화면을 나누고, 바뀐 흔적을 남길 공간을
-                  만들었습니다.
-                </p>
-              </article>
-              <article class="trace-item">
-                <time class="trace-date" datetime="2026-05-08">05.08</time>
-                <p class="trace-text">
-                  자주 꺼내두는 것들을 기술과 취향이 함께 보이는 화면으로
-                  정리했습니다.
-                </p>
-              </article>
-              <article class="trace-item">
-                <time class="trace-date" datetime="2026-05-08">05.08</time>
-                <p class="trace-text">
-                  처음 펼친 이유를 따로 볼 수 있도록 서브 화면을 구성했습니다.
-                </p>
-              </article>
-            </div>
-          </section>
-        </div> -->
-  </section>
-</main>
+      <section aria-label="바뀐 흔적 기록">
+        <p class="trace-intro">
+          만들고 고치며 지나온 시간들을 기록하고 있습니다.
+        </p>
+
+        <div class="trace-board" id="traceBoard"></div>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+  </body>
+</html>
