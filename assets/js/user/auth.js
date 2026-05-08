@@ -60,7 +60,7 @@ authForm.addEventListener("submit", async (event) => {
 
       saveAuth(data);
       setMessage("회원가입이 완료되었습니다.");
-      window.location.href = "/github.io/user/login.html";
+      window.location.href = "login.html";
     } catch (error) {
       console.error(error);
       setMessage(error.message || "회원가입 중 오류가 발생했습니다.", true);
@@ -79,7 +79,7 @@ authForm.addEventListener("submit", async (event) => {
 
     saveAuth(data);
     setMessage("로그인되었습니다.");
-    window.location.href = "/github.io/index.html";
+    window.location.href = "../../index.html";
   } catch (error) {
     console.error(error);
     setMessage(error.message || "로그인 중 오류가 발생했습니다.", true);

@@ -1,0 +1,161 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>바뀐 흔적 | 연습장</title>
+    <link rel="stylesheet" href="../assets/css/changed-traces.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-inner">
+        <a class="logo" href="../index.html" aria-label="연습장 홈">
+          <svg class="logo-mark" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+            <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#4f6f52" stroke-width="2.5" />
+            <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+            <path d="M32.5 13.5l6.9 6.9" stroke="#314c35" stroke-width="2.7" stroke-linecap="round" />
+            <path d="M18.7 28.7l6.2 6.2-8.1 1.9 1.9-8.1z" fill="#f7f4ed" stroke="#314c35" stroke-width="1.7" stroke-linejoin="round" />
+            <circle cx="34" cy="34" r="7" fill="#4f6f52" />
+            <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>연습장</span>
+        </a>
+
+        <button class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <ul class="nav-links" id="nav-links">
+          <li class="nav-item">
+            <a href="../index.html" class="nav-btn">연습장 소개</a>
+            <ul class="nav-submenu" aria-label="연습장 소개 하위 메뉴">
+              <li><a href="first-reason.html">처음 펼친 이유</a></li>
+              <li><a href="frequent-thing.html">자주 꺼내두는 것들</a></li>
+              <li><a href="changed-traces.html" class="is-current">바뀐 흔적</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="../index.html#about" class="nav-btn">공책</a>
+            <ul class="nav-submenu" aria-label="공책 하위 메뉴">
+              <li><a href="../index.html#about">배운 것들</a></li>
+              <li><a href="../index.html#about">막혔던 부분</a></li>
+              <li><a href="../index.html#about">다시 보기</a></li>
+              <li><a href="../index.html#about">작은 정리</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a href="../index.html#contact" class="nav-btn">발자국</a></li>
+          <li class="nav-item"><a href="../index.html#contact" class="nav-btn">실험실</a></li>
+          <li class="nav-item">
+            <a href="../index.html#contact" class="nav-btn">스크랩</a>
+            <ul class="nav-submenu" aria-label="스크랩 하위 메뉴">
+              <li><a href="../index.html#contact">주워온 링크</a></li>
+              <li><a href="../index.html#contact">마음에 남은 디자인</a></li>
+              <li><a href="../index.html#contact">밑줄 친 문장</a></li>
+              <li><a href="../index.html#contact">저장해둔 조각</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="mega-menu" aria-label="전체 메뉴">
+          <div class="mega-group">
+            <h3>연습장 소개</h3>
+            <a href="first-reason.html">처음 펼친 이유</a>
+            <a href="frequent-thing.html">자주 꺼내두는 것들</a>
+            <a href="changed-traces.html" class="is-current">바뀐 흔적</a>
+          </div>
+          <div class="mega-group">
+            <h3>공책</h3>
+            <a href="../index.html#about">배운 것들</a>
+            <a href="../index.html#about">막혔던 부분</a>
+            <a href="../index.html#about">다시 보기</a>
+            <a href="../index.html#about">작은 정리</a>
+          </div>
+          <div class="mega-group">
+            <h3>발자국</h3>
+            <a href="../index.html#contact">남겨둔 흐름</a>
+          </div>
+          <div class="mega-group">
+            <h3>실험실</h3>
+            <a href="../index.html#contact">해본 것들</a>
+          </div>
+          <div class="mega-group">
+            <h3>스크랩</h3>
+            <a href="../index.html#contact">주워온 링크</a>
+            <a href="../index.html#contact">마음에 남은 디자인</a>
+            <a href="../index.html#contact">밑줄 친 문장</a>
+            <a href="../index.html#contact">저장해둔 조각</a>
+          </div>
+        </div>
+
+        <div class="auth-actions" aria-label="회원 메뉴">
+          <a href="login/login.html" class="auth-link">로그인</a>
+          <a href="login/signup.html" class="auth-link">가입</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <header class="page-head">
+        <p class="breadcrumb">
+          <a href="../index.html">연습장 소개</a>
+          <span>/</span>
+          <strong>바뀐 흔적</strong>
+        </p>
+        <h1>바뀐 흔적</h1>
+        <nav class="sub-tabs" aria-label="연습장 소개 2차 메뉴">
+          <a href="first-reason.html">처음 펼친 이유</a>
+          <a href="frequent-thing.html">자주 꺼내두는 것들</a>
+          <a href="changed-traces.html" class="is-current">바뀐 흔적</a>
+        </nav>
+      </header>
+
+      <section aria-label="바뀐 흔적 기록">
+        <p class="trace-intro">만들고 고치며 지나온 시간들을 기록하고 있습니다.</p>
+
+        <div class="trace-board">
+          <section class="timeline-year" aria-labelledby="year-2026">
+            <h2 class="year-label" id="year-2026">2026</h2>
+            <div class="trace-list">
+              <article class="trace-item">
+                <time class="trace-date" datetime="2026-05-08">05.08</time>
+                <p class="trace-text">연습장 소개 화면을 나누고, 바뀐 흔적을 남길 공간을 만들었습니다.</p>
+              </article>
+              <article class="trace-item">
+                <time class="trace-date" datetime="2026-05-08">05.08</time>
+                <p class="trace-text">자주 꺼내두는 것들을 기술과 취향이 함께 보이는 화면으로 정리했습니다.</p>
+              </article>
+              <article class="trace-item">
+                <time class="trace-date" datetime="2026-05-08">05.08</time>
+                <p class="trace-text">처음 펼친 이유를 따로 볼 수 있도록 서브 화면을 구성했습니다.</p>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg class="footer-logo" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+            <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#dce8d8" stroke-width="2.5" />
+            <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+            <path d="M32.5 13.5l6.9 6.9" stroke="#dce8d8" stroke-width="2.7" stroke-linecap="round" />
+            <path d="M18.7 28.7l6.2 6.2-8.1 1.9 1.9-8.1z" fill="#f7f4ed" stroke="#dce8d8" stroke-width="1.7" stroke-linejoin="round" />
+            <circle cx="34" cy="34" r="7" fill="#4f6f52" />
+            <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>연습장</span>
+        </div>
+        <p class="footer-copy">© 2026 연습장. All rights reserved.</p>
+      </div>
+    </footer>
+    <script src="../assets/js/changed-traces.js"></script>
+  </body>
+</html>
+
+
