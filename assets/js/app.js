@@ -564,20 +564,24 @@ async function initMyPage() {
       // });
       // const result = await response.json().catch(() => ({}));
 
-      // if (!response.ok) {
-      //   throw new Error(result.message || result.error || "회원탈퇴 처리 중 오류가 발생했습니다.");
-      // }
-
-      const { data: result, error } = await supabaseClient.functions.invoke(
-        "delete-user",
+      const response = await fetch(
+        `${APP_SUPABASE_URL}/functions/v1/delete-user`,
         {
-          body: {},
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
         },
       );
+      const result = await response.json().catch(() => ({}));
 
-      if (error) {
+      if (!response.ok) {
         throw new Error(
-          error.message || "회원탈퇴 처리 중 오류가 발생했습니다.",
+          result.message ||
+            result.error ||
+            "회원탈퇴 처리 중 오류가 발생했습니다.",
         );
       }
 

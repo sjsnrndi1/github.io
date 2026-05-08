@@ -8,70 +8,95 @@ const corsHeaders = {
 };
 
 Deno.serve(async (request) => {
-  if (request.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders,
+  try {
+    if (request.method === "OPTIONS") {
+      return new Response("ok", {
+        headers: corsHeaders,
+      });
+    }
+
+    if (request.method !== "POST") {
+      return createJsonResponse({ message: "허용되지 않는 요청입니다." }, 405);
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey =
+      Deno.env.get("SERVICE_ROLE_KEY") ||
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    console.log("SUPABASE_URL:", !!supabaseUrl);
+    console.log("SERVICE_ROLE_KEY:", !!serviceRoleKey);
+
+    const authHeader = request.headers.get("Authorization") || "";
+    const accessToken = authHeader.replace("Bearer ", "").trim();
+
+    console.log("TOKEN EXISTS:", !!accessToken);
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      return createJsonResponse(
+        { message: "서버 환경 변수가 설정되지 않았습니다." },
+        500,
+      );
+    }
+
+    if (!accessToken) {
+      return createJsonResponse({ message: "로그인 정보가 없습니다." }, 401);
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
     });
-  }
 
-  if (request.method !== "POST") {
-    return createJsonResponse({ message: "허용되지 않는 요청입니다." }, 405);
-  }
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseAdmin.auth.getUser(accessToken);
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey =
-    Deno.env.get("SERVICE_ROLE_KEY") ||
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const authHeader = request.headers.get("Authorization") || "";
-  const accessToken = authHeader.replace("Bearer ", "").trim();
+    console.log("USER:", user);
+    console.log("USER ERROR:", userError);
 
-  if (!supabaseUrl || !serviceRoleKey) {
-    return createJsonResponse(
-      { message: "서버 환경 변수가 설정되지 않았습니다." },
-      500,
+    if (userError || !user) {
+      return createJsonResponse(
+        {
+          message:
+            "사용자 정보를 확인할 수 없습니다. 다시 로그인한 뒤 시도해주세요.",
+        },
+        401,
+      );
+    }
+
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
+      user.id,
     );
-  }
 
-  if (!accessToken) {
-    return createJsonResponse({ message: "로그인 정보가 없습니다." }, 401);
-  }
+    console.log("DELETE ERROR:", deleteError);
 
-  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+    if (deleteError) {
+      return createJsonResponse(
+        {
+          message:
+            deleteError.message || "회원탈퇴 처리 중 오류가 발생했습니다.",
+        },
+        500,
+      );
+    }
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabaseAdmin.auth.getUser(accessToken);
+    return createJsonResponse({
+      message: "회원탈퇴가 완료되었습니다.",
+    });
+  } catch (err) {
+    console.error("FUNCTION ERROR:", err);
 
-  if (userError || !user) {
     return createJsonResponse(
       {
-        message:
-          "사용자 정보를 확인할 수 없습니다. 다시 로그인한 뒤 시도해주세요.",
-      },
-      401,
-    );
-  }
-
-  const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
-    user.id,
-  );
-
-  if (deleteError) {
-    return createJsonResponse(
-      {
-        message: deleteError.message || "회원탈퇴 처리 중 오류가 발생했습니다.",
+        message: err?.message || "알 수 없는 오류",
       },
       500,
     );
   }
-
-  return createJsonResponse({ message: "회원탈퇴가 완료되었습니다." });
 });
 
 function createJsonResponse(body: Record<string, unknown>, status = 200) {
