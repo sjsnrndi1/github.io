@@ -30,7 +30,7 @@ async function loadChangedTraces() {
       (item) => `
     <article class="trace-item">
       <time class="trace-date">
-        ${item.trace_date}
+        ${item.date}
       </time>
 
       <p class="trace-text">
