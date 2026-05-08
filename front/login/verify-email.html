@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이메일 인증 안내 | 연습장</title>
+    <link rel="stylesheet" href="../../assets/css/app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body class="member-page">
+    <main class="verify-shell">
+      <section class="verify-card" aria-label="이메일 인증 안내">
+        <div class="member-logo verify-logo" aria-label="연습장">
+          <span class="member-logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" focusable="false">
+              <rect x="7" y="6" width="27" height="34" rx="5" fill="#fffdf8" stroke="#4f6f52" stroke-width="2.5" />
+              <path d="M14 15h13M14 22h10M14 29h12" stroke="#ddd7ca" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M32.5 13.5l6.9 6.9-14.5 14.5-8.1 1.9 1.9-8.1 13.8-15.2z" fill="#b7754c" />
+              <path d="M31 34.2l2.1 2.1 4-4.5" fill="none" stroke="#fffdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span>연습장</span>
+        </div>
+
+        <p class="eyebrow">Email Verification</p>
+        <h1>이메일 인증이 필요합니다.</h1>
+        <p>
+          가입한 이메일로 인증 메일을 보냈습니다.
+          이메일 인증을 완료해야 로그인할 수 있습니다.
+        </p>
+
+        <p class="verify-timer">
+          <span data-resend-timer>02:00</span> 후 인증 메일을 다시 보낼 수 있습니다.
+        </p>
+
+        <button class="member-submit verify-button" type="button" data-resend-email disabled>
+          이메일 재전송
+        </button>
+
+        <p class="member-message" data-auth-message role="alert" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="../../assets/js/user/auth.js"></script>
+  </body>
+</html>

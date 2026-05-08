@@ -1,7 +1,12 @@
 const authForm = document.querySelector("[data-auth-form]");
 const authMessage = document.querySelector("[data-auth-message]");
+const resendButton = document.querySelector("[data-resend-email]");
+const resendTimer = document.querySelector("[data-resend-timer]");
 const SUPABASE_URL = "https://nrlkhbgeynmiqesglhgt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
+const RESEND_WAIT_SECONDS = 120;
+
+let resendIntervalId = null;
 
 function setMessage(message, isError = false) {
   if (!authMessage) return;
@@ -104,6 +109,77 @@ async function signInWithSupabase(formData) {
   return data;
 }
 
+async function resendVerificationEmail(email) {
+  const supabaseClient = getSupabaseClient();
+
+  const { error } = await supabaseClient.auth.resend({
+    type: "signup",
+    email,
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+function formatTime(seconds) {
+  const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const remainSeconds = String(seconds % 60).padStart(2, "0");
+
+  return `${minutes}:${remainSeconds}`;
+}
+
+function startResendTimer() {
+  if (!resendButton || !resendTimer) return;
+
+  let remainingSeconds = RESEND_WAIT_SECONDS;
+
+  window.clearInterval(resendIntervalId);
+  resendButton.disabled = true;
+  resendTimer.textContent = formatTime(remainingSeconds);
+
+  resendIntervalId = window.setInterval(() => {
+    remainingSeconds -= 1;
+    resendTimer.textContent = formatTime(Math.max(remainingSeconds, 0));
+
+    if (remainingSeconds <= 0) {
+      window.clearInterval(resendIntervalId);
+      resendButton.disabled = false;
+    }
+  }, 1000);
+}
+
+function getPendingVerifyEmail() {
+  const params = new URLSearchParams(window.location.search);
+  return normalizeText(params.get("email") || localStorage.getItem("pendingVerifyEmail")).toLowerCase();
+}
+
+if (resendButton) {
+  const pendingEmail = getPendingVerifyEmail();
+  startResendTimer();
+
+  resendButton.addEventListener("click", async () => {
+    if (!pendingEmail) {
+      setMessage("재전송할 이메일 정보가 없습니다. 회원가입을 다시 진행해주세요.", true);
+      return;
+    }
+
+    try {
+      resendButton.disabled = true;
+      setMessage("인증 메일을 다시 보내고 있습니다.");
+
+      await resendVerificationEmail(pendingEmail);
+
+      setMessage("인증 메일을 다시 보냈습니다.");
+      startResendTimer();
+    } catch (error) {
+      console.error(error);
+      setMessage(error.message || "인증 메일 재전송 중 오류가 발생했습니다.", true);
+      resendButton.disabled = false;
+    }
+  });
+}
+
 if (authForm) {
   authForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -123,9 +199,10 @@ if (authForm) {
           saveSupabaseAuth(data);
         }
 
-        setMessage("회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.");
+        localStorage.setItem("pendingVerifyEmail", signupData.email);
+        setMessage("회원가입이 완료되었습니다. 이메일 인증 안내 화면으로 이동합니다.");
         window.setTimeout(() => {
-          window.location.href = "login.html";
+          window.location.href = `verify-email.html?email=${encodeURIComponent(signupData.email)}`;
         }, 800);
       } catch (error) {
         console.error(error);
