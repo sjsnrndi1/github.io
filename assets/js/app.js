@@ -484,10 +484,24 @@ async function initMyPage() {
       withdrawButton.disabled = true;
       setPageMessage(message, "회원탈퇴를 요청하고 있습니다.");
 
+      const supabaseClient = await getAuthedSupabaseClient();
+      const {
+        data: { session },
+      } = await supabaseClient.auth.getSession();
+      const accessToken = session?.access_token || localStorage.getItem("token") || "";
+
+      if (session?.access_token) {
+        localStorage.setItem("token", session.access_token);
+      }
+
+      if (session?.refresh_token) {
+        localStorage.setItem("refreshToken", session.refresh_token);
+      }
+
       const response = await fetch(`${APP_SUPABASE_URL}/functions/v1/delete-user`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          Authorization: `Bearer ${accessToken}`,
           apikey: APP_SUPABASE_ANON_KEY,
           "Content-Type": "application/json",
         },
@@ -496,7 +510,7 @@ async function initMyPage() {
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(result.message || "회원탈퇴 처리 중 오류가 발생했습니다.");
+        throw new Error(result.message || result.error || "회원탈퇴 처리 중 오류가 발생했습니다.");
       }
 
       clearStoredAuth();

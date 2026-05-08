@@ -19,7 +19,9 @@ Deno.serve(async (request) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SERVICE_ROLE_KEY");
+  const serviceRoleKey =
+    Deno.env.get("SERVICE_ROLE_KEY") ||
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const authHeader = request.headers.get("Authorization") || "";
   const accessToken = authHeader.replace("Bearer ", "").trim();
 
@@ -48,7 +50,10 @@ Deno.serve(async (request) => {
 
   if (userError || !user) {
     return createJsonResponse(
-      { message: "사용자 정보를 확인할 수 없습니다." },
+      {
+        message:
+          "사용자 정보를 확인할 수 없습니다. 다시 로그인한 뒤 시도해주세요.",
+      },
       401,
     );
   }
@@ -59,7 +64,9 @@ Deno.serve(async (request) => {
 
   if (deleteError) {
     return createJsonResponse(
-      { message: "회원탈퇴 처리 중 오류가 발생했습니다." },
+      {
+        message: deleteError.message || "회원탈퇴 처리 중 오류가 발생했습니다.",
+      },
       500,
     );
   }
