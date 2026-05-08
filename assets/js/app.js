@@ -507,9 +507,12 @@ async function initMyPage() {
     } catch (error) {
       console.error(error);
       withdrawButton.disabled = false;
+      const isFetchFailed = String(error?.message || "").toLowerCase().includes("failed to fetch");
       setPageMessage(
         message,
-        error.message || "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        isFetchFailed
+          ? "회원탈퇴 함수에 연결하지 못했습니다. Edge Function 배포 상태와 CORS 설정을 확인해주세요."
+          : error.message || "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
         true
       );
     }

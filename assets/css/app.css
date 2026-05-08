@@ -2061,6 +2061,15 @@ body {
         }
       }
 
+      .hero-content > p:not(.eyebrow),
+      .note-card p:not(.eyebrow),
+      .reason-note p,
+      .member-visual-copy p:last-child {
+        font-family: "Nanum Pen", "Noto Sans KR", system-ui, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
 
 /* First reason page styles */
 
@@ -2966,6 +2975,23 @@ body {
         }
       }
 
+      @font-face {
+        font-family: "Nanum Pen";
+        src: url("../fonts/NanumPen.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      .hero-content > p:not(.eyebrow),
+      .note-card p:not(.eyebrow),
+      .reason-note p,
+      .member-visual-copy p:last-child {
+        font-family: "Nanum Pen", "Noto Sans KR", system-ui, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
 
 /* Frequent thing page styles */
 
@@ -3618,6 +3644,15 @@ body {
           color: var(--white);
           background: var(--green-dark);
         }
+      }
+
+      .hero-content > p:not(.eyebrow),
+      .note-card p:not(.eyebrow),
+      .reason-note p,
+      .member-visual-copy p:last-child {
+        font-family: "Nanum Pen", "Noto Sans KR", system-ui, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0;
       }
 
 
