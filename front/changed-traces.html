@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>바뀐 흔적 | 연습장</title>
     <link rel="stylesheet" href="../assets/css/changed-traces.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/changed-traces.js"></script>
   </head>
   <body>
     <nav class="navbar">
@@ -169,7 +171,9 @@
           만들고 고치며 지나온 시간들을 기록하고 있습니다.
         </p>
 
-        <div class="trace-board">
+        <div class="trace-board" id="traceBoard"></div>
+        <!-- <div class="trace-board">
+          <p>불러오는 중...</p>
           <section class="timeline-year" aria-labelledby="year-2026">
             <h2 class="year-label" id="year-2026">2026</h2>
             <div class="trace-list">
@@ -195,7 +199,7 @@
               </article>
             </div>
           </section>
-        </div>
+        </div> -->
       </section>
     </main>
 
