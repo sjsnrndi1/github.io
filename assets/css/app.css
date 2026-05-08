@@ -2617,6 +2617,16 @@ body {
         }
       }
 
+      body:not(.member-page) main > .contact-section {
+        margin-bottom: 32px;
+      }
+
+      @media (max-width: 820px) {
+        body:not(.member-page) main > .contact-section {
+          margin-bottom: 24px;
+        }
+      }
+
 
 /* Frequent thing page styles */
 

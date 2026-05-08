@@ -15,6 +15,63 @@ function setMessage(message, isError = false) {
   authMessage.classList.toggle("is-error", isError);
 }
 
+function translateSupabaseMessage(error, fallbackMessage) {
+  const rawMessage = String(error?.message || error || "").trim();
+  const lowerMessage = rawMessage.toLowerCase();
+
+  if (!rawMessage) return fallbackMessage;
+
+  const messageMap = [
+    {
+      test: () => lowerMessage.includes("invalid login credentials"),
+      message: "이메일 또는 비밀번호가 올바르지 않습니다.",
+    },
+    {
+      test: () => lowerMessage.includes("email not confirmed") || lowerMessage.includes("email_not_confirmed"),
+      message: "이메일 인증이 아직 완료되지 않았습니다. 메일함에서 인증을 먼저 진행해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("user already registered") || lowerMessage.includes("already registered"),
+      message: "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("password") && lowerMessage.includes("characters"),
+      message: "비밀번호는 안내된 조건에 맞게 입력해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("unable to validate email") || lowerMessage.includes("invalid email") || lowerMessage.includes("email address is invalid"),
+      message: "이메일 형식이 올바르지 않습니다.",
+    },
+    {
+      test: () => lowerMessage.includes("rate limit") || lowerMessage.includes("too many") || lowerMessage.includes("only request this after"),
+      message: "요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("token has expired") || lowerMessage.includes("expired") || lowerMessage.includes("invalid token"),
+      message: "인증 링크가 만료되었거나 올바르지 않습니다. 인증 메일을 다시 요청해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("auth session missing") || lowerMessage.includes("session"),
+      message: "로그인 세션을 확인할 수 없습니다. 다시 로그인해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("user not found"),
+      message: "가입 정보를 찾을 수 없습니다.",
+    },
+    {
+      test: () => lowerMessage.includes("failed to fetch") || lowerMessage.includes("network"),
+      message: "네트워크 연결을 확인한 뒤 다시 시도해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("database error"),
+      message: "회원 정보를 저장하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+    },
+  ];
+
+  const matchedMessage = messageMap.find((item) => item.test());
+  return matchedMessage ? matchedMessage.message : fallbackMessage;
+}
+
 function getSupabaseClient() {
   if (!window.supabase) {
     throw new Error("Supabase 클라이언트를 불러오지 못했습니다.");
@@ -42,7 +99,7 @@ function validateSignupForm(formData) {
   const passwordConfirm = String(formData.get("passwordConfirm") || "");
 
   if (!name) {
-    throw new Error("이름을 공백 없이 입력해주세요.");
+    throw new Error("이름은 공백 없이 입력해주세요.");
   }
 
   if (!email) {
@@ -174,7 +231,7 @@ if (resendButton) {
       startResendTimer();
     } catch (error) {
       console.error(error);
-      setMessage(error.message || "인증 메일 재전송 중 오류가 발생했습니다.", true);
+      setMessage(translateSupabaseMessage(error, "인증 메일 재전송 중 오류가 발생했습니다."), true);
       resendButton.disabled = false;
     }
   });
@@ -191,7 +248,7 @@ if (authForm) {
       try {
         const signupData = validateSignupForm(formData);
 
-        setMessage("Supabase에 회원가입을 등록하고 있습니다.");
+        setMessage("회원가입을 등록하고 있습니다.");
 
         const data = await signUpWithSupabase(signupData);
 
@@ -206,7 +263,7 @@ if (authForm) {
         }, 800);
       } catch (error) {
         console.error(error);
-        setMessage(error.message || "회원가입 중 오류가 발생했습니다.", true);
+        setMessage(translateSupabaseMessage(error, "회원가입 중 오류가 발생했습니다."), true);
       }
 
       return;
@@ -222,7 +279,7 @@ if (authForm) {
       window.location.href = "../../index.html";
     } catch (error) {
       console.error(error);
-      setMessage(error.message || "로그인 중 오류가 발생했습니다.", true);
+      setMessage(translateSupabaseMessage(error, "로그인 중 오류가 발생했습니다."), true);
     }
   });
 }

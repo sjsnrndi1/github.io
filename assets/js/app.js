@@ -9,6 +9,51 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFooter();
 });
 
+function translateSupabaseMessage(message, fallbackMessage) {
+  const rawMessage = String(message || "").trim();
+  const lowerMessage = rawMessage.toLowerCase();
+
+  if (!rawMessage) return fallbackMessage;
+
+  const messageMap = [
+    {
+      test: () => lowerMessage.includes("invalid login credentials"),
+      message: "이메일 또는 비밀번호가 올바르지 않습니다.",
+    },
+    {
+      test: () => lowerMessage.includes("email not confirmed") || lowerMessage.includes("email_not_confirmed"),
+      message: "이메일 인증이 아직 완료되지 않았습니다. 메일함에서 인증을 먼저 진행해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("already registered"),
+      message: "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("unable to validate email") || lowerMessage.includes("invalid email"),
+      message: "이메일 형식이 올바르지 않습니다.",
+    },
+    {
+      test: () => lowerMessage.includes("rate limit") || lowerMessage.includes("too many") || lowerMessage.includes("only request this after"),
+      message: "요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("token has expired") || lowerMessage.includes("expired") || lowerMessage.includes("invalid token"),
+      message: "인증 링크가 만료되었거나 올바르지 않습니다. 인증 메일을 다시 요청해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("access_denied"),
+      message: "인증 요청이 거부되었습니다. 다시 시도해주세요.",
+    },
+    {
+      test: () => lowerMessage.includes("failed to fetch") || lowerMessage.includes("network"),
+      message: "네트워크 연결을 확인한 뒤 다시 시도해주세요.",
+    },
+  ];
+
+  const matchedMessage = messageMap.find((item) => item.test());
+  return matchedMessage ? matchedMessage.message : fallbackMessage;
+}
+
 function renderAuthCallbackResult() {
   const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const isSignupCallback = hashParams.get("type") === "signup";
@@ -25,7 +70,10 @@ function renderAuthCallbackResult() {
     main.innerHTML = createAuthResultMarkup({
       isSuccess: false,
       title: "이메일 인증에 실패했습니다.",
-      description: decodeURIComponent(errorDescription || "인증 링크가 만료되었거나 올바르지 않습니다. 다시 시도해주세요."),
+      description: translateSupabaseMessage(
+        decodeURIComponent(errorDescription || error),
+        "인증 링크가 만료되었거나 올바르지 않습니다. 다시 시도해주세요."
+      ),
     });
   } else {
     const accessToken = hashParams.get("access_token");
