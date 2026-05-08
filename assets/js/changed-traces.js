@@ -25,6 +25,8 @@ async function loadChangedTraces() {
     return;
   }
 
+  console.log(data);
+
   traceBoard.innerHTML = data
     .map(
       (item) => `
