@@ -298,12 +298,12 @@
         z-index: 3;
         left: 50%;
         top: 50%;
-        width: min(700px, calc(100% - 48px));
+        width: min(460px, calc(100% - 56px));
         margin: 0;
         color: #2f2c26;
-        font-size: clamp(20px, 2.3vw, 28px);
+        font-size: clamp(15px, 1.45vw, 18px);
         font-weight: 900;
-        line-height: 1.75;
+        line-height: 1.7;
         text-align: center;
         text-shadow:
           0 1px 0 rgba(255, 253, 248, 0.92),
@@ -315,19 +315,30 @@
       .thing {
         position: absolute;
         z-index: 1;
-        min-height: 38px;
-        padding: 9px 15px;
+        min-height: 34px;
+        padding: 6px 14px 7px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        border: 1px solid rgba(35, 33, 29, 0.1);
+        border: 0;
         color: #2f2c26;
         font-size: var(--size, 14px);
         font-weight: 900;
         white-space: nowrap;
-        box-shadow: 0 12px 26px rgba(50, 45, 35, 0.11);
+        box-shadow: none;
         transform: rotate(var(--rotate, 0deg));
+      }
+
+      .thing::before {
+        content: "";
+        position: absolute;
+        inset: 5px -4px 3px;
+        z-index: -1;
+        border-radius: 999px 72% 88% 68%;
+        background: var(--highlight, rgba(241, 229, 170, 0.74));
+        filter: saturate(1.12);
+        transform: rotate(var(--stroke-rotate, -1deg));
       }
 
       .thing svg {
@@ -337,64 +348,55 @@
       }
 
       .pill {
-        border-radius: 999px;
+        border-radius: 14px 20px 16px 18px;
       }
 
       .cloud {
-        border-radius: 24px 30px 26px 18px;
+        border-radius: 22px 18px 26px 16px;
       }
 
       .drop {
-        border-radius: 60% 45% 58% 42%;
+        border-radius: 18px 26px 16px 22px;
       }
 
       .square {
-        border-radius: 8px;
+        border-radius: 10px 15px 9px 14px;
       }
 
       .speech {
-        border-radius: 18px;
+        border-radius: 17px 13px 19px 14px;
       }
 
       .speech::after {
-        content: "";
-        position: absolute;
-        left: 20px;
-        bottom: -7px;
-        width: 13px;
-        height: 13px;
-        background: inherit;
-        border-right: 1px solid rgba(35, 33, 29, 0.08);
-        border-bottom: 1px solid rgba(35, 33, 29, 0.08);
-        transform: rotate(45deg);
+        content: none;
       }
 
       .green {
-        background: #dce8d8;
+        --highlight: rgba(159, 218, 143, 0.58);
       }
 
       .clay {
-        background: #ead3c1;
+        --highlight: rgba(255, 175, 122, 0.52);
       }
 
       .yellow {
-        background: #f1e5aa;
+        --highlight: rgba(255, 232, 89, 0.62);
       }
 
       .blue {
-        background: #d9e4ed;
+        --highlight: rgba(125, 200, 255, 0.52);
       }
 
       .pink {
-        background: #efd7d5;
+        --highlight: rgba(255, 157, 190, 0.5);
       }
 
       .gray {
-        background: #e7e3da;
+        --highlight: rgba(197, 202, 192, 0.56);
       }
 
       .mint {
-        background: #d8e8df;
+        --highlight: rgba(125, 224, 190, 0.5);
       }
 
       @media (max-width: 920px) {
@@ -599,28 +601,28 @@
           <span class="thing pill gray" style="right: 4%; top: 18%; --size: 15px; --rotate: -6deg;">Oracle Database</span>
           <span class="thing drop mint" style="left: 8%; top: 23%; --size: 17px; --rotate: 4deg;">SQL</span>
           <span class="thing pill pink" style="left: 28%; top: 20%; --size: 15px; --rotate: -4deg;">Git</span>
-          <span class="thing speech gray" style="left: 49%; top: 24%; --size: 16px; --rotate: 3deg;">GitHub</span>
+          <span class="thing speech gray" style="left: 51%; top: 22%; --size: 16px; --rotate: 3deg;">GitHub</span>
           <span class="thing square blue" style="right: 12%; top: 32%; --size: 14px; --rotate: 9deg;">VSCode</span>
           <span class="thing cloud green" style="left: 5%; top: 41%; --size: 14px; --rotate: -3deg;">REST API</span>
-          <span class="thing pill yellow" style="left: 24%; top: 36%; --size: 14px; --rotate: 8deg;">JSON</span>
-          <span class="thing drop clay" style="left: 65%; top: 43%; --size: 15px; --rotate: -7deg;">AJAX</span>
-          <span class="thing square gray" style="left: 10%; top: 58%; --size: 16px; --rotate: 5deg;">Linux</span>
-          <span class="thing speech blue" style="left: 31%; top: 52%; --size: 18px; --rotate: -5deg;">Docker</span>
-          <span class="thing pill green" style="left: 55%; top: 57%; --size: 15px; --rotate: 4deg;">Nginx</span>
-          <span class="thing cloud pink" style="right: 7%; top: 53%; --size: 15px; --rotate: -3deg;">Markdown</span>
+          <span class="thing pill yellow" style="left: 22%; top: 33%; --size: 14px; --rotate: 8deg;">JSON</span>
+          <span class="thing drop clay" style="left: 71%; top: 41%; --size: 15px; --rotate: -7deg;">AJAX</span>
+          <span class="thing square gray" style="left: 8%; top: 60%; --size: 16px; --rotate: 5deg;">Linux</span>
+          <span class="thing speech blue" style="left: 24%; top: 64%; --size: 18px; --rotate: -5deg;">Docker</span>
+          <span class="thing pill green" style="left: 61%; top: 64%; --size: 15px; --rotate: 4deg;">Nginx</span>
+          <span class="thing cloud pink" style="right: 5%; top: 55%; --size: 15px; --rotate: -3deg;">Markdown</span>
           <span class="thing drop clay" style="left: 5%; bottom: 15%; --size: 15px; --rotate: -8deg;">Postman</span>
           <span class="thing square green" style="left: 21%; bottom: 8%; --size: 17px; --rotate: 4deg;">Node.js</span>
           <span class="thing speech pink" style="left: 43%; bottom: 13%; --size: 15px; --rotate: -2deg;">Redis</span>
           <span class="thing pill mint" style="right: 29%; bottom: 8%; --size: 15px; --rotate: 6deg;">Supabase</span>
           <span class="thing drop yellow" style="right: 12%; bottom: 13%; --size: 16px; --rotate: -5deg;">JWT</span>
-          <span class="thing cloud blue" style="left: 38%; top: 34%; --size: 13px; --rotate: 8deg;">WebSocket</span>
-          <span class="thing pill gray" style="right: 35%; top: 35%; --size: 13px; --rotate: -6deg;">CryptoJS</span>
+          <span class="thing cloud blue" style="left: 39%; top: 30%; --size: 13px; --rotate: 8deg;">WebSocket</span>
+          <span class="thing pill gray" style="right: 32%; top: 30%; --size: 13px; --rotate: -6deg;">CryptoJS</span>
           <span class="thing speech green" style="right: 5%; bottom: 27%; --size: 13px; --rotate: 6deg;">SHA-256</span>
 
-          <span class="thing cloud clay" style="left: 17%; top: 69%; --size: 16px; --rotate: 2deg;">커피</span>
-          <span class="thing pill blue" style="left: 34%; top: 70%; --size: 14px; --rotate: -7deg;">새벽 시간</span>
-          <span class="thing drop gray" style="right: 34%; top: 72%; --size: 14px; --rotate: 6deg;">이어폰</span>
-          <span class="thing speech mint" style="right: 8%; top: 70%; --size: 14px; --rotate: -4deg;">조용한 음악</span>
+          <span class="thing cloud clay" style="left: 14%; top: 76%; --size: 16px; --rotate: 2deg;">커피</span>
+          <span class="thing pill blue" style="left: 32%; top: 76%; --size: 14px; --rotate: -7deg;">새벽 시간</span>
+          <span class="thing drop gray" style="right: 34%; top: 78%; --size: 14px; --rotate: 6deg;">이어폰</span>
+          <span class="thing speech mint" style="right: 7%; top: 73%; --size: 14px; --rotate: -4deg;">조용한 음악</span>
           <span class="thing square yellow" style="left: 3%; bottom: 36%; --size: 15px; --rotate: 7deg;">게임</span>
           <span class="thing cloud green" style="left: 40%; bottom: 28%; --size: 14px; --rotate: -4deg;">산책</span>
           <span class="thing pill pink" style="right: 17%; bottom: 36%; --size: 14px; --rotate: 4deg;">플레이리스트</span>
