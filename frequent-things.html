@@ -174,14 +174,14 @@
 
       .mega-menu {
         position: absolute;
-        top: 100%;
+        top: calc(100% - 1px);
         left: 50%;
         z-index: 20;
-        width: 100vw;
-        padding: 12px max(24px, calc((100vw - 1120px) / 2)) 22px;
+        width: min(760px, calc(100vw - 32px));
+        padding: 10px 0 18px;
         display: grid;
-        grid-template-columns: repeat(5, minmax(120px, 1fr));
-        gap: clamp(26px, 4.8vw, 64px);
+        grid-template-columns: 1.25fr 1fr 0.7fr 0.7fr 1.25fr;
+        gap: clamp(18px, 3.8vw, 54px);
         border-top: 1px solid rgba(221, 215, 202, 0.9);
         border-bottom: 1px solid rgba(221, 215, 202, 0.9);
         background: rgba(255, 253, 248, 0.97);
@@ -204,15 +204,12 @@
       }
 
       .mega-group h3 {
-        margin: 0 0 8px;
-        color: var(--ink);
-        font-size: 15px;
-        line-height: 1.3;
+        display: none;
       }
 
       .mega-group a {
         display: block;
-        padding: 4px 0;
+        padding: 5px 0;
         color: var(--muted);
         font-size: 15px;
         font-weight: 700;
