@@ -25,31 +25,46 @@ function translateSupabaseMessage(message, fallbackMessage) {
       message: "이메일 또는 비밀번호가 올바르지 않습니다.",
     },
     {
-      test: () => lowerMessage.includes("email not confirmed") || lowerMessage.includes("email_not_confirmed"),
-      message: "이메일 인증이 아직 완료되지 않았습니다. 메일함에서 인증을 먼저 진행해주세요.",
+      test: () =>
+        lowerMessage.includes("email not confirmed") ||
+        lowerMessage.includes("email_not_confirmed"),
+      message:
+        "이메일 인증이 아직 완료되지 않았습니다. 메일함에서 인증을 먼저 진행해주세요.",
     },
     {
       test: () => lowerMessage.includes("already registered"),
-      message: "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
+      message:
+        "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
     },
     {
-      test: () => lowerMessage.includes("unable to validate email") || lowerMessage.includes("invalid email"),
+      test: () =>
+        lowerMessage.includes("unable to validate email") ||
+        lowerMessage.includes("invalid email"),
       message: "이메일 형식이 올바르지 않습니다.",
     },
     {
-      test: () => lowerMessage.includes("rate limit") || lowerMessage.includes("too many") || lowerMessage.includes("only request this after"),
+      test: () =>
+        lowerMessage.includes("rate limit") ||
+        lowerMessage.includes("too many") ||
+        lowerMessage.includes("only request this after"),
       message: "요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.",
     },
     {
-      test: () => lowerMessage.includes("token has expired") || lowerMessage.includes("expired") || lowerMessage.includes("invalid token"),
-      message: "인증 링크가 만료되었거나 올바르지 않습니다. 인증 메일을 다시 요청해주세요.",
+      test: () =>
+        lowerMessage.includes("token has expired") ||
+        lowerMessage.includes("expired") ||
+        lowerMessage.includes("invalid token"),
+      message:
+        "인증 링크가 만료되었거나 올바르지 않습니다. 인증 메일을 다시 요청해주세요.",
     },
     {
       test: () => lowerMessage.includes("access_denied"),
       message: "인증 요청이 거부되었습니다. 다시 시도해주세요.",
     },
     {
-      test: () => lowerMessage.includes("failed to fetch") || lowerMessage.includes("network"),
+      test: () =>
+        lowerMessage.includes("failed to fetch") ||
+        lowerMessage.includes("network"),
       message: "네트워크 연결을 확인한 뒤 다시 시도해주세요.",
     },
   ];
@@ -59,7 +74,9 @@ function translateSupabaseMessage(message, fallbackMessage) {
 }
 
 function renderAuthCallbackResult() {
-  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const hashParams = new URLSearchParams(
+    window.location.hash.replace(/^#/, ""),
+  );
   const isSignupCallback = hashParams.get("type") === "signup";
   const hasAccessToken = hashParams.has("access_token");
   const error = hashParams.get("error");
@@ -76,7 +93,7 @@ function renderAuthCallbackResult() {
       title: "이메일 인증에 실패했습니다.",
       description: translateSupabaseMessage(
         decodeURIComponent(errorDescription || error),
-        "인증 링크가 만료되었거나 올바르지 않습니다. 다시 시도해주세요."
+        "인증 링크가 만료되었거나 올바르지 않습니다. 다시 시도해주세요.",
       ),
     });
   } else {
@@ -141,7 +158,9 @@ function applyHeaderLinks(headerRoot) {
   headerRoot.querySelectorAll("[data-path]").forEach((link) => {
     link.href = `${componentBase}${link.dataset.path}`;
     const linkUrl = new URL(link.href, window.location.href);
-    const isSamePage = linkUrl.pathname === window.location.pathname && linkUrl.hash === window.location.hash;
+    const isSamePage =
+      linkUrl.pathname === window.location.pathname &&
+      linkUrl.hash === window.location.hash;
 
     if (isSamePage) {
       link.classList.add("is-current");
@@ -192,7 +211,9 @@ function loadSupabaseSdk() {
   }
 
   return new Promise((resolve, reject) => {
-    const existingScript = document.querySelector(`script[src="${SUPABASE_SDK_URL}"]`);
+    const existingScript = document.querySelector(
+      `script[src="${SUPABASE_SDK_URL}"]`,
+    );
 
     if (existingScript) {
       existingScript.addEventListener("load", resolve, { once: true });
@@ -211,7 +232,10 @@ function loadSupabaseSdk() {
 async function signOutSupabaseSession() {
   await loadSupabaseSdk();
 
-  const supabaseClient = window.supabase.createClient(APP_SUPABASE_URL, APP_SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabase.createClient(
+    APP_SUPABASE_URL,
+    APP_SUPABASE_ANON_KEY,
+  );
   const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
@@ -222,7 +246,10 @@ async function signOutSupabaseSession() {
 async function getAuthedSupabaseClient() {
   await loadSupabaseSdk();
 
-  const supabaseClient = window.supabase.createClient(APP_SUPABASE_URL, APP_SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabase.createClient(
+    APP_SUPABASE_URL,
+    APP_SUPABASE_ANON_KEY,
+  );
   const accessToken = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
 
@@ -333,7 +360,8 @@ function renderMyPageProfile(user) {
   const nameInput = document.getElementById("profile-name");
 
   if (nameText) nameText.textContent = displayName;
-  if (emailText) emailText.textContent = user?.email || "이메일 정보가 없습니다.";
+  if (emailText)
+    emailText.textContent = user?.email || "이메일 정보가 없습니다.";
   renderAvatarElement(avatar, user, displayName);
   renderAvatarElement(preview, user, displayName);
   if (nameInput) nameInput.value = user?.user_metadata?.name || "";
@@ -366,7 +394,17 @@ function resizeProfileImage(file) {
 
         canvas.width = size;
         canvas.height = size;
-        context.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
+        context.drawImage(
+          image,
+          cropX,
+          cropY,
+          cropSize,
+          cropSize,
+          0,
+          0,
+          size,
+          size,
+        );
         resolve(canvas.toDataURL("image/jpeg", 0.78));
       };
 
@@ -411,7 +449,11 @@ async function initMyPage() {
     } catch (error) {
       console.error(error);
       profileImageInput.value = "";
-      setPageMessage(message, error.message || "프로필 이미지를 확인해주세요.", true);
+      setPageMessage(
+        message,
+        error.message || "프로필 이미지를 확인해주세요.",
+        true,
+      );
     }
   });
 
@@ -438,7 +480,11 @@ async function initMyPage() {
 
     if (password) {
       if (!isStrongPassword(password)) {
-        setPageMessage(message, "비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 모두 포함해야 합니다.", true);
+        setPageMessage(
+          message,
+          "비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 모두 포함해야 합니다.",
+          true,
+        );
         return;
       }
 
@@ -453,7 +499,8 @@ async function initMyPage() {
       }
 
       const supabaseClient = await getAuthedSupabaseClient();
-      const { data, error } = await supabaseClient.auth.updateUser(updatePayload);
+      const { data, error } =
+        await supabaseClient.auth.updateUser(updatePayload);
 
       if (error) {
         throw error;
@@ -467,7 +514,14 @@ async function initMyPage() {
       loadHeader();
     } catch (error) {
       console.error(error);
-      setPageMessage(message, translateSupabaseMessage(error?.message || error, "회원정보 수정 중 오류가 발생했습니다."), true);
+      setPageMessage(
+        message,
+        translateSupabaseMessage(
+          error?.message || error,
+          "회원정보 수정 중 오류가 발생했습니다.",
+        ),
+        true,
+      );
     }
   });
 
@@ -488,7 +542,8 @@ async function initMyPage() {
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
-      const accessToken = session?.access_token || localStorage.getItem("token") || "";
+      const accessToken =
+        session?.access_token || localStorage.getItem("token") || "";
 
       if (session?.access_token) {
         localStorage.setItem("token", session.access_token);
@@ -498,39 +553,60 @@ async function initMyPage() {
         localStorage.setItem("refreshToken", session.refresh_token);
       }
 
-      const response = await fetch(`${APP_SUPABASE_URL}/functions/v1/delete-user`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          apikey: APP_SUPABASE_ANON_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-      const result = await response.json().catch(() => ({}));
+      // const response = await fetch(`${APP_SUPABASE_URL}/functions/v1/delete-user`, {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`,
+      //     apikey: APP_SUPABASE_ANON_KEY,
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({}),
+      // });
+      // const result = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
-        throw new Error(result.message || result.error || "회원탈퇴 처리 중 오류가 발생했습니다.");
+      // if (!response.ok) {
+      //   throw new Error(result.message || result.error || "회원탈퇴 처리 중 오류가 발생했습니다.");
+      // }
+
+      const { data: result, error } = await supabaseClient.functions.invoke(
+        "delete-user",
+        {
+          body: {},
+        },
+      );
+
+      if (error) {
+        throw new Error(
+          error.message || "회원탈퇴 처리 중 오류가 발생했습니다.",
+        );
       }
 
       clearStoredAuth();
-      setPageMessage(message, "회원탈퇴가 완료되었습니다. 메인 화면으로 이동합니다.");
+      setPageMessage(
+        message,
+        "회원탈퇴가 완료되었습니다. 메인 화면으로 이동합니다.",
+      );
       window.setTimeout(() => {
         window.location.href = `${componentBase}index.html`;
       }, 900);
     } catch (error) {
       console.error(error);
       withdrawButton.disabled = false;
-      const isFetchFailed = String(error?.message || "").toLowerCase().includes("failed to fetch");
+      const isFetchFailed = String(error?.message || "")
+        .toLowerCase()
+        .includes("failed to fetch");
       if (isFetchFailed) {
-        console.warn("delete-user Edge Function request failed. Check function deployment, verify_jwt=false, and CORS preflight settings.");
+        console.warn(
+          "delete-user Edge Function request failed. Check function deployment, verify_jwt=false, and CORS preflight settings.",
+        );
       }
       setPageMessage(
         message,
         isFetchFailed
           ? "회원탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해주세요."
-          : error.message || "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-        true
+          : error.message ||
+              "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        true,
       );
     }
   });
@@ -553,7 +629,6 @@ function initMenu() {
     });
   });
 }
-
 
 // Changed traces page
 
@@ -606,8 +681,12 @@ async function loadChangedTraces() {
               const rawDate = String(item.date);
               const isHyphenDate = rawDate.includes("-");
               const itemYear = rawDate.slice(0, 4);
-              const month = isHyphenDate ? rawDate.slice(5, 7) : rawDate.slice(4, 6);
-              const day = isHyphenDate ? rawDate.slice(8, 10) : rawDate.slice(6, 8);
+              const month = isHyphenDate
+                ? rawDate.slice(5, 7)
+                : rawDate.slice(4, 6);
+              const day = isHyphenDate
+                ? rawDate.slice(8, 10)
+                : rawDate.slice(6, 8);
 
               return `
                 <article class="trace-item">
@@ -628,5 +707,3 @@ async function loadChangedTraces() {
     })
     .join("");
 }
-
-
