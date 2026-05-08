@@ -25,22 +25,48 @@ async function loadChangedTraces() {
     return;
   }
 
-  console.log(data);
+  const groupedByYear = data.reduce((acc, item) => {
+    const rawDate = String(item.date); // 예: 20260508
+    const year = rawDate.slice(0, 4);
 
-  traceBoard.innerHTML = data
-    .map(
-      (item) => `
-    <article class="trace-item">
-      <time class="trace-date">
-        ${item.date}
-      </time>
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(item);
 
-      <p class="trace-text">
-        ${item.content}
-      </p>
-    </article>
-  `,
-    )
+    return acc;
+  }, {});
+
+  traceBoard.innerHTML = Object.entries(groupedByYear)
+    .map(([year, items]) => {
+      return `
+      <section class="timeline-year" aria-labelledby="year-${year}">
+        <h2 class="year-label" id="year-${year}">${year}</h2>
+
+        <div class="trace-list">
+          ${items
+            .map((item) => {
+              const rawDate = String(item.date); // 20260508
+
+              const year = rawDate.slice(0, 4);
+              const month = rawDate.slice(4, 6);
+              const day = rawDate.slice(6, 8);
+
+              return `
+                <article class="trace-item">
+                  <time class="trace-date" datetime="${year}-${month}-${day}">
+                    ${month}.${day}
+                  </time>
+
+                  <p class="trace-text">
+                    ${item.content}
+                  </p>
+                </article>
+              `;
+            })
+            .join("")}
+        </div>
+      </section>
+    `;
+    })
     .join("");
 }
 
