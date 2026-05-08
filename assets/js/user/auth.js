@@ -39,15 +39,24 @@ function translateSupabaseMessage(error, fallbackMessage) {
       message: "비밀번호는 안내된 조건에 맞게 입력해주세요.",
     },
     {
-      test: () => lowerMessage.includes("unable to validate email") || lowerMessage.includes("invalid email") || lowerMessage.includes("email address is invalid"),
+      test: () =>
+        lowerMessage.includes("unable to validate email") ||
+        lowerMessage.includes("invalid email") ||
+        lowerMessage.includes("email address is invalid"),
       message: "이메일 형식이 올바르지 않습니다.",
     },
     {
-      test: () => lowerMessage.includes("rate limit") || lowerMessage.includes("too many") || lowerMessage.includes("only request this after"),
+      test: () =>
+        lowerMessage.includes("rate limit") ||
+        lowerMessage.includes("too many") ||
+        lowerMessage.includes("only request this after"),
       message: "요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.",
     },
     {
-      test: () => lowerMessage.includes("token has expired") || lowerMessage.includes("expired") || lowerMessage.includes("invalid token"),
+      test: () =>
+        lowerMessage.includes("token has expired") ||
+        lowerMessage.includes("expired") ||
+        lowerMessage.includes("invalid token"),
       message: "인증 링크가 만료되었거나 올바르지 않습니다. 인증 메일을 다시 요청해주세요.",
     },
     {
@@ -253,11 +262,16 @@ if (authForm) {
         const data = await signUpWithSupabase(signupData);
 
         if (data.session) {
-          saveSupabaseAuth(data);
+          localStorage.removeItem("pendingVerifyEmail");
+          setMessage("회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.");
+          window.setTimeout(() => {
+            window.location.href = "login.html";
+          }, 800);
+          return;
         }
 
         localStorage.setItem("pendingVerifyEmail", signupData.email);
-        setMessage("회원가입이 완료되었습니다. 이메일 인증 안내 화면으로 이동합니다.");
+        setMessage("이메일 인증이 필요합니다. 인증 안내 화면으로 이동합니다.");
         window.setTimeout(() => {
           window.location.href = `verify-email.html?email=${encodeURIComponent(signupData.email)}`;
         }, 800);
