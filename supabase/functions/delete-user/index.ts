@@ -2,7 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -18,12 +19,15 @@ Deno.serve(async (request) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const serviceRoleKey = Deno.env.get("SERVICE_ROLE_KEY");
   const authHeader = request.headers.get("Authorization") || "";
   const accessToken = authHeader.replace("Bearer ", "").trim();
 
   if (!supabaseUrl || !serviceRoleKey) {
-    return createJsonResponse({ message: "서버 환경 변수가 설정되지 않았습니다." }, 500);
+    return createJsonResponse(
+      { message: "서버 환경 변수가 설정되지 않았습니다." },
+      500,
+    );
   }
 
   if (!accessToken) {
@@ -43,13 +47,21 @@ Deno.serve(async (request) => {
   } = await supabaseAdmin.auth.getUser(accessToken);
 
   if (userError || !user) {
-    return createJsonResponse({ message: "사용자 정보를 확인할 수 없습니다." }, 401);
+    return createJsonResponse(
+      { message: "사용자 정보를 확인할 수 없습니다." },
+      401,
+    );
   }
 
-  const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+  const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
+    user.id,
+  );
 
   if (deleteError) {
-    return createJsonResponse({ message: "회원탈퇴 처리 중 오류가 발생했습니다." }, 500);
+    return createJsonResponse(
+      { message: "회원탈퇴 처리 중 오류가 발생했습니다." },
+      500,
+    );
   }
 
   return createJsonResponse({ message: "회원탈퇴가 완료되었습니다." });

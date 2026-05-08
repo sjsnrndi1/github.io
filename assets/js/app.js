@@ -508,10 +508,13 @@ async function initMyPage() {
       console.error(error);
       withdrawButton.disabled = false;
       const isFetchFailed = String(error?.message || "").toLowerCase().includes("failed to fetch");
+      if (isFetchFailed) {
+        console.warn("delete-user Edge Function request failed. Check function deployment, verify_jwt=false, and CORS preflight settings.");
+      }
       setPageMessage(
         message,
         isFetchFailed
-          ? "회원탈퇴 함수에 연결하지 못했습니다. Edge Function 배포 상태와 CORS 설정을 확인해주세요."
+          ? "회원탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해주세요."
           : error.message || "회원탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
         true
       );
