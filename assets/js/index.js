@@ -34,3 +34,10 @@ function initMenu() {
     });
   });
 }
+
+async function loadPage(page) {
+  const response = await fetch(page);
+  const html = await response.text();
+
+  document.getElementById("content").innerHTML = html;
+}
