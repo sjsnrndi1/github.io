@@ -580,11 +580,10 @@ async function initMyPage() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
             apikey: APP_SUPABASE_ANON_KEY,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({}),
+          body: JSON.stringify({ accessToken }),
         },
       );
       const responseText = await response.text();

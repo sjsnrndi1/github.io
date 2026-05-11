@@ -29,8 +29,14 @@ Deno.serve(async (request) => {
     console.log("SUPABASE_URL:", Boolean(supabaseUrl));
     console.log("SERVICE_ROLE_KEY:", Boolean(serviceRoleKey));
 
+    const requestBody = await request.json().catch(() => ({}));
     const authHeader = request.headers.get("Authorization") || "";
-    const accessToken = authHeader.replace("Bearer ", "").trim();
+    const headerToken = authHeader.replace("Bearer ", "").trim();
+    const bodyToken =
+      typeof requestBody.accessToken === "string"
+        ? requestBody.accessToken.trim()
+        : "";
+    const accessToken = headerToken || bodyToken;
 
     console.log("TOKEN EXISTS:", Boolean(accessToken));
 
