@@ -794,80 +794,81 @@ async function fetchLearnedComments(postId) {
   return data || [];
 }
 
-async function getNextLearnedCommentId(postId) {
-  const supabaseClient = await getPublicSupabaseClient();
-  const { data, error } = await supabaseClient
-    .from("LEARNED_COMMENT")
-    .select("id")
-    .eq("learned_id", Number(postId))
-    .order("id", { ascending: false })
-    .limit(1);
+async function callLearnedCommentFunction(payload) {
+  const supabaseClient = await getAuthedSupabaseClient();
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabaseClient.auth.getSession();
 
-  if (error) throw error;
-  return Number(data?.[0]?.id || 0) + 1;
+  if (sessionError) throw sessionError;
+
+  const accessToken = session?.access_token || localStorage.getItem("token");
+
+  if (!accessToken) {
+    throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+  }
+
+  const response = await fetch(
+    `${APP_SUPABASE_URL}/functions/v1/learned-comment`,
+    {
+      method: "POST",
+      headers: {
+        apikey: APP_SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...payload,
+        accessToken,
+      }),
+    },
+  );
+  const responseText = await response.text();
+  const result = responseText ? JSON.parse(responseText) : {};
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || result.error || "댓글 요청 처리에 실패했습니다.",
+    );
+  }
+
+  return result.data;
 }
 
 async function createLearnedComment(postId, content) {
-  const supabaseClient = await getAuthedSupabaseClient();
-  const userId = getCurrentUserId();
-  const nextId = await getNextLearnedCommentId(postId);
-
-  const { error } = await supabaseClient.from("LEARNED_COMMENT").insert({
-    id: nextId,
-    learned_id: Number(postId),
+  return callLearnedCommentFunction({
+    action: "create",
+    learnedId: Number(postId),
     content,
-    reg_user_id: userId,
-    created_user_id: userId,
-    updated_user_id: userId,
-    num_like_cnt: 0,
   });
-
-  if (error) throw error;
 }
 
 async function updateLearnedComment(postId, commentId, content) {
-  const supabaseClient = await getAuthedSupabaseClient();
-  const { error } = await supabaseClient
-    .from("LEARNED_COMMENT")
-    .update({
-      content,
-      updated_at: new Date().toISOString(),
-      updated_user_id: getCurrentUserId(),
-    })
-    .eq("learned_id", Number(postId))
-    .eq("id", Number(commentId))
-    .eq("reg_user_id", getCurrentUserId());
-
-  if (error) throw error;
+  return callLearnedCommentFunction({
+    action: "update",
+    learnedId: Number(postId),
+    commentId: Number(commentId),
+    content,
+  });
 }
 
 async function deleteLearnedComment(postId, commentId) {
-  const supabaseClient = await getAuthedSupabaseClient();
-  const { error } = await supabaseClient
-    .from("LEARNED_COMMENT")
-    .delete()
-    .eq("learned_id", Number(postId))
-    .eq("id", Number(commentId))
-    .eq("reg_user_id", getCurrentUserId());
-
-  if (error) throw error;
+  return callLearnedCommentFunction({
+    action: "delete",
+    learnedId: Number(postId),
+    commentId: Number(commentId),
+  });
 }
 
 async function updateLearnedCommentLike(postId, comment, shouldLike) {
-  const supabaseClient = await getAuthedSupabaseClient();
-  const nextLikeCount = Math.max(
-    0,
-    Number(comment.num_like_cnt || 0) + (shouldLike ? 1 : -1),
-  );
-  const { error } = await supabaseClient
-    .from("LEARNED_COMMENT")
-    .update({ num_like_cnt: nextLikeCount })
-    .eq("learned_id", Number(postId))
-    .eq("id", Number(comment.id));
-
-  if (error) throw error;
-
+  const data = await callLearnedCommentFunction({
+    action: "like",
+    learnedId: Number(postId),
+    commentId: Number(comment.id),
+    shouldLike,
+  });
   setLikedComment(postId, comment.id, getCurrentUserId(), shouldLike);
+  return data;
 }
 
 function initLearnedPages() {
@@ -1036,7 +1037,11 @@ async function initCommentPanel(postId) {
       await renderComments(postId);
     } catch (error) {
       console.error(error);
-      setPageMessage(message, "댓글 등록에 실패했습니다.", true);
+      setPageMessage(
+        message,
+        error?.message || "댓글 등록에 실패했습니다.",
+        true,
+      );
     }
   });
 }
