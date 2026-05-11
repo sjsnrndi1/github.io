@@ -254,10 +254,23 @@ async function getAuthedSupabaseClient() {
   const refreshToken = localStorage.getItem("refreshToken");
 
   if (accessToken && refreshToken) {
-    await supabaseClient.auth.setSession({
+    const { data, error } = await supabaseClient.auth.setSession({
       access_token: accessToken,
       refresh_token: refreshToken,
     });
+
+    if (error) {
+      clearStoredAuth();
+      throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+    }
+
+    if (data.session?.access_token) {
+      localStorage.setItem("token", data.session.access_token);
+    }
+
+    if (data.session?.refresh_token) {
+      localStorage.setItem("refreshToken", data.session.refresh_token);
+    }
   }
 
   return supabaseClient;
@@ -541,9 +554,14 @@ async function initMyPage() {
       const supabaseClient = await getAuthedSupabaseClient();
       const {
         data: { session },
+        error: sessionError,
       } = await supabaseClient.auth.getSession();
-      const accessToken =
-        session?.access_token || localStorage.getItem("token") || "";
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      const accessToken = session?.access_token || "";
 
       if (!accessToken) {
         throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
