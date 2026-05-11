@@ -2377,6 +2377,37 @@ body {
   border-bottom: 1px solid rgba(221, 215, 202, 0.9);
 }
 
+.comment-login-callout {
+  margin-bottom: 24px;
+  padding: 22px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(79, 111, 82, 0.24);
+  border-radius: 8px;
+  background: rgba(79, 111, 82, 0.08);
+}
+
+.comment-login-callout[hidden],
+.comment-form[hidden] {
+  display: none;
+}
+
+.comment-login-callout p {
+  margin: 0;
+  color: var(--green-dark);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.6;
+}
+
+.comment-login-link {
+  width: max-content;
+  min-height: 44px;
+  margin-top: 0;
+  padding: 0 16px;
+  text-decoration: none;
+}
+
 .comment-form label {
   display: grid;
   gap: 8px;

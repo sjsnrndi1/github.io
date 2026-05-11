@@ -874,9 +874,34 @@ async function renderLearnedDetailPage() {
 function initCommentPanel(postId) {
   const form = document.querySelector("[data-comment-form]");
   const list = document.querySelector("[data-comment-list]");
+  const loginCallout = document.querySelector("[data-comment-login-callout]");
   if (!form || !list) return;
 
   renderComments(postId);
+
+  const storedUser = getStoredUser();
+
+  if (!storedUser) {
+    form.hidden = true;
+    if (loginCallout) {
+      loginCallout.hidden = false;
+      const loginLink = loginCallout.querySelector("a");
+      if (loginLink) {
+        loginLink.href = `${componentBase}front/login/login.html`;
+      }
+    }
+    return;
+  }
+
+  form.hidden = false;
+  if (loginCallout) {
+    loginCallout.hidden = true;
+  }
+
+  const nameInput = form.querySelector('input[name="name"]');
+  if (nameInput && !nameInput.value.trim()) {
+    nameInput.value = getUserDisplayName(storedUser);
+  }
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
