@@ -2294,7 +2294,7 @@ body {
 .learned-detail-head h1 {
   margin: 12px 0 16px;
   color: var(--ink);
-  font-size: clamp(34px, 5vw, 56px);
+  font-size: clamp(30px, 4vw, 44px);
   line-height: 1.12;
   letter-spacing: 0;
   word-break: keep-all;

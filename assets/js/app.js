@@ -140,7 +140,6 @@ async function loadHeader() {
   const html = await response.text();
 
   headerRoot.innerHTML = html;
-  applyLearnedHeaderLink(headerRoot);
   applyHeaderLinks(headerRoot);
   renderHeaderAuth(headerRoot);
   initMenu();
@@ -168,18 +167,6 @@ function applyHeaderLinks(headerRoot) {
       link.classList.add("is-current");
     }
   });
-}
-
-function applyLearnedHeaderLink(headerRoot) {
-  const aboutMenu = headerRoot.querySelector(
-    '.nav-links > .nav-item a[data-path="index.html#about"] + .nav-submenu',
-  );
-  const learnedLink = aboutMenu?.querySelector("a");
-  if (!learnedLink) return;
-
-  learnedLink.dataset.path = "front/learned.html";
-  learnedLink.href = `${componentBase}front/learned.html`;
-  learnedLink.textContent = "배운 것들";
 }
 
 function getStoredUser() {
