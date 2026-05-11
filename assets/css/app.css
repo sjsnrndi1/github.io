@@ -2096,6 +2096,25 @@ body {
 
 /* Learned posts */
 
+.learned-main {
+  position: relative;
+}
+
+.learned-main::before {
+  content: "";
+  position: fixed;
+  inset: 74px 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("../images/learned/learned-bg.png") center top / cover no-repeat;
+  opacity: 0.14;
+}
+
+.learned-main > * {
+  position: relative;
+  z-index: 1;
+}
+
 .feature-card h3 a {
   color: inherit;
   text-decoration: none;
