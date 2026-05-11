@@ -2454,6 +2454,10 @@ body {
   font-weight: 800;
 }
 
+.comment-empty.is-error {
+  color: #b42318;
+}
+
 .comment-item {
   padding: 18px;
   border: 1px solid rgba(221, 215, 202, 0.86);
@@ -2483,6 +2487,12 @@ body {
   word-break: keep-all;
 }
 
+.comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .comment-like {
   display: inline-flex;
   align-items: center;
@@ -2499,8 +2509,39 @@ body {
   cursor: pointer;
 }
 
-.comment-like:hover {
+.comment-like:hover,
+.comment-like.is-liked {
   background: rgba(183, 117, 76, 0.15);
+}
+
+.comment-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(79, 111, 82, 0.24);
+  border-radius: 999px;
+  background: rgba(79, 111, 82, 0.08);
+  color: var(--green);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.comment-action-button:hover {
+  background: rgba(79, 111, 82, 0.14);
+}
+
+.comment-action-button.is-danger {
+  border-color: rgba(180, 35, 24, 0.24);
+  background: rgba(180, 35, 24, 0.06);
+  color: #b42318;
+}
+
+.comment-action-button.is-danger:hover {
+  background: rgba(180, 35, 24, 0.12);
 }
 
 @media (max-width: 720px) {

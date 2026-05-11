@@ -655,20 +655,7 @@ function initMenu() {
 // Learned posts page
 
 const LEARNED_PAGE_SIZE = 4;
-const LEARNED_COMMENT_KEY = "learnedPostComments";
-
-function getLearnedComments() {
-  try {
-    return JSON.parse(localStorage.getItem(LEARNED_COMMENT_KEY) || "{}");
-  } catch (error) {
-    console.error(error);
-    return {};
-  }
-}
-
-function saveLearnedComments(comments) {
-  localStorage.setItem(LEARNED_COMMENT_KEY, JSON.stringify(comments));
-}
+const LEARNED_COMMENT_LIKE_KEY = "learnedCommentLikes";
 
 function formatLearnedDate(date) {
   return String(date || "").replaceAll("-", ".");
@@ -758,6 +745,129 @@ function createContentParagraphs(content) {
     .filter(Boolean)
     .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
     .join("");
+}
+
+function getCurrentUserId() {
+  return getStoredUser()?.id || "";
+}
+
+function getCommentLikeKey(postId, commentId, userId) {
+  return `${postId}:${commentId}:${userId}`;
+}
+
+function getStoredCommentLikes() {
+  try {
+    return JSON.parse(localStorage.getItem(LEARNED_COMMENT_LIKE_KEY) || "{}");
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+}
+
+function hasLikedComment(postId, commentId, userId) {
+  const likes = getStoredCommentLikes();
+  return Boolean(likes[getCommentLikeKey(postId, commentId, userId)]);
+}
+
+function setLikedComment(postId, commentId, userId, isLiked) {
+  const likes = getStoredCommentLikes();
+  const key = getCommentLikeKey(postId, commentId, userId);
+
+  if (isLiked) {
+    likes[key] = true;
+  } else {
+    delete likes[key];
+  }
+
+  localStorage.setItem(LEARNED_COMMENT_LIKE_KEY, JSON.stringify(likes));
+}
+
+async function fetchLearnedComments(postId) {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data, error } = await supabaseClient
+    .from("LEARNED_COMMENT")
+    .select("id,learned_id,content,created_at,reg_user_id,num_like_cnt")
+    .eq("learned_id", Number(postId))
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+async function getNextLearnedCommentId(postId) {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data, error } = await supabaseClient
+    .from("LEARNED_COMMENT")
+    .select("id")
+    .eq("learned_id", Number(postId))
+    .order("id", { ascending: false })
+    .limit(1);
+
+  if (error) throw error;
+  return Number(data?.[0]?.id || 0) + 1;
+}
+
+async function createLearnedComment(postId, content) {
+  const supabaseClient = await getAuthedSupabaseClient();
+  const userId = getCurrentUserId();
+  const nextId = await getNextLearnedCommentId(postId);
+
+  const { error } = await supabaseClient.from("LEARNED_COMMENT").insert({
+    id: nextId,
+    learned_id: Number(postId),
+    content,
+    reg_user_id: userId,
+    created_user_id: userId,
+    updated_user_id: userId,
+    num_like_cnt: 0,
+  });
+
+  if (error) throw error;
+}
+
+async function updateLearnedComment(postId, commentId, content) {
+  const supabaseClient = await getAuthedSupabaseClient();
+  const { error } = await supabaseClient
+    .from("LEARNED_COMMENT")
+    .update({
+      content,
+      updated_at: new Date().toISOString(),
+      updated_user_id: getCurrentUserId(),
+    })
+    .eq("learned_id", Number(postId))
+    .eq("id", Number(commentId))
+    .eq("reg_user_id", getCurrentUserId());
+
+  if (error) throw error;
+}
+
+async function deleteLearnedComment(postId, commentId) {
+  const supabaseClient = await getAuthedSupabaseClient();
+  const { error } = await supabaseClient
+    .from("LEARNED_COMMENT")
+    .delete()
+    .eq("learned_id", Number(postId))
+    .eq("id", Number(commentId))
+    .eq("reg_user_id", getCurrentUserId());
+
+  if (error) throw error;
+}
+
+async function updateLearnedCommentLike(postId, comment, shouldLike) {
+  const supabaseClient = await getAuthedSupabaseClient();
+  const nextLikeCount = Math.max(
+    0,
+    Number(comment.num_like_cnt || 0) + (shouldLike ? 1 : -1),
+  );
+  const { error } = await supabaseClient
+    .from("LEARNED_COMMENT")
+    .update({ num_like_cnt: nextLikeCount })
+    .eq("learned_id", Number(postId))
+    .eq("id", Number(comment.id));
+
+  if (error) throw error;
+
+  setLikedComment(postId, comment.id, getCurrentUserId(), shouldLike);
 }
 
 function initLearnedPages() {
@@ -871,13 +981,13 @@ async function renderLearnedDetailPage() {
   }
 }
 
-function initCommentPanel(postId) {
+async function initCommentPanel(postId) {
   const form = document.querySelector("[data-comment-form]");
   const list = document.querySelector("[data-comment-list]");
   const loginCallout = document.querySelector("[data-comment-login-callout]");
   if (!form || !list) return;
 
-  renderComments(postId);
+  await renderComments(postId);
 
   const storedUser = getStoredUser();
 
@@ -904,43 +1014,51 @@ function initCommentPanel(postId) {
     nameInput.value = getUserDisplayName(storedUser);
   }
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const message = document.querySelector("[data-comment-message]");
     const formData = new FormData(form);
-    const name = String(formData.get("name") || "").trim();
     const content = String(formData.get("content") || "").trim();
 
-    if (!name || !content) {
-      setPageMessage(message, "이름과 댓글을 모두 입력해주세요.", true);
+    if (!content) {
+      setPageMessage(message, "댓글을 입력해주세요.", true);
       return;
     }
 
-    const comments = getLearnedComments();
-    const postComments = comments[postId] || [];
-    postComments.unshift({
-      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      name,
-      content,
-      likes: 0,
-      createdAt: new Date().toISOString(),
-    });
-    comments[postId] = postComments;
-    saveLearnedComments(comments);
-    form.reset();
-    setPageMessage(message, "댓글이 남겨졌습니다.");
-    renderComments(postId);
+    try {
+      await createLearnedComment(postId, content);
+      form.reset();
+      if (nameInput) {
+        nameInput.value = getUserDisplayName(storedUser);
+      }
+      setPageMessage(message, "댓글이 남겨졌습니다.");
+      await renderComments(postId);
+    } catch (error) {
+      console.error(error);
+      setPageMessage(message, "댓글 등록에 실패했습니다.", true);
+    }
   });
 }
 
-function renderComments(postId) {
+async function renderComments(postId) {
   const list = document.querySelector("[data-comment-list]");
   const count = document.querySelector("[data-comment-count]");
   if (!list) return;
 
-  const comments = getLearnedComments();
-  const postComments = comments[postId] || [];
+  list.innerHTML = `<p class="comment-empty">댓글을 불러오고 있습니다.</p>`;
+
+  let postComments = [];
+  try {
+    postComments = await fetchLearnedComments(postId);
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<p class="comment-empty is-error">댓글을 불러오지 못했습니다.</p>`;
+    if (count) {
+      count.textContent = "";
+    }
+    return;
+  }
 
   if (count) {
     count.textContent = `${postComments.length}개`;
@@ -953,32 +1071,104 @@ function renderComments(postId) {
 
   list.innerHTML = postComments
     .map(
-      (comment) => `
+      (comment) => {
+        const userId = getCurrentUserId();
+        const isOwner = Boolean(userId && comment.reg_user_id === userId);
+        const isLiked = Boolean(
+          userId && hasLikedComment(postId, comment.id, userId),
+        );
+
+        return `
         <article class="comment-item">
           <div>
-            <strong>${escapeHtml(comment.name)}</strong>
-            <time datetime="${comment.createdAt}">${formatLearnedDate(comment.createdAt.slice(0, 10))}</time>
+            <strong>${isOwner ? "내 댓글" : "회원 댓글"}</strong>
+            <time datetime="${comment.created_at}">${formatLearnedDate(String(comment.created_at || "").slice(0, 10))}</time>
           </div>
           <p>${escapeHtml(comment.content)}</p>
-          <button type="button" class="comment-like" data-comment-like="${escapeHtml(comment.id)}">
-            좋아요 <span>${comment.likes}</span>
-          </button>
+          <div class="comment-actions">
+            <button type="button" class="comment-like ${isLiked ? "is-liked" : ""}" data-comment-like="${escapeHtml(comment.id)}">
+              ${isLiked ? "좋아요 취소" : "좋아요"} <span>${Number(comment.num_like_cnt || 0)}</span>
+            </button>
+            ${
+              isOwner
+                ? `
+                  <button type="button" class="comment-action-button" data-comment-edit="${escapeHtml(comment.id)}">수정</button>
+                  <button type="button" class="comment-action-button is-danger" data-comment-delete="${escapeHtml(comment.id)}">삭제</button>
+                `
+                : ""
+            }
+          </div>
         </article>
-      `,
+      `;
+      },
     )
     .join("");
 
   list.querySelectorAll("[data-comment-like]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const comments = getLearnedComments();
-      const target = (comments[postId] || []).find(
-        (comment) => comment.id === button.dataset.commentLike,
+    button.addEventListener("click", async () => {
+      const userId = getCurrentUserId();
+      if (!userId) {
+        alert("로그인해야 좋아요를 누를 수 있습니다.");
+        return;
+      }
+
+      const target = postComments.find(
+        (comment) => String(comment.id) === button.dataset.commentLike,
       );
       if (!target) return;
 
-      target.likes += 1;
-      saveLearnedComments(comments);
-      renderComments(postId);
+      try {
+        await updateLearnedCommentLike(
+          postId,
+          target,
+          !hasLikedComment(postId, target.id, userId),
+        );
+        await renderComments(postId);
+      } catch (error) {
+        console.error(error);
+        alert("좋아요 처리에 실패했습니다.");
+      }
+    });
+  });
+
+  list.querySelectorAll("[data-comment-edit]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const target = postComments.find(
+        (comment) => String(comment.id) === button.dataset.commentEdit,
+      );
+      if (!target) return;
+
+      const nextContent = window.prompt("댓글을 수정해주세요.", target.content);
+      if (nextContent === null) return;
+
+      const trimmedContent = nextContent.trim();
+      if (!trimmedContent) {
+        alert("댓글을 입력해주세요.");
+        return;
+      }
+
+      try {
+        await updateLearnedComment(postId, target.id, trimmedContent);
+        await renderComments(postId);
+      } catch (error) {
+        console.error(error);
+        alert("댓글 수정에 실패했습니다.");
+      }
+    });
+  });
+
+  list.querySelectorAll("[data-comment-delete]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const isConfirmed = window.confirm("댓글을 삭제할까요?");
+      if (!isConfirmed) return;
+
+      try {
+        await deleteLearnedComment(postId, button.dataset.commentDelete);
+        await renderComments(postId);
+      } catch (error) {
+        console.error(error);
+        alert("댓글 삭제에 실패했습니다.");
+      }
     });
   });
 }
