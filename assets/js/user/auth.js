@@ -224,6 +224,23 @@ function getPendingVerifyEmail() {
   return normalizeText(params.get("email") || localStorage.getItem("pendingVerifyEmail")).toLowerCase();
 }
 
+function getLoginRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get("redirect");
+
+  if (!redirect) return "../../index.html";
+
+  try {
+    const url = new URL(redirect, window.location.origin);
+    if (url.origin !== window.location.origin) return "../../index.html";
+
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch (error) {
+    console.error(error);
+    return "../../index.html";
+  }
+}
+
 if (resendButton) {
   const pendingEmail = getPendingVerifyEmail();
   startResendTimer();
@@ -294,7 +311,7 @@ if (authForm) {
 
       saveSupabaseAuth(data);
       setMessage("로그인되었습니다.");
-      window.location.href = "../../index.html";
+      window.location.href = getLoginRedirectUrl();
     } catch (error) {
       console.error(error);
       setMessage(translateSupabaseMessage(error, "로그인 중 오류가 발생했습니다."), true);

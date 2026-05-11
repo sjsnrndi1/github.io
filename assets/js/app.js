@@ -887,7 +887,8 @@ function initCommentPanel(postId) {
       loginCallout.hidden = false;
       const loginLink = loginCallout.querySelector("a");
       if (loginLink) {
-        loginLink.href = `${componentBase}front/login/login.html`;
+        const redirectUrl = `${window.location.pathname}${window.location.search}`;
+        loginLink.href = `${componentBase}front/login/login.html?redirect=${encodeURIComponent(redirectUrl)}`;
       }
     }
     return;
