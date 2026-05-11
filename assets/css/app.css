@@ -2112,6 +2112,11 @@ body {
   opacity: 0.5;
 }
 
+.blocked-main::before {
+  background-image: url("../images/blocked/blocked-bg.png");
+  opacity: 0.42;
+}
+
 .about-image-main::before {
   opacity: 0.32;
 }
