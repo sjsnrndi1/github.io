@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>배운 것들 | 연습장</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="stylesheet" href="../assets/css/app.css" />
+    <script src="../assets/js/app.js"></script>
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <main>
+      <header class="page-head learned-head">
+        <p class="breadcrumb">
+          <a href="../index.html">연습장</a>
+          <span>/</span>
+          <strong>배운 것들</strong>
+        </p>
+        <h1>배운 것들</h1>
+        <p>
+          새롭게 알게 된 것들을 가볍게 남겨두고 있습니다.
+        </p>
+      </header>
+
+      <section class="learned-list-shell" aria-label="배운 것들 게시글 목록">
+        <div class="learned-toolbar">
+          <p>제목, 요약, 해시태그로 빠르게 훑어보는 작은 기록들입니다.</p>
+          <span data-learned-count></span>
+        </div>
+
+        <div class="learned-list" data-learned-list></div>
+        <nav class="learned-pagination" data-learned-pagination aria-label="배운 것들 페이지"></nav>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+  </body>
+</html>

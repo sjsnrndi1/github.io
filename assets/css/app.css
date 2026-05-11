@@ -2093,6 +2093,382 @@ body {
         line-height: 1.55;
       }
 
+
+/* Learned posts */
+
+.feature-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.feature-card h3 a:hover {
+  color: var(--green);
+}
+
+.learned-head > p:last-child {
+  width: min(720px, 100%);
+  margin: 18px auto 0;
+  color: var(--muted);
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 800;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.learned-list-shell {
+  width: min(920px, 100%);
+  margin: 0 auto;
+}
+
+.learned-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.learned-toolbar p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.learned-toolbar span,
+[data-comment-count] {
+  flex: 0 0 auto;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.learned-list {
+  display: grid;
+  gap: 16px;
+}
+
+.learned-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  padding: clamp(22px, 4vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(183, 117, 76, 0.12) 0 2px, transparent 2px 100%),
+    rgba(255, 253, 248, 0.88);
+  box-shadow: 0 16px 36px rgba(50, 45, 35, 0.08);
+}
+
+.learned-card time,
+.learned-detail-head time,
+.comment-item time {
+  color: var(--clay);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.learned-card h2 {
+  margin: 10px 0 10px;
+  color: var(--ink);
+  font-size: clamp(22px, 3vw, 32px);
+  line-height: 1.22;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.learned-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.learned-card h2 a:hover {
+  color: var(--green);
+}
+
+.learned-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.learned-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+}
+
+.learned-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(79, 111, 82, 0.24);
+  border-radius: 999px;
+  background: rgba(79, 111, 82, 0.08);
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.learned-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.learned-pagination a {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.8);
+  color: var(--muted);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.learned-pagination a.is-current,
+.learned-pagination a:hover {
+  border-color: var(--green);
+  background: var(--green);
+  color: var(--white);
+}
+
+.detail-back {
+  width: min(860px, 100%);
+  margin: 0 auto 18px;
+}
+
+.detail-back a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.72);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.detail-back a::before {
+  content: "<";
+  margin-right: 8px;
+  color: var(--clay);
+}
+
+.learned-detail,
+.comment-panel {
+  width: min(860px, 100%);
+  margin: 0 auto;
+}
+
+.learned-detail {
+  padding: clamp(28px, 5vw, 52px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(183, 117, 76, 0.14) 0 2px, transparent 2px 100%),
+    repeating-linear-gradient(180deg, transparent 0 48px, rgba(79, 111, 82, 0.08) 49px 50px),
+    rgba(255, 253, 248, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.learned-detail-head h1 {
+  margin: 12px 0 16px;
+  color: var(--ink);
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.12;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.learned-detail-head > p {
+  max-width: 700px;
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.learned-detail-body {
+  margin-top: clamp(32px, 5vw, 48px);
+  padding-top: clamp(28px, 4vw, 42px);
+  border-top: 1px solid rgba(221, 215, 202, 0.9);
+}
+
+.learned-detail-body p {
+  margin: 0;
+  color: #4f493f;
+  font-family: "Nanum Pen", "Noto Sans KR", system-ui, sans-serif;
+  font-size: clamp(23px, 2.3vw, 31px);
+  font-weight: 400;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.learned-detail-body p + p {
+  margin-top: 22px;
+}
+
+.comment-panel {
+  margin-top: 26px;
+  padding: clamp(24px, 4vw, 36px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.comment-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.comment-panel-head h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.comment-form {
+  display: grid;
+  gap: 14px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(221, 215, 202, 0.9);
+}
+
+.comment-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--green-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.comment-form input,
+.comment-form textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+}
+
+.comment-form textarea {
+  resize: vertical;
+}
+
+.comment-form input:focus,
+.comment-form textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(79, 111, 82, 0.14);
+}
+
+.comment-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.comment-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.comment-item {
+  padding: 18px;
+  border: 1px solid rgba(221, 215, 202, 0.86);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.82);
+}
+
+.comment-item > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.comment-item strong {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.comment-item p {
+  margin: 12px 0 14px;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.comment-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(183, 117, 76, 0.28);
+  border-radius: 999px;
+  background: rgba(183, 117, 76, 0.08);
+  color: var(--clay);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.comment-like:hover {
+  background: rgba(183, 117, 76, 0.15);
+}
+
+@media (max-width: 720px) {
+  .learned-toolbar,
+  .comment-panel-head,
+  .comment-item > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .learned-card {
+    grid-template-columns: 1fr;
+  }
+
+  .learned-tags {
+    justify-content: flex-start;
+  }
+}
+
       .hero-content > p:not(.eyebrow) {
         font-size: clamp(24px, 2.2vw, 31px);
       }
@@ -4447,4 +4823,3 @@ body {
         font-size: 23px;
         line-height: 1.55;
       }
-

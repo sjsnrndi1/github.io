@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadHeader();
   loadFooter();
   initMyPage();
+  initLearnedPages();
 });
 
 function translateSupabaseMessage(message, fallbackMessage) {
@@ -139,6 +140,7 @@ async function loadHeader() {
   const html = await response.text();
 
   headerRoot.innerHTML = html;
+  applyLearnedHeaderLink(headerRoot);
   applyHeaderLinks(headerRoot);
   renderHeaderAuth(headerRoot);
   initMenu();
@@ -166,6 +168,18 @@ function applyHeaderLinks(headerRoot) {
       link.classList.add("is-current");
     }
   });
+}
+
+function applyLearnedHeaderLink(headerRoot) {
+  const aboutMenu = headerRoot.querySelector(
+    '.nav-links > .nav-item a[data-path="index.html#about"] + .nav-submenu',
+  );
+  const learnedLink = aboutMenu?.querySelector("a");
+  if (!learnedLink) return;
+
+  learnedLink.dataset.path = "front/learned.html";
+  learnedLink.href = `${componentBase}front/learned.html`;
+  learnedLink.textContent = "배운 것들";
 }
 
 function getStoredUser() {
@@ -647,6 +661,296 @@ function initMenu() {
     link.addEventListener("click", () => {
       navLinks.classList.remove("active");
       menuToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+
+// Learned posts page
+
+const LEARNED_POSTS = [
+  {
+    id: "supabase-edge-cors",
+    title: "Supabase Edge Function에서 CORS가 막힐 때",
+    summary:
+      "브라우저의 CORS 오류가 항상 프론트 문제는 아니라는 점을 정리했습니다.",
+    tags: ["Supabase", "CORS", "Edge Function"],
+    date: "2026-05-11",
+    detail: [
+      "회원탈퇴 기능을 만들면서 OPTIONS 요청, CORS 헤더, JWT verification 설정이 서로 어떻게 영향을 주는지 확인했습니다.",
+      "특히 브라우저 콘솔에는 CORS처럼 보이지만 실제로는 함수 실행 전 게이트웨이 단계에서 막히는 경우가 있었습니다. 그래서 preflight 응답과 실제 POST 응답을 따로 확인하는 습관이 중요했습니다.",
+      "이번 기록의 결론은 간단합니다. 함수가 직접 인증 로직을 처리한다면 CORS 응답은 모든 경로에서 붙이고, 요청 방식도 게이트웨이와 충돌하지 않게 최대한 단순하게 가져가는 편이 좋습니다.",
+    ],
+  },
+  {
+    id: "localstorage-session",
+    title: "localStorage에 저장한 세션을 너무 믿지 않기",
+    summary:
+      "저장된 토큰이 남아 있어도 실제 세션은 만료될 수 있다는 점을 배웠습니다.",
+    tags: ["Auth", "localStorage", "Session"],
+    date: "2026-05-10",
+    detail: [
+      "로그인 상태를 화면에 표시하려고 localStorage를 사용했지만, 저장된 값이 있다는 사실과 현재 세션이 유효하다는 사실은 다릅니다.",
+      "세션을 사용하는 기능에서는 SDK로 현재 세션을 다시 확인하고, 갱신 실패 시 저장된 인증 정보를 지우는 흐름이 더 안전했습니다.",
+      "사용자에게는 복잡한 원인을 보여주기보다 다시 로그인하면 해결되는 상태인지 명확하게 안내하는 것이 좋았습니다.",
+    ],
+  },
+  {
+    id: "favicon-small-detail",
+    title: "favicon도 사용자 경험의 일부",
+    summary:
+      "작은 아이콘 하나가 콘솔의 404와 브라우저 탭의 빈 느낌을 같이 줄여줬습니다.",
+    tags: ["HTML", "Favicon", "UX"],
+    date: "2026-05-09",
+    detail: [
+      "사이트에 favicon이 없으면 기능에는 문제가 없지만 브라우저는 기본적으로 /favicon.ico를 요청하고 404를 남깁니다.",
+      "헤더 로고와 같은 시각 언어를 favicon으로 옮기면 작은 탭에서도 프로젝트의 정체성이 이어집니다.",
+      "SVG favicon을 연결하고, 오래된 브라우저나 기본 요청을 위해 ico 파일도 함께 두는 방식으로 정리했습니다.",
+    ],
+  },
+  {
+    id: "html-structure",
+    title: "목록과 상세는 역할을 나누면 편하다",
+    summary:
+      "게시글 목록은 훑기 좋게, 상세는 읽고 반응하기 좋게 나누는 게 자연스러웠습니다.",
+    tags: ["HTML", "UI", "게시글"],
+    date: "2026-05-08",
+    detail: [
+      "목록에서는 제목, 요약, 해시태그만 보여줘도 사용자가 읽을 글을 고르는 데 충분했습니다.",
+      "상세 화면에서는 같은 정보에 본문과 댓글을 더해 맥락과 반응이 이어지게 만들었습니다.",
+      "처음부터 복잡한 게시판보다 필요한 화면 단위부터 작게 만드는 방식이 구현과 유지보수 모두 편했습니다.",
+    ],
+  },
+  {
+    id: "css-paper-tone",
+    title: "연습장 분위기를 만드는 CSS",
+    summary:
+      "선, 종이색, 작은 그림자만으로도 기록장 같은 느낌을 만들 수 있었습니다.",
+    tags: ["CSS", "Design", "연습장"],
+    date: "2026-05-07",
+    detail: [
+      "프로젝트의 시각 분위기는 강한 장식보다 종이색 배경, 얇은 선, 손글씨 느낌의 문장으로 만들어졌습니다.",
+      "카드는 둥글게 과장하지 않고 8px 정도로 유지하니 기존 화면과 자연스럽게 이어졌습니다.",
+      "해시태그와 버튼 색은 초록과 흙빛 계열을 섞어 단조롭지 않게 조정했습니다.",
+    ],
+  },
+  {
+    id: "comments-local-first",
+    title: "댓글 기능을 localStorage로 먼저 만들기",
+    summary:
+      "백엔드 없이도 댓글 작성과 좋아요 흐름을 화면에서 먼저 검증할 수 있었습니다.",
+    tags: ["JavaScript", "댓글", "localStorage"],
+    date: "2026-05-06",
+    detail: [
+      "댓글 기능은 서버와 연결되기 전에 localStorage로 먼저 화면 흐름을 만들 수 있습니다.",
+      "이름과 내용을 저장하고, 댓글별 좋아요 수를 올리는 정도라면 브라우저 저장소만으로도 충분히 동작을 확인할 수 있습니다.",
+      "나중에 API가 붙으면 저장하고 불러오는 함수만 교체하면 되도록 렌더링과 저장 로직을 분리하는 편이 좋습니다.",
+    ],
+  },
+  {
+    id: "small-copy",
+    title: "문구는 기능의 분위기를 정한다",
+    summary:
+      "딱딱한 설명보다 '가볍게 남겨둔다'는 말이 화면의 온도를 맞춰줬습니다.",
+    tags: ["Writing", "UX Writing", "Tone"],
+    date: "2026-05-05",
+    detail: [
+      "개인 기록 공간에서는 거창한 설명보다 사용자가 부담 없이 쓰고 읽을 수 있는 문장이 어울렸습니다.",
+      "배운 것들을 완성된 지식처럼 보여주기보다, 새롭게 알게 된 것을 가볍게 남겨둔다는 방향이 프로젝트 이름과도 잘 맞았습니다.",
+      "화면 문구는 기능 설명을 넘어서 사용자의 행동을 편하게 만드는 역할을 한다는 점을 다시 느꼈습니다.",
+    ],
+  },
+];
+
+const LEARNED_PAGE_SIZE = 4;
+const LEARNED_COMMENT_KEY = "learnedPostComments";
+
+function getLearnedPostById(id) {
+  return LEARNED_POSTS.find((post) => post.id === id) || null;
+}
+
+function getLearnedComments() {
+  try {
+    return JSON.parse(localStorage.getItem(LEARNED_COMMENT_KEY) || "{}");
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+}
+
+function saveLearnedComments(comments) {
+  localStorage.setItem(LEARNED_COMMENT_KEY, JSON.stringify(comments));
+}
+
+function formatLearnedDate(date) {
+  return String(date || "").replaceAll("-", ".");
+}
+
+function createTagMarkup(tags) {
+  return tags
+    .map((tag) => `<span class="learned-tag">#${escapeHtml(tag)}</span>`)
+    .join("");
+}
+
+function initLearnedPages() {
+  renderLearnedListPage();
+  renderLearnedDetailPage();
+}
+
+function renderLearnedListPage() {
+  const list = document.querySelector("[data-learned-list]");
+  if (!list) return;
+
+  const count = document.querySelector("[data-learned-count]");
+  const pagination = document.querySelector("[data-learned-pagination]");
+  const params = new URLSearchParams(window.location.search);
+  const totalPages = Math.ceil(LEARNED_POSTS.length / LEARNED_PAGE_SIZE);
+  const requestedPage = Number(params.get("page") || "1");
+  const currentPage = Math.min(Math.max(requestedPage || 1, 1), totalPages);
+  const pageStart = (currentPage - 1) * LEARNED_PAGE_SIZE;
+  const posts = LEARNED_POSTS.slice(pageStart, pageStart + LEARNED_PAGE_SIZE);
+
+  if (count) {
+    count.textContent = `총 ${LEARNED_POSTS.length}개의 기록`;
+  }
+
+  list.innerHTML = posts
+    .map(
+      (post) => `
+        <article class="learned-card">
+          <div class="learned-card-main">
+            <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+            <h2>
+              <a href="learned-detail.html?id=${encodeURIComponent(post.id)}">${escapeHtml(post.title)}</a>
+            </h2>
+            <p>${escapeHtml(post.summary)}</p>
+          </div>
+          <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+        </article>
+      `,
+    )
+    .join("");
+
+  if (!pagination) return;
+
+  pagination.innerHTML = Array.from({ length: totalPages }, (_, index) => {
+    const page = index + 1;
+    const isCurrent = page === currentPage;
+    return `
+      <a href="learned.html?page=${page}" class="${isCurrent ? "is-current" : ""}" aria-label="${page}페이지"${isCurrent ? ' aria-current="page"' : ""}>
+        ${page}
+      </a>
+    `;
+  }).join("");
+}
+
+function renderLearnedDetailPage() {
+  const detail = document.querySelector("[data-learned-detail]");
+  if (!detail) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const post = getLearnedPostById(params.get("id")) || LEARNED_POSTS[0];
+
+  document.title = `${post.title} | 연습장`;
+  detail.innerHTML = `
+    <nav class="detail-back" aria-label="이전 화면">
+      <a href="learned.html">배운 것들 목록</a>
+    </nav>
+    <header class="learned-detail-head">
+      <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+      <h1>${escapeHtml(post.title)}</h1>
+      <p>${escapeHtml(post.summary)}</p>
+      <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+    </header>
+    <div class="learned-detail-body">
+      ${post.detail.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+    </div>
+  `;
+
+  initCommentPanel(post.id);
+}
+
+function initCommentPanel(postId) {
+  const form = document.querySelector("[data-comment-form]");
+  const list = document.querySelector("[data-comment-list]");
+  if (!form || !list) return;
+
+  renderComments(postId);
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const message = document.querySelector("[data-comment-message]");
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const content = String(formData.get("content") || "").trim();
+
+    if (!name || !content) {
+      setPageMessage(message, "이름과 댓글을 모두 입력해주세요.", true);
+      return;
+    }
+
+    const comments = getLearnedComments();
+    const postComments = comments[postId] || [];
+    postComments.unshift({
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      name,
+      content,
+      likes: 0,
+      createdAt: new Date().toISOString(),
+    });
+    comments[postId] = postComments;
+    saveLearnedComments(comments);
+    form.reset();
+    setPageMessage(message, "댓글이 남겨졌습니다.");
+    renderComments(postId);
+  });
+}
+
+function renderComments(postId) {
+  const list = document.querySelector("[data-comment-list]");
+  const count = document.querySelector("[data-comment-count]");
+  if (!list) return;
+
+  const comments = getLearnedComments();
+  const postComments = comments[postId] || [];
+
+  if (count) {
+    count.textContent = `${postComments.length}개`;
+  }
+
+  if (postComments.length === 0) {
+    list.innerHTML = `<p class="comment-empty">아직 댓글이 없습니다. 첫 생각을 남겨주세요.</p>`;
+    return;
+  }
+
+  list.innerHTML = postComments
+    .map(
+      (comment) => `
+        <article class="comment-item">
+          <div>
+            <strong>${escapeHtml(comment.name)}</strong>
+            <time datetime="${comment.createdAt}">${formatLearnedDate(comment.createdAt.slice(0, 10))}</time>
+          </div>
+          <p>${escapeHtml(comment.content)}</p>
+          <button type="button" class="comment-like" data-comment-like="${escapeHtml(comment.id)}">
+            좋아요 <span>${comment.likes}</span>
+          </button>
+        </article>
+      `,
+    )
+    .join("");
+
+  list.querySelectorAll("[data-comment-like]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const comments = getLearnedComments();
+      const target = (comments[postId] || []).find(
+        (comment) => comment.id === button.dataset.commentLike,
+      );
+      if (!target) return;
+
+      target.likes += 1;
+      saveLearnedComments(comments);
+      renderComments(postId);
     });
   });
 }
