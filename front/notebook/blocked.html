@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>막혔던 부분 | 연습장</title>
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+    <link rel="stylesheet" href="../../assets/css/app.css" />
+    <script src="../../assets/js/app.js"></script>
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <main class="learned-main">
+      <header class="page-head learned-head">
+        <p class="breadcrumb">
+          <a href="../../index.html">연습장</a>
+          <span>/</span>
+          <strong>막혔던 부분</strong>
+        </p>
+        <h1>막혔던 부분</h1>
+        <p>
+          오래 붙잡고 있었던 문제들과 지나온 시행착오들을 기록하고 있습니다.
+        </p>
+      </header>
+
+      <section class="learned-list-shell" aria-label="막혔던 부분 게시글 목록">
+        <div class="learned-toolbar">
+          <p>제목, 요약, 해시태그로 막혔던 지점을 다시 훑어봅니다.</p>
+          <span data-blocked-count></span>
+        </div>
+
+        <div class="learned-list" data-blocked-list></div>
+        <nav class="learned-pagination" data-blocked-pagination aria-label="막혔던 부분 페이지"></nav>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+  </body>
+</html>

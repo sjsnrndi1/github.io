@@ -3,3 +3,6 @@ verify_jwt = false
 
 [functions.learned-comment]
 verify_jwt = false
+
+[functions.blocked-comment]
+verify_jwt = false

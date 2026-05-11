@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFooter();
   initMyPage();
   initLearnedPages();
+  initBlockedPages();
 });
 
 function translateSupabaseMessage(message, fallbackMessage) {
@@ -660,6 +661,7 @@ function initMenu() {
 
 const LEARNED_PAGE_SIZE = 4;
 const LEARNED_COMMENT_LIKE_KEY = "learnedCommentLikes";
+const BLOCKED_COMMENT_LIKE_KEY = "blockedCommentLikes";
 
 function formatLearnedDate(date) {
   return String(date || "").replaceAll("-", ".");
@@ -742,6 +744,61 @@ async function fetchLearnedPost(id) {
   );
 }
 
+async function fetchBlockedPosts() {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data: posts, error: postsError } = await supabaseClient
+    .from("BLOCKED")
+    .select("id,title,summary,created_at")
+    .order("created_at", { ascending: false });
+
+  if (postsError) throw postsError;
+  if (!posts?.length) return [];
+
+  const blockedIds = posts.map((post) => post.id);
+  const { data: hashtags, error: hashtagsError } = await supabaseClient
+    .from("BLOCKED_HASHTAG")
+    .select("blocked_id,content")
+    .in("blocked_id", blockedIds)
+    .order("id", { ascending: true });
+
+  if (hashtagsError) throw hashtagsError;
+
+  const groupedHashtags = (hashtags || []).reduce((acc, tag) => {
+    const blockedId = String(tag.blocked_id);
+    if (!acc[blockedId]) acc[blockedId] = [];
+    if (tag.content) acc[blockedId].push(tag.content);
+    return acc;
+  }, {});
+
+  return posts.map((post) =>
+    normalizeLearnedPost(post, groupedHashtags[String(post.id)] || []),
+  );
+}
+
+async function fetchBlockedPost(id) {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data: post, error: postError } = await supabaseClient
+    .from("BLOCKED")
+    .select("id,title,summary,content,created_at")
+    .eq("id", id)
+    .single();
+
+  if (postError) throw postError;
+
+  const { data: hashtags, error: hashtagsError } = await supabaseClient
+    .from("BLOCKED_HASHTAG")
+    .select("content")
+    .eq("blocked_id", id)
+    .order("id", { ascending: true });
+
+  if (hashtagsError) throw hashtagsError;
+
+  return normalizeLearnedPost(
+    post,
+    (hashtags || []).map((tag) => tag.content).filter(Boolean),
+  );
+}
+
 function createContentParagraphs(content) {
   return String(content || "")
     .split(/\n{2,}|\r?\n/)
@@ -755,27 +812,27 @@ function getCurrentUserId() {
   return getStoredUser()?.id || "";
 }
 
-function getCommentLikeKey(postId, commentId, userId) {
-  return `${postId}:${commentId}:${userId}`;
+function getCommentLikeKey(postType, postId, commentId, userId) {
+  return `${postType}:${postId}:${commentId}:${userId}`;
 }
 
-function getStoredCommentLikes() {
+function getStoredCommentLikes(storageKey) {
   try {
-    return JSON.parse(localStorage.getItem(LEARNED_COMMENT_LIKE_KEY) || "{}");
+    return JSON.parse(localStorage.getItem(storageKey) || "{}");
   } catch (error) {
     console.error(error);
     return {};
   }
 }
 
-function hasLikedComment(postId, commentId, userId) {
-  const likes = getStoredCommentLikes();
-  return Boolean(likes[getCommentLikeKey(postId, commentId, userId)]);
+function hasLikedComment(postType, storageKey, postId, commentId, userId) {
+  const likes = getStoredCommentLikes(storageKey);
+  return Boolean(likes[getCommentLikeKey(postType, postId, commentId, userId)]);
 }
 
-function setLikedComment(postId, commentId, userId, isLiked) {
-  const likes = getStoredCommentLikes();
-  const key = getCommentLikeKey(postId, commentId, userId);
+function setLikedComment(postType, storageKey, postId, commentId, userId, isLiked) {
+  const likes = getStoredCommentLikes(storageKey);
+  const key = getCommentLikeKey(postType, postId, commentId, userId);
 
   if (isLiked) {
     likes[key] = true;
@@ -783,7 +840,7 @@ function setLikedComment(postId, commentId, userId, isLiked) {
     delete likes[key];
   }
 
-  localStorage.setItem(LEARNED_COMMENT_LIKE_KEY, JSON.stringify(likes));
+  localStorage.setItem(storageKey, JSON.stringify(likes));
 }
 
 async function fetchLearnedComments(postId) {
@@ -792,6 +849,18 @@ async function fetchLearnedComments(postId) {
     .from("LEARNED_COMMENT")
     .select("id,learned_id,content,created_at,reg_user_id,num_like_cnt")
     .eq("learned_id", Number(postId))
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+async function fetchBlockedComments(postId) {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data, error } = await supabaseClient
+    .from("BLOCKED_COMMENT")
+    .select("id,blocked_id,content,created_at,reg_user_id,num_like_cnt")
+    .eq("blocked_id", Number(postId))
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -871,13 +940,129 @@ async function updateLearnedCommentLike(postId, comment, shouldLike) {
     commentId: Number(comment.id),
     shouldLike,
   });
-  setLikedComment(postId, comment.id, getCurrentUserId(), shouldLike);
+  setLikedComment(
+    "learned",
+    LEARNED_COMMENT_LIKE_KEY,
+    postId,
+    comment.id,
+    getCurrentUserId(),
+    shouldLike,
+  );
   return data;
 }
+
+async function callBlockedCommentFunction(payload) {
+  const supabaseClient = await getAuthedSupabaseClient();
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabaseClient.auth.getSession();
+
+  if (sessionError) throw sessionError;
+
+  const accessToken = session?.access_token || localStorage.getItem("token");
+
+  if (!accessToken) {
+    throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+  }
+
+  const response = await fetch(
+    `${APP_SUPABASE_URL}/functions/v1/blocked-comment`,
+    {
+      method: "POST",
+      headers: {
+        apikey: APP_SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...payload,
+        accessToken,
+      }),
+    },
+  );
+  const responseText = await response.text();
+  const result = responseText ? JSON.parse(responseText) : {};
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || result.error || "댓글 요청 처리에 실패했습니다.",
+    );
+  }
+
+  return result.data;
+}
+
+async function createBlockedComment(postId, content) {
+  return callBlockedCommentFunction({
+    action: "create",
+    blockedId: Number(postId),
+    content,
+  });
+}
+
+async function updateBlockedComment(postId, commentId, content) {
+  return callBlockedCommentFunction({
+    action: "update",
+    blockedId: Number(postId),
+    commentId: Number(commentId),
+    content,
+  });
+}
+
+async function deleteBlockedComment(postId, commentId) {
+  return callBlockedCommentFunction({
+    action: "delete",
+    blockedId: Number(postId),
+    commentId: Number(commentId),
+  });
+}
+
+async function updateBlockedCommentLike(postId, comment, shouldLike) {
+  const data = await callBlockedCommentFunction({
+    action: "like",
+    blockedId: Number(postId),
+    commentId: Number(comment.id),
+    shouldLike,
+  });
+  setLikedComment(
+    "blocked",
+    BLOCKED_COMMENT_LIKE_KEY,
+    postId,
+    comment.id,
+    getCurrentUserId(),
+    shouldLike,
+  );
+  return data;
+}
+
+const learnedCommentApi = {
+  postType: "learned",
+  likeStorageKey: LEARNED_COMMENT_LIKE_KEY,
+  fetchComments: fetchLearnedComments,
+  createComment: createLearnedComment,
+  updateComment: updateLearnedComment,
+  deleteComment: deleteLearnedComment,
+  updateLike: updateLearnedCommentLike,
+};
+
+const blockedCommentApi = {
+  postType: "blocked",
+  likeStorageKey: BLOCKED_COMMENT_LIKE_KEY,
+  fetchComments: fetchBlockedComments,
+  createComment: createBlockedComment,
+  updateComment: updateBlockedComment,
+  deleteComment: deleteBlockedComment,
+  updateLike: updateBlockedCommentLike,
+};
 
 function initLearnedPages() {
   renderLearnedListPage();
   renderLearnedDetailPage();
+}
+
+function initBlockedPages() {
+  renderBlockedListPage();
+  renderBlockedDetailPage();
 }
 
 async function renderLearnedListPage() {
@@ -979,20 +1164,126 @@ async function renderLearnedDetailPage() {
       </div>
     `;
 
-    initCommentPanel(post.id);
+    initCommentPanel(post.id, learnedCommentApi);
   } catch (error) {
     console.error(error);
     detail.innerHTML = `<p class="learned-empty is-error">게시글을 불러오지 못했습니다.</p>`;
   }
 }
 
-async function initCommentPanel(postId) {
+async function renderBlockedListPage() {
+  const list = document.querySelector("[data-blocked-list]");
+  if (!list) return;
+
+  const count = document.querySelector("[data-blocked-count]");
+  const pagination = document.querySelector("[data-blocked-pagination]");
+
+  list.innerHTML = `<p class="learned-empty">막혔던 부분을 불러오고 있습니다.</p>`;
+  if (pagination) pagination.innerHTML = "";
+
+  try {
+    const blockedPosts = await fetchBlockedPosts();
+    const totalPages = Math.max(
+      Math.ceil(blockedPosts.length / LEARNED_PAGE_SIZE),
+      1,
+    );
+    const params = new URLSearchParams(window.location.search);
+    const requestedPage = Number(params.get("page") || "1");
+    const currentPage = Math.min(Math.max(requestedPage || 1, 1), totalPages);
+    const pageStart = (currentPage - 1) * LEARNED_PAGE_SIZE;
+    const posts = blockedPosts.slice(pageStart, pageStart + LEARNED_PAGE_SIZE);
+
+    if (count) {
+      count.textContent = `총 ${blockedPosts.length}개의 기록`;
+    }
+
+    if (!posts.length) {
+      list.innerHTML = `<p class="learned-empty">아직 남겨진 기록이 없습니다.</p>`;
+      return;
+    }
+
+    list.innerHTML = posts
+      .map(
+        (post) => `
+          <article class="learned-card">
+            <div class="learned-card-main">
+              <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+              <h2>
+                <a href="blocked-detail.html?id=${encodeURIComponent(post.id)}">${escapeHtml(post.title)}</a>
+              </h2>
+              <p>${escapeHtml(post.summary)}</p>
+            </div>
+            <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+          </article>
+        `,
+      )
+      .join("");
+
+    if (!pagination || totalPages <= 1) return;
+
+    pagination.innerHTML = Array.from({ length: totalPages }, (_, index) => {
+      const page = index + 1;
+      const isCurrent = page === currentPage;
+      return `
+        <a href="blocked.html?page=${page}" class="${isCurrent ? "is-current" : ""}" aria-label="${page}페이지"${isCurrent ? ' aria-current="page"' : ""}>
+          ${page}
+        </a>
+      `;
+    }).join("");
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<p class="learned-empty is-error">막혔던 부분을 불러오지 못했습니다.</p>`;
+    if (count) count.textContent = "";
+  }
+}
+
+async function renderBlockedDetailPage() {
+  const detail = document.querySelector("[data-blocked-detail]");
+  if (!detail) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const blockedId = params.get("id");
+
+  if (!blockedId) {
+    detail.innerHTML = `<p class="learned-empty is-error">게시글을 찾을 수 없습니다.</p>`;
+    return;
+  }
+
+  detail.innerHTML = `<p class="learned-empty">게시글을 불러오고 있습니다.</p>`;
+
+  try {
+    const post = await fetchBlockedPost(blockedId);
+
+    document.title = `${post.title} | 연습장`;
+    detail.innerHTML = `
+      <nav class="detail-back" aria-label="이전 화면">
+        <a href="blocked.html">막혔던 부분 목록</a>
+      </nav>
+      <header class="learned-detail-head">
+        <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+        <h1>${escapeHtml(post.title)}</h1>
+        <p>${escapeHtml(post.summary)}</p>
+        <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+      </header>
+      <div class="learned-detail-body">
+        ${createContentParagraphs(post.content)}
+      </div>
+    `;
+
+    initCommentPanel(post.id, blockedCommentApi);
+  } catch (error) {
+    console.error(error);
+    detail.innerHTML = `<p class="learned-empty is-error">게시글을 불러오지 못했습니다.</p>`;
+  }
+}
+
+async function initCommentPanel(postId, commentApi = learnedCommentApi) {
   const form = document.querySelector("[data-comment-form]");
   const list = document.querySelector("[data-comment-list]");
   const loginCallout = document.querySelector("[data-comment-login-callout]");
   if (!form || !list) return;
 
-  await renderComments(postId);
+  await renderComments(postId, commentApi);
 
   const storedUser = getStoredUser();
 
@@ -1032,13 +1323,13 @@ async function initCommentPanel(postId) {
     }
 
     try {
-      await createLearnedComment(postId, content);
+      await commentApi.createComment(postId, content);
       form.reset();
       if (nameInput) {
         nameInput.value = getUserDisplayName(storedUser);
       }
       setPageMessage(message, "댓글이 남겨졌습니다.");
-      await renderComments(postId);
+      await renderComments(postId, commentApi);
     } catch (error) {
       console.error(error);
       setPageMessage(
@@ -1050,7 +1341,7 @@ async function initCommentPanel(postId) {
   });
 }
 
-async function renderComments(postId) {
+async function renderComments(postId, commentApi = learnedCommentApi) {
   const list = document.querySelector("[data-comment-list]");
   const count = document.querySelector("[data-comment-count]");
   if (!list) return;
@@ -1059,7 +1350,7 @@ async function renderComments(postId) {
 
   let postComments = [];
   try {
-    postComments = await fetchLearnedComments(postId);
+    postComments = await commentApi.fetchComments(postId);
   } catch (error) {
     console.error(error);
     list.innerHTML = `<p class="comment-empty is-error">댓글을 불러오지 못했습니다.</p>`;
@@ -1084,7 +1375,14 @@ async function renderComments(postId) {
         const userId = getCurrentUserId();
         const isOwner = Boolean(userId && comment.reg_user_id === userId);
         const isLiked = Boolean(
-          userId && hasLikedComment(postId, comment.id, userId),
+          userId &&
+            hasLikedComment(
+              commentApi.postType,
+              commentApi.likeStorageKey,
+              postId,
+              comment.id,
+              userId,
+            ),
         );
 
         return `
@@ -1129,12 +1427,18 @@ async function renderComments(postId) {
       if (!target) return;
 
       try {
-        await updateLearnedCommentLike(
+        await commentApi.updateLike(
           postId,
           target,
-          !hasLikedComment(postId, target.id, userId),
+          !hasLikedComment(
+            commentApi.postType,
+            commentApi.likeStorageKey,
+            postId,
+            target.id,
+            userId,
+          ),
         );
-        await renderComments(postId);
+        await renderComments(postId, commentApi);
       } catch (error) {
         console.error(error);
         alert("좋아요 처리에 실패했습니다.");
@@ -1159,8 +1463,8 @@ async function renderComments(postId) {
       }
 
       try {
-        await updateLearnedComment(postId, target.id, trimmedContent);
-        await renderComments(postId);
+        await commentApi.updateComment(postId, target.id, trimmedContent);
+        await renderComments(postId, commentApi);
       } catch (error) {
         console.error(error);
         alert("댓글 수정에 실패했습니다.");
@@ -1174,8 +1478,8 @@ async function renderComments(postId) {
       if (!isConfirmed) return;
 
       try {
-        await deleteLearnedComment(postId, button.dataset.commentDelete);
-        await renderComments(postId);
+        await commentApi.deleteComment(postId, button.dataset.commentDelete);
+        await renderComments(postId, commentApi);
       } catch (error) {
         console.error(error);
         alert("댓글 삭제에 실패했습니다.");
