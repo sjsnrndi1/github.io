@@ -2153,6 +2153,23 @@ body {
   gap: 16px;
 }
 
+.learned-empty {
+  margin: 0;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.74);
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.learned-empty.is-error {
+  color: #b42318;
+}
+
 .learned-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
