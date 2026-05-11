@@ -2107,7 +2107,7 @@ body {
   z-index: -1;
   pointer-events: none;
   background: url("../images/learned/learned-bg.png") center top / cover no-repeat;
-  opacity: 0.14;
+  opacity: 0.22;
 }
 
 .learned-main > * {
