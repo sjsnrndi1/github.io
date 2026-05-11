@@ -2096,10 +2096,12 @@ body {
 
 /* Learned posts */
 
+.about-image-main,
 .learned-main {
   position: relative;
 }
 
+.about-image-main::before,
 .learned-main::before {
   content: "";
   position: fixed;
@@ -2110,6 +2112,23 @@ body {
   opacity: 0.5;
 }
 
+.about-image-main::before {
+  opacity: 0.32;
+}
+
+.first-reason-main::before {
+  background-image: url("../images/about/first-reason-bg.png");
+}
+
+.frequent-thing-main::before {
+  background-image: url("../images/about/frequent-thing-bg.png");
+}
+
+.changed-traces-main::before {
+  background-image: url("../images/about/changed-traces-bg.png");
+}
+
+.about-image-main > *,
 .learned-main > * {
   position: relative;
   z-index: 1;
