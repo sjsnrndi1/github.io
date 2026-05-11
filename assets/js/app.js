@@ -1055,6 +1055,15 @@ const blockedCommentApi = {
   updateLike: updateBlockedCommentLike,
 };
 
+function createNotebookTabsMarkup(current) {
+  return `
+    <nav class="sub-tabs" aria-label="공책 2차 메뉴">
+      <a href="learned.html" class="${current === "learned" ? "is-current" : ""}">배운 것들</a>
+      <a href="blocked.html" class="${current === "blocked" ? "is-current" : ""}">막혔던 부분</a>
+    </nav>
+  `;
+}
+
 function initLearnedPages() {
   renderLearnedListPage();
   renderLearnedDetailPage();
@@ -1156,6 +1165,7 @@ async function renderLearnedDetailPage() {
       <header class="learned-detail-head">
         <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
         <h1>${escapeHtml(post.title)}</h1>
+        ${createNotebookTabsMarkup("learned")}
         <p>${escapeHtml(post.summary)}</p>
         <div class="learned-tags">${createTagMarkup(post.tags)}</div>
       </header>
@@ -1262,6 +1272,7 @@ async function renderBlockedDetailPage() {
       <header class="learned-detail-head">
         <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
         <h1>${escapeHtml(post.title)}</h1>
+        ${createNotebookTabsMarkup("blocked")}
         <p>${escapeHtml(post.summary)}</p>
         <div class="learned-tags">${createTagMarkup(post.tags)}</div>
       </header>
