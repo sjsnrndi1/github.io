@@ -1091,17 +1091,19 @@ async function renderComments(postId) {
           </div>
           <p>${escapeHtml(comment.content)}</p>
           <div class="comment-actions">
-            <button type="button" class="comment-like ${isLiked ? "is-liked" : ""}" data-comment-like="${escapeHtml(comment.id)}">
-              ${isLiked ? "좋아요 취소" : "좋아요"} <span>${Number(comment.num_like_cnt || 0)}</span>
+            <button type="button" class="comment-like ${isLiked ? "is-liked" : ""}" data-comment-like="${escapeHtml(comment.id)}" aria-pressed="${isLiked ? "true" : "false"}">
+              좋아요 <span>${Number(comment.num_like_cnt || 0)}</span>
             </button>
-            ${
-              isOwner
-                ? `
-                  <button type="button" class="comment-action-button" data-comment-edit="${escapeHtml(comment.id)}">수정</button>
-                  <button type="button" class="comment-action-button is-danger" data-comment-delete="${escapeHtml(comment.id)}">삭제</button>
-                `
-                : ""
-            }
+            <div class="comment-owner-actions">
+              ${
+                isOwner
+                  ? `
+                    <button type="button" class="comment-action-button" data-comment-edit="${escapeHtml(comment.id)}">수정</button>
+                    <button type="button" class="comment-action-button is-danger" data-comment-delete="${escapeHtml(comment.id)}">삭제</button>
+                  `
+                  : ""
+              }
+            </div>
           </div>
         </article>
       `;

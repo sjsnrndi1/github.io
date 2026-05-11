@@ -2107,7 +2107,7 @@ body {
   z-index: -1;
   pointer-events: none;
   background: url("../images/learned/learned-bg.png") center top / cover no-repeat;
-  opacity: 0.22;
+  opacity: 0.5;
 }
 
 .learned-main > * {
@@ -2509,7 +2509,16 @@ body {
 .comment-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: 8px;
+}
+
+.comment-owner-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .comment-like {
@@ -2528,9 +2537,19 @@ body {
   cursor: pointer;
 }
 
-.comment-like:hover,
-.comment-like.is-liked {
+.comment-like:hover {
   background: rgba(183, 117, 76, 0.15);
+}
+
+.comment-like.is-liked {
+  border-color: rgba(79, 111, 82, 0.42);
+  background: var(--green);
+  color: var(--white);
+  box-shadow: 0 8px 18px rgba(49, 76, 53, 0.16);
+}
+
+.comment-like.is-liked:hover {
+  background: var(--green-dark);
 }
 
 .comment-action-button {
