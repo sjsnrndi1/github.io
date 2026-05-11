@@ -1,7 +1,11 @@
 ﻿// Common layout
 
-const isFrontPage = window.location.pathname.includes("/front/");
-const componentBase = isFrontPage ? "../" : "";
+const pathSegments = window.location.pathname.split("/").filter(Boolean);
+const frontSegmentIndex = pathSegments.indexOf("front");
+const componentBase =
+  frontSegmentIndex === -1
+    ? ""
+    : "../".repeat(pathSegments.length - frontSegmentIndex - 1);
 const APP_SUPABASE_URL = "https://nrlkhbgeynmiqesglhgt.supabase.co";
 const APP_SUPABASE_ANON_KEY = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 const SUPABASE_SDK_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
@@ -126,7 +130,7 @@ function createAuthResultMarkup({ isSuccess, title, description }) {
         <p class="eyebrow">${isSuccess ? "Verified" : "Verification Failed"}</p>
         <h1>${title}</h1>
         <p>${description}</p>
-        <a class="member-submit auth-result-button" href="front/login/login.html">로그인</a>
+        <a class="member-submit auth-result-button" href="${componentBase}front/login/login.html">로그인</a>
       </div>
     </section>
   `;
