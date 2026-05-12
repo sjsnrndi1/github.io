@@ -35,18 +35,22 @@ Deno.serve(async (request) => {
 
     const body = await request.json().catch(() => ({}));
     const action = String(body.action || "");
-    const accessToken = getAccessToken(request, body);
-
-    if (!accessToken) {
-      return createJsonResponse({ message: "로그인 정보가 없습니다." }, 401);
-    }
-
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
     });
+
+    if (action === "list") {
+      return await listComments(supabaseAdmin, body);
+    }
+
+    const accessToken = getAccessToken(request, body);
+
+    if (!accessToken) {
+      return createJsonResponse({ message: "로그인 정보가 없습니다." }, 401);
+    }
 
     const {
       data: { user },
@@ -63,7 +67,7 @@ Deno.serve(async (request) => {
     const clientIp = getClientIp(request);
 
     if (action === "create") {
-      return await createComment(supabaseAdmin, body, user.id, clientIp);
+      return await createComment(supabaseAdmin, body, user, clientIp);
     }
 
     if (action === "update") {
@@ -121,10 +125,44 @@ function getBoardContext(body: Record<string, unknown>) {
   };
 }
 
+function getUserDisplayName(user: {
+  email?: string;
+  user_metadata?: Record<string, unknown>;
+}) {
+  const metadata = user?.user_metadata || {};
+  return (
+    typeof metadata.name === "string" && metadata.name.trim()
+      ? metadata.name.trim()
+      : String(user?.email || "").split("@")[0] || "회원"
+  );
+}
+
+async function listComments(
+  supabaseAdmin: ReturnType<typeof createClient>,
+  body: Record<string, unknown>,
+) {
+  const { boardId } = getBoardContext(body);
+
+  const { data, error } = await supabaseAdmin
+    .from(BOARD_COMMENT_TABLE)
+    .select("id,board_id,name,content,created_at,reg_user_id,num_like_cnt")
+    .eq("board_id", boardId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return createJsonResponse({
+    data: (data || []).map((comment) => ({
+      ...comment,
+      name: comment.name || "회원",
+    })),
+  });
+}
+
 async function createComment(
   supabaseAdmin: ReturnType<typeof createClient>,
   body: Record<string, unknown>,
-  userId: string,
+  user: { id: string; email?: string; user_metadata?: Record<string, unknown> },
   clientIp: string,
 ) {
   const { boardId } = getBoardContext(body);
@@ -149,11 +187,12 @@ async function createComment(
     .insert({
       id: nextId,
       board_id: boardId,
+      name: getUserDisplayName(user),
       content,
-      reg_user_id: userId,
-      created_user_id: userId,
+      reg_user_id: user.id,
+      created_user_id: user.id,
       created_ip: clientIp,
-      updated_user_id: userId,
+      updated_user_id: user.id,
       updated_ip: clientIp,
       num_like_cnt: 0,
     })

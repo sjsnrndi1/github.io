@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>막혔던 부분 | 연습장</title>
+    <title>다시 보기 | 연습장</title>
     <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
     <link rel="stylesheet" href="../../assets/css/app.css" />
     <script src="../../assets/js/app.js"></script>
@@ -11,32 +11,32 @@
   <body>
     <div id="header"></div>
 
-    <main class="learned-main blocked-main">
+    <main class="learned-main review-main">
       <header class="page-head learned-head">
         <p class="breadcrumb">
           <a href="../../index.html">연습장</a>
           <span>/</span>
-          <strong>막혔던 부분</strong>
+          <strong>다시 보기</strong>
         </p>
-        <h1>막혔던 부분</h1>
+        <h1>다시 보기</h1>
         <nav class="sub-tabs" aria-label="공책 2차 메뉴">
           <a href="learned.html">배운 것들</a>
-          <a href="blocked.html" class="is-current">막혔던 부분</a>
-          <a href="review.html">다시 보기</a>
+          <a href="blocked.html">막혔던 부분</a>
+          <a href="review.html" class="is-current">다시 보기</a>
         </nav>
         <p>
-          오래 붙잡고 있었던 문제들과 지나온 시행착오들을 기록하고 있습니다.
+          시간이 지나 다시 이해하게 된 것들을 천천히 정리하고 있습니다.
         </p>
       </header>
 
-      <section class="learned-list-shell" aria-label="막혔던 부분 게시글 목록">
+      <section class="learned-list-shell" aria-label="다시 보기 게시글 목록">
         <div class="learned-toolbar">
-          <p>제목, 요약, 해시태그로 막혔던 지점을 다시 훑어봅니다.</p>
-          <span data-blocked-count></span>
+          <p>제목, 요약, 해시태그로 다시 짚어볼 기록을 모아두었습니다.</p>
+          <span data-review-count></span>
         </div>
 
-        <div class="learned-list" data-blocked-list></div>
-        <nav class="learned-pagination" data-blocked-pagination aria-label="막혔던 부분 페이지"></nav>
+        <div class="learned-list" data-review-list></div>
+        <nav class="learned-pagination" data-review-pagination aria-label="다시 보기 페이지"></nav>
       </section>
     </main>
 

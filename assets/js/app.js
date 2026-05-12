@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initMyPage();
   initLearnedPages();
   initBlockedPages();
+  initReviewPages();
 });
 
 function translateSupabaseMessage(message, fallbackMessage) {
@@ -696,11 +697,13 @@ function initMenu() {
 const LEARNED_PAGE_SIZE = 4;
 const LEARNED_COMMENT_LIKE_KEY = "learnedCommentLikes";
 const BLOCKED_COMMENT_LIKE_KEY = "blockedCommentLikes";
+const REVIEW_COMMENT_LIKE_KEY = "reviewCommentLikes";
 const BOARD_TABLE = "BOARD";
 const BOARD_HASHTAG_TABLE = "BOARD_HASHTAG";
-const BOARD_COMMENT_TABLE = "BOARD_COMMENT";
+const BOARD_REF_TABLE = "BOARD_REF";
 const BOARD_DCD_LEARNED = "learned";
 const BOARD_DCD_BLOCKED = "blocked";
+const BOARD_DCD_REVIEW = "review";
 
 function formatLearnedDate(date) {
   return String(date || "").replaceAll("-", ".");
@@ -801,6 +804,67 @@ async function fetchBlockedPost(id) {
   return fetchBoardPost(id, BOARD_DCD_BLOCKED);
 }
 
+async function fetchReviewPosts() {
+  return fetchBoardPosts(BOARD_DCD_REVIEW);
+}
+
+async function fetchReviewPost(id) {
+  return fetchBoardPost(id, BOARD_DCD_REVIEW);
+}
+
+async function fetchReviewReferences(boardId) {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data: refs, error: refsError } = await supabaseClient
+    .from(BOARD_REF_TABLE)
+    .select("reference_id")
+    .eq("board_id", boardId)
+    .order("id", { ascending: true });
+
+  if (refsError) throw refsError;
+
+  const referenceIds = (refs || [])
+    .map((ref) => ref.reference_id)
+    .filter(Boolean);
+
+  if (!referenceIds.length) return [];
+
+  const { data: posts, error: postsError } = await supabaseClient
+    .from(BOARD_TABLE)
+    .select("id,title,summary,content,created_at,board_dcd")
+    .in("id", referenceIds)
+    .in("board_dcd", [BOARD_DCD_LEARNED, BOARD_DCD_BLOCKED]);
+
+  if (postsError) throw postsError;
+
+  const { data: hashtags, error: hashtagsError } = await supabaseClient
+    .from(BOARD_HASHTAG_TABLE)
+    .select("board_id,content")
+    .in("board_id", referenceIds)
+    .order("id", { ascending: true });
+
+  if (hashtagsError) throw hashtagsError;
+
+  const groupedHashtags = (hashtags || []).reduce((acc, tag) => {
+    const tagBoardId = String(tag.board_id);
+    if (!acc[tagBoardId]) acc[tagBoardId] = [];
+    if (tag.content) acc[tagBoardId].push(tag.content);
+    return acc;
+  }, {});
+  const postMap = new Map(
+    (posts || []).map((post) => [
+      String(post.id),
+      {
+        ...normalizeLearnedPost(post, groupedHashtags[String(post.id)] || []),
+        boardDcd: post.board_dcd || "",
+      },
+    ]),
+  );
+
+  return referenceIds
+    .map((referenceId) => postMap.get(String(referenceId)))
+    .filter(Boolean);
+}
+
 function createContentParagraphs(content) {
   return String(content || "")
     .split(/\n{2,}|\r?\n/)
@@ -845,28 +909,8 @@ function setLikedComment(postType, storageKey, postId, commentId, userId, isLike
   localStorage.setItem(storageKey, JSON.stringify(likes));
 }
 
-async function fetchLearnedComments(postId) {
-  const supabaseClient = await getPublicSupabaseClient();
-  const { data, error } = await supabaseClient
-    .from(BOARD_COMMENT_TABLE)
-    .select("id,board_id,content,created_at,reg_user_id,num_like_cnt")
-    .eq("board_id", Number(postId))
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-  return data || [];
-}
-
-async function fetchBlockedComments(postId) {
-  const supabaseClient = await getPublicSupabaseClient();
-  const { data, error } = await supabaseClient
-    .from(BOARD_COMMENT_TABLE)
-    .select("id,board_id,content,created_at,reg_user_id,num_like_cnt")
-    .eq("board_id", Number(postId))
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-  return data || [];
+function getCommentAuthorName(comment) {
+  return String(comment.name || "회원").trim() || "회원";
 }
 
 async function callBoardCommentFunction(payload) {
@@ -914,6 +958,47 @@ async function callBoardCommentFunction(payload) {
   }
 
   return result.data;
+}
+
+async function fetchBoardComments(postId) {
+  let response;
+  try {
+    response = await fetch(`${APP_SUPABASE_URL}/functions/v1/board-comment`, {
+      method: "POST",
+      headers: {
+        apikey: APP_SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "list",
+        boardId: Number(postId),
+      }),
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error(
+      "댓글 목록을 불러오지 못했습니다. board-comment 함수 배포 상태를 확인해주세요.",
+    );
+  }
+
+  const responseText = await response.text();
+  const result = responseText ? JSON.parse(responseText) : {};
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || result.error || "댓글 목록을 불러오지 못했습니다.",
+    );
+  }
+
+  return result.data || [];
+}
+
+async function fetchLearnedComments(postId) {
+  return fetchBoardComments(postId);
+}
+
+async function fetchBlockedComments(postId) {
+  return fetchBoardComments(postId);
 }
 
 async function createLearnedComment(postId, content) {
@@ -1002,6 +1087,49 @@ async function updateBlockedCommentLike(postId, comment, shouldLike) {
   return data;
 }
 
+async function createReviewComment(postId, content) {
+  return callBoardCommentFunction({
+    action: "create",
+    boardId: Number(postId),
+    content,
+  });
+}
+
+async function updateReviewComment(postId, commentId, content) {
+  return callBoardCommentFunction({
+    action: "update",
+    boardId: Number(postId),
+    commentId: Number(commentId),
+    content,
+  });
+}
+
+async function deleteReviewComment(postId, commentId) {
+  return callBoardCommentFunction({
+    action: "delete",
+    boardId: Number(postId),
+    commentId: Number(commentId),
+  });
+}
+
+async function updateReviewCommentLike(postId, comment, shouldLike) {
+  const data = await callBoardCommentFunction({
+    action: "like",
+    boardId: Number(postId),
+    commentId: Number(comment.id),
+    shouldLike,
+  });
+  setLikedComment(
+    "review",
+    REVIEW_COMMENT_LIKE_KEY,
+    postId,
+    comment.id,
+    getCurrentUserId(),
+    shouldLike,
+  );
+  return data;
+}
+
 const learnedCommentApi = {
   postType: "learned",
   likeStorageKey: LEARNED_COMMENT_LIKE_KEY,
@@ -1022,11 +1150,22 @@ const blockedCommentApi = {
   updateLike: updateBlockedCommentLike,
 };
 
+const reviewCommentApi = {
+  postType: "review",
+  likeStorageKey: REVIEW_COMMENT_LIKE_KEY,
+  fetchComments: fetchBoardComments,
+  createComment: createReviewComment,
+  updateComment: updateReviewComment,
+  deleteComment: deleteReviewComment,
+  updateLike: updateReviewCommentLike,
+};
+
 function createNotebookTabsMarkup(current) {
   return `
     <nav class="sub-tabs" aria-label="공책 2차 메뉴">
       <a href="learned.html" class="${current === "learned" ? "is-current" : ""}">배운 것들</a>
       <a href="blocked.html" class="${current === "blocked" ? "is-current" : ""}">막혔던 부분</a>
+      <a href="review.html" class="${current === "review" ? "is-current" : ""}">다시 보기</a>
     </nav>
   `;
 }
@@ -1039,6 +1178,11 @@ function initLearnedPages() {
 function initBlockedPages() {
   renderBlockedListPage();
   renderBlockedDetailPage();
+}
+
+function initReviewPages() {
+  renderReviewListPage();
+  renderReviewDetailPage();
 }
 
 async function renderLearnedListPage() {
@@ -1253,6 +1397,214 @@ async function renderBlockedDetailPage() {
   }
 }
 
+async function renderReviewListPage() {
+  const list = document.querySelector("[data-review-list]");
+  if (!list) return;
+
+  const count = document.querySelector("[data-review-count]");
+  const pagination = document.querySelector("[data-review-pagination]");
+
+  list.innerHTML = `<p class="learned-empty">다시 보기 기록을 불러오고 있습니다.</p>`;
+  if (pagination) pagination.innerHTML = "";
+
+  try {
+    const reviewPosts = await fetchReviewPosts();
+    const totalPages = Math.max(
+      Math.ceil(reviewPosts.length / LEARNED_PAGE_SIZE),
+      1,
+    );
+    const params = new URLSearchParams(window.location.search);
+    const requestedPage = Number(params.get("page") || "1");
+    const currentPage = Math.min(Math.max(requestedPage || 1, 1), totalPages);
+    const pageStart = (currentPage - 1) * LEARNED_PAGE_SIZE;
+    const posts = reviewPosts.slice(pageStart, pageStart + LEARNED_PAGE_SIZE);
+
+    if (count) {
+      count.textContent = `총 ${reviewPosts.length}개의 기록`;
+    }
+
+    if (!posts.length) {
+      list.innerHTML = `<p class="learned-empty">아직 남겨진 기록이 없습니다.</p>`;
+      return;
+    }
+
+    list.innerHTML = posts
+      .map(
+        (post) => `
+          <article class="learned-card">
+            <div class="learned-card-main">
+              <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+              <h2>
+                <a href="review-detail.html?id=${encodeURIComponent(post.id)}">${escapeHtml(post.title)}</a>
+              </h2>
+              <p>${escapeHtml(post.summary)}</p>
+            </div>
+            <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+          </article>
+        `,
+      )
+      .join("");
+
+    if (!pagination || totalPages <= 1) return;
+
+    pagination.innerHTML = Array.from({ length: totalPages }, (_, index) => {
+      const page = index + 1;
+      const isCurrent = page === currentPage;
+      return `
+        <a href="review.html?page=${page}" class="${isCurrent ? "is-current" : ""}" aria-label="${page}페이지"${isCurrent ? ' aria-current="page"' : ""}>
+          ${page}
+        </a>
+      `;
+    }).join("");
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<p class="learned-empty is-error">다시 보기 기록을 불러오지 못했습니다.</p>`;
+    if (count) count.textContent = "";
+  }
+}
+
+function createReviewReferencesMarkup(references) {
+  if (!references.length) return "";
+
+  return `
+    <section class="review-references" aria-label="참조">
+      <div class="review-references-head">
+        <p class="eyebrow">References</p>
+        <h2>참조</h2>
+      </div>
+      <div class="review-reference-list">
+        ${references
+          .map(
+            (reference) => `
+              <button type="button" class="review-reference-item" data-review-reference="${escapeHtml(reference.id)}">
+                <span>${escapeHtml(getBoardDcdLabel(reference.boardDcd))}</span>
+                <strong>${escapeHtml(reference.title)}</strong>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function getBoardDcdLabel(boardDcd) {
+  if (boardDcd === BOARD_DCD_LEARNED) return "배운 것들";
+  if (boardDcd === BOARD_DCD_BLOCKED) return "막혔던 부분";
+  if (boardDcd === BOARD_DCD_REVIEW) return "다시 보기";
+  return "참조";
+}
+
+async function renderReviewDetailPage() {
+  const detail = document.querySelector("[data-review-detail]");
+  if (!detail) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const reviewId = params.get("id");
+
+  if (!reviewId) {
+    detail.innerHTML = `<p class="learned-empty is-error">게시글을 찾을 수 없습니다.</p>`;
+    return;
+  }
+
+  detail.innerHTML = `<p class="learned-empty">게시글을 불러오고 있습니다.</p>`;
+
+  try {
+    const [post, references] = await Promise.all([
+      fetchReviewPost(reviewId),
+      fetchReviewReferences(reviewId),
+    ]);
+
+    document.title = `${post.title} | 연습장`;
+    detail.innerHTML = `
+      <nav class="detail-back" aria-label="이전 화면">
+        <a href="review.html">다시 보기 목록</a>
+      </nav>
+      <header class="learned-detail-head">
+        <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+        <h1>${escapeHtml(post.title)}</h1>
+        <p>${escapeHtml(post.summary)}</p>
+        <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+      </header>
+      <div class="learned-detail-body">
+        ${createContentParagraphs(post.content)}
+      </div>
+      ${createReviewReferencesMarkup(references)}
+    `;
+
+    detail.querySelectorAll("[data-review-reference]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const reference = references.find(
+          (item) => String(item.id) === button.dataset.reviewReference,
+        );
+        if (reference) {
+          openReviewReferenceModal(reference);
+        }
+      });
+    });
+
+    initCommentPanel(post.id, reviewCommentApi);
+  } catch (error) {
+    console.error(error);
+    detail.innerHTML = `<p class="learned-empty is-error">게시글을 불러오지 못했습니다.</p>`;
+  }
+}
+
+function getReviewReferenceModal() {
+  let modal = document.querySelector("[data-review-reference-modal]");
+  if (modal) return modal;
+
+  modal = document.createElement("div");
+  modal.className = "review-reference-modal";
+  modal.dataset.reviewReferenceModal = "";
+  modal.hidden = true;
+  modal.innerHTML = `
+    <div class="review-reference-backdrop" data-review-reference-close></div>
+    <article class="review-reference-dialog" role="dialog" aria-modal="true" aria-labelledby="review-reference-title">
+      <button type="button" class="review-reference-close" data-review-reference-close aria-label="닫기">×</button>
+      <div data-review-reference-content></div>
+    </article>
+  `;
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function openReviewReferenceModal(reference) {
+  const modal = getReviewReferenceModal();
+  const content = modal.querySelector("[data-review-reference-content]");
+  if (!content) return;
+
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.classList.remove("has-comment-modal");
+    modal.onkeydown = null;
+  };
+
+  modal.querySelectorAll("[data-review-reference-close]").forEach((button) => {
+    button.onclick = closeModal;
+  });
+
+  modal.onkeydown = (event) => {
+    if (event.key === "Escape") closeModal();
+  };
+
+  content.innerHTML = `
+    <header class="learned-detail-head">
+      <p class="eyebrow">${escapeHtml(getBoardDcdLabel(reference.boardDcd))}</p>
+      <time datetime="${reference.date}">${formatLearnedDate(reference.date)}</time>
+      <h1 id="review-reference-title">${escapeHtml(reference.title)}</h1>
+      <p>${escapeHtml(reference.summary)}</p>
+      <div class="learned-tags">${createTagMarkup(reference.tags)}</div>
+    </header>
+    <div class="learned-detail-body">
+      ${createContentParagraphs(reference.content)}
+    </div>
+  `;
+
+  modal.hidden = false;
+  document.body.classList.add("has-comment-modal");
+}
+
 async function initCommentPanel(postId, commentApi = learnedCommentApi) {
   const form = document.querySelector("[data-comment-form]");
   const list = document.querySelector("[data-comment-list]");
@@ -1316,6 +1668,99 @@ async function initCommentPanel(postId, commentApi = learnedCommentApi) {
   });
 }
 
+function getCommentEditModal() {
+  let modal = document.querySelector("[data-comment-edit-modal]");
+  if (modal) return modal;
+
+  modal = document.createElement("div");
+  modal.className = "comment-modal";
+  modal.dataset.commentEditModal = "";
+  modal.hidden = true;
+  modal.innerHTML = `
+    <div class="comment-modal-backdrop" data-comment-edit-close></div>
+    <section class="comment-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="comment-edit-title">
+      <form class="comment-modal-form" data-comment-edit-form>
+        <div class="comment-modal-head">
+          <h2 id="comment-edit-title">댓글 수정</h2>
+          <button type="button" class="comment-modal-close" data-comment-edit-close aria-label="닫기">×</button>
+        </div>
+        <label>
+          댓글
+          <textarea name="content" rows="5" required></textarea>
+        </label>
+        <p class="member-message" data-comment-edit-message role="alert" aria-live="polite"></p>
+        <div class="comment-modal-actions">
+          <button type="button" class="comment-action-button" data-comment-edit-close>취소</button>
+          <button type="submit" class="member-submit">저장</button>
+        </div>
+      </form>
+    </section>
+  `;
+  document.body.appendChild(modal);
+
+  return modal;
+}
+
+function openCommentEditModal(comment, onSave) {
+  const modal = getCommentEditModal();
+  const form = modal.querySelector("[data-comment-edit-form]");
+  const textarea = form?.querySelector('textarea[name="content"]');
+  const message = modal.querySelector("[data-comment-edit-message]");
+  const submitButton = form?.querySelector('button[type="submit"]');
+
+  if (!form || !textarea || !submitButton) return;
+
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.classList.remove("has-comment-modal");
+    form.onsubmit = null;
+    modal.onkeydown = null;
+  };
+
+  modal.querySelectorAll("[data-comment-edit-close]").forEach((button) => {
+    button.onclick = closeModal;
+  });
+
+  form.onsubmit = async (event) => {
+    event.preventDefault();
+
+    const nextContent = textarea.value.trim();
+    if (!nextContent) {
+      setPageMessage(message, "댓글을 입력해주세요.", true);
+      textarea.focus();
+      return;
+    }
+
+    try {
+      submitButton.disabled = true;
+      setPageMessage(message, "댓글을 수정하고 있습니다.");
+      await onSave(nextContent);
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      setPageMessage(
+        message,
+        error?.message || "댓글 수정에 실패했습니다.",
+        true,
+      );
+    } finally {
+      submitButton.disabled = false;
+    }
+  };
+
+  modal.onkeydown = (event) => {
+    if (event.key === "Escape") {
+      closeModal();
+    }
+  };
+
+  textarea.value = comment.content || "";
+  setPageMessage(message, "");
+  modal.hidden = false;
+  document.body.classList.add("has-comment-modal");
+  window.setTimeout(() => textarea.focus(), 0);
+}
+
 async function renderComments(postId, commentApi = learnedCommentApi) {
   const list = document.querySelector("[data-comment-list]");
   const count = document.querySelector("[data-comment-count]");
@@ -1362,8 +1807,10 @@ async function renderComments(postId, commentApi = learnedCommentApi) {
 
         return `
         <article class="comment-item">
-          <div>
-            <strong>${isOwner ? "내 댓글" : "회원 댓글"}</strong>
+          <div class="comment-meta">
+            <div class="comment-author">
+              <strong>${escapeHtml(getCommentAuthorName(comment))}</strong>
+            </div>
             <time datetime="${comment.created_at}">${formatLearnedDate(String(comment.created_at || "").slice(0, 10))}</time>
           </div>
           <p>${escapeHtml(comment.content)}</p>
@@ -1427,23 +1874,10 @@ async function renderComments(postId, commentApi = learnedCommentApi) {
         (comment) => String(comment.id) === button.dataset.commentEdit,
       );
       if (!target) return;
-
-      const nextContent = window.prompt("댓글을 수정해주세요.", target.content);
-      if (nextContent === null) return;
-
-      const trimmedContent = nextContent.trim();
-      if (!trimmedContent) {
-        alert("댓글을 입력해주세요.");
-        return;
-      }
-
-      try {
+      openCommentEditModal(target, async (trimmedContent) => {
         await commentApi.updateComment(postId, target.id, trimmedContent);
         await renderComments(postId, commentApi);
-      } catch (error) {
-        console.error(error);
-        alert("댓글 수정에 실패했습니다.");
-      }
+      });
     });
   });
 

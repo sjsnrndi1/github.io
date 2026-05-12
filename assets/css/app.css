@@ -2117,6 +2117,11 @@ body {
   opacity: 0.42;
 }
 
+.review-main::before {
+  background-image: url("../images/learned/learned-bg.png");
+  opacity: 0.38;
+}
+
 .about-image-main::before {
   opacity: 0.32;
 }
@@ -2390,6 +2395,113 @@ body {
   margin-top: 22px;
 }
 
+.review-references {
+  margin-top: clamp(32px, 5vw, 46px);
+  padding-top: clamp(24px, 4vw, 34px);
+  border-top: 1px solid rgba(221, 215, 202, 0.9);
+}
+
+.review-references-head {
+  margin-bottom: 16px;
+}
+
+.review-references-head h2 {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 24px;
+}
+
+.review-reference-list {
+  display: grid;
+  gap: 10px;
+}
+
+.review-reference-item {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid rgba(79, 111, 82, 0.22);
+  border-radius: 8px;
+  background: rgba(79, 111, 82, 0.08);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.review-reference-item:hover {
+  background: rgba(79, 111, 82, 0.14);
+}
+
+.review-reference-item span {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.review-reference-item strong {
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.review-reference-modal[hidden] {
+  display: none;
+}
+
+.review-reference-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.review-reference-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(35, 33, 29, 0.46);
+}
+
+.review-reference-dialog {
+  position: relative;
+  width: min(780px, 100%);
+  max-height: min(84vh, 820px);
+  overflow: auto;
+  padding: clamp(26px, 5vw, 44px);
+  border: 1px solid rgba(221, 215, 202, 0.92);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(183, 117, 76, 0.12) 0 2px, transparent 2px 100%),
+    rgba(255, 253, 248, 0.98);
+  box-shadow: 0 24px 70px rgba(35, 33, 29, 0.26);
+}
+
+.review-reference-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(79, 111, 82, 0.22);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--green-dark);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.review-reference-close:hover {
+  background: rgba(79, 111, 82, 0.1);
+}
+
 .comment-panel {
   margin-top: 26px;
   padding: clamp(24px, 4vw, 36px);
@@ -2508,11 +2620,18 @@ body {
   background: rgba(255, 253, 248, 0.82);
 }
 
-.comment-item > div {
+.comment-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.comment-author {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
 }
 
 .comment-item strong {
@@ -2606,10 +2725,112 @@ body {
   background: rgba(180, 35, 24, 0.12);
 }
 
+.comment-modal[hidden] {
+  display: none;
+}
+
+.comment-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.comment-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(35, 33, 29, 0.42);
+}
+
+.comment-modal-dialog {
+  position: relative;
+  width: min(520px, 100%);
+  border: 1px solid rgba(221, 215, 202, 0.92);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 24px 70px rgba(35, 33, 29, 0.22);
+}
+
+.comment-modal-form {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.comment-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.comment-modal-head h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 24px;
+}
+
+.comment-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(79, 111, 82, 0.22);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.84);
+  color: var(--green-dark);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.comment-modal-close:hover {
+  background: rgba(79, 111, 82, 0.1);
+}
+
+.comment-modal-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--green-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.comment-modal-form textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+  resize: vertical;
+}
+
+.comment-modal-form textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(79, 111, 82, 0.14);
+}
+
+.comment-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.has-comment-modal {
+  overflow: hidden;
+}
+
 @media (max-width: 720px) {
   .learned-toolbar,
   .comment-panel-head,
-  .comment-item > div {
+  .comment-meta {
     align-items: flex-start;
     flex-direction: column;
   }
