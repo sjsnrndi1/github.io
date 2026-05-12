@@ -1691,7 +1691,7 @@ function getCommentEditModal() {
         <p class="member-message" data-comment-edit-message role="alert" aria-live="polite"></p>
         <div class="comment-modal-actions">
           <button type="button" class="comment-action-button" data-comment-edit-close>취소</button>
-          <button type="submit" class="member-submit">저장</button>
+          <button type="submit" class="comment-action-button">저장</button>
         </div>
       </form>
     </section>
@@ -1849,21 +1849,34 @@ async function renderComments(postId, commentApi = learnedCommentApi) {
       if (!target) return;
 
       try {
-        await commentApi.updateLike(
+        button.disabled = true;
+        const shouldLike = !hasLikedComment(
+          commentApi.postType,
+          commentApi.likeStorageKey,
+          postId,
+          target.id,
+          userId,
+        );
+        const updatedComment = await commentApi.updateLike(
           postId,
           target,
-          !hasLikedComment(
-            commentApi.postType,
-            commentApi.likeStorageKey,
-            postId,
-            target.id,
-            userId,
-          ),
+          shouldLike,
         );
-        await renderComments(postId, commentApi);
+        const nextLikeCount = Number(
+          updatedComment?.num_like_cnt ?? target.num_like_cnt ?? 0,
+        );
+        target.num_like_cnt = nextLikeCount;
+        button.classList.toggle("is-liked", shouldLike);
+        button.setAttribute("aria-pressed", shouldLike ? "true" : "false");
+        const countLabel = button.querySelector("span");
+        if (countLabel) {
+          countLabel.textContent = String(nextLikeCount);
+        }
       } catch (error) {
         console.error(error);
         alert("좋아요 처리에 실패했습니다.");
+      } finally {
+        button.disabled = false;
       }
     });
   });
