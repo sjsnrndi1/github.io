@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const BOARD_COMMENT_TABLE = "BOARD_COMMENT";
+const VALID_BOARD_DCDS = new Set(["learned", "blocked", "review"]);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -120,8 +121,14 @@ function requirePositiveNumber(value: unknown, name: string) {
 }
 
 function getBoardContext(body: Record<string, unknown>) {
+  const boardDcd = String(body.boardDcd || body.board_dcd || "").trim();
+  if (!VALID_BOARD_DCDS.has(boardDcd)) {
+    throw new Error("Invalid boardDcd.");
+  }
+
   return {
     boardId: requirePositiveNumber(body.boardId, "boardId"),
+    boardDcd,
   };
 }
 
@@ -141,12 +148,13 @@ async function listComments(
   supabaseAdmin: ReturnType<typeof createClient>,
   body: Record<string, unknown>,
 ) {
-  const { boardId } = getBoardContext(body);
+  const { boardId, boardDcd } = getBoardContext(body);
 
   const { data, error } = await supabaseAdmin
     .from(BOARD_COMMENT_TABLE)
-    .select("id,board_id,name,content,created_at,reg_user_id,num_like_cnt")
+    .select("id,board_id,board_dcd,name,content,created_at,reg_user_id,num_like_cnt")
     .eq("board_id", boardId)
+    .eq("board_dcd", boardDcd)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -165,7 +173,7 @@ async function createComment(
   user: { id: string; email?: string; user_metadata?: Record<string, unknown> },
   clientIp: string,
 ) {
-  const { boardId } = getBoardContext(body);
+  const { boardId, boardDcd } = getBoardContext(body);
   const content = String(body.content || "").trim();
 
   if (!content) {
@@ -176,6 +184,7 @@ async function createComment(
     .from(BOARD_COMMENT_TABLE)
     .select("id")
     .eq("board_id", boardId)
+    .eq("board_dcd", boardDcd)
     .order("id", { ascending: false })
     .limit(1);
 
@@ -187,6 +196,7 @@ async function createComment(
     .insert({
       id: nextId,
       board_id: boardId,
+      board_dcd: boardDcd,
       name: getUserDisplayName(user),
       content,
       reg_user_id: user.id,
@@ -210,7 +220,7 @@ async function updateComment(
   userId: string,
   clientIp: string,
 ) {
-  const { boardId } = getBoardContext(body);
+  const { boardId, boardDcd } = getBoardContext(body);
   const commentId = requirePositiveNumber(body.commentId, "commentId");
   const content = String(body.content || "").trim();
 
@@ -227,6 +237,7 @@ async function updateComment(
       updated_ip: clientIp,
     })
     .eq("board_id", boardId)
+    .eq("board_dcd", boardDcd)
     .eq("id", commentId)
     .eq("reg_user_id", userId)
     .select("id,board_id")
@@ -242,13 +253,14 @@ async function deleteComment(
   body: Record<string, unknown>,
   userId: string,
 ) {
-  const { boardId } = getBoardContext(body);
+  const { boardId, boardDcd } = getBoardContext(body);
   const commentId = requirePositiveNumber(body.commentId, "commentId");
 
   const { error } = await supabaseAdmin
     .from(BOARD_COMMENT_TABLE)
     .delete()
     .eq("board_id", boardId)
+    .eq("board_dcd", boardDcd)
     .eq("id", commentId)
     .eq("reg_user_id", userId);
 
@@ -261,7 +273,7 @@ async function updateLike(
   supabaseAdmin: ReturnType<typeof createClient>,
   body: Record<string, unknown>,
 ) {
-  const { boardId } = getBoardContext(body);
+  const { boardId, boardDcd } = getBoardContext(body);
   const commentId = requirePositiveNumber(body.commentId, "commentId");
   const shouldLike = Boolean(body.shouldLike);
 
@@ -269,6 +281,7 @@ async function updateLike(
     .from(BOARD_COMMENT_TABLE)
     .select("num_like_cnt")
     .eq("board_id", boardId)
+    .eq("board_dcd", boardDcd)
     .eq("id", commentId)
     .single();
 
@@ -283,8 +296,9 @@ async function updateLike(
     .from(BOARD_COMMENT_TABLE)
     .update({ num_like_cnt: nextLikeCount })
     .eq("board_id", boardId)
+    .eq("board_dcd", boardDcd)
     .eq("id", commentId)
-    .select("id,board_id,num_like_cnt")
+    .select("id,board_id,board_dcd,num_like_cnt")
     .single();
 
   if (error) throw error;

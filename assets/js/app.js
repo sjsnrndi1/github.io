@@ -960,7 +960,7 @@ async function callBoardCommentFunction(payload) {
   return result.data;
 }
 
-async function fetchBoardComments(postId) {
+async function fetchBoardComments(postId, boardDcd) {
   let response;
   try {
     response = await fetch(`${APP_SUPABASE_URL}/functions/v1/board-comment`, {
@@ -972,6 +972,7 @@ async function fetchBoardComments(postId) {
       body: JSON.stringify({
         action: "list",
         boardId: Number(postId),
+        boardDcd,
       }),
     });
   } catch (error) {
@@ -994,17 +995,18 @@ async function fetchBoardComments(postId) {
 }
 
 async function fetchLearnedComments(postId) {
-  return fetchBoardComments(postId);
+  return fetchBoardComments(postId, BOARD_DCD_LEARNED);
 }
 
 async function fetchBlockedComments(postId) {
-  return fetchBoardComments(postId);
+  return fetchBoardComments(postId, BOARD_DCD_BLOCKED);
 }
 
 async function createLearnedComment(postId, content) {
   return callBoardCommentFunction({
     action: "create",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_LEARNED,
     content,
   });
 }
@@ -1013,6 +1015,7 @@ async function updateLearnedComment(postId, commentId, content) {
   return callBoardCommentFunction({
     action: "update",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_LEARNED,
     commentId: Number(commentId),
     content,
   });
@@ -1022,6 +1025,7 @@ async function deleteLearnedComment(postId, commentId) {
   return callBoardCommentFunction({
     action: "delete",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_LEARNED,
     commentId: Number(commentId),
   });
 }
@@ -1030,6 +1034,7 @@ async function updateLearnedCommentLike(postId, comment, shouldLike) {
   const data = await callBoardCommentFunction({
     action: "like",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_LEARNED,
     commentId: Number(comment.id),
     shouldLike,
   });
@@ -1048,6 +1053,7 @@ async function createBlockedComment(postId, content) {
   return callBoardCommentFunction({
     action: "create",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_BLOCKED,
     content,
   });
 }
@@ -1056,6 +1062,7 @@ async function updateBlockedComment(postId, commentId, content) {
   return callBoardCommentFunction({
     action: "update",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_BLOCKED,
     commentId: Number(commentId),
     content,
   });
@@ -1065,6 +1072,7 @@ async function deleteBlockedComment(postId, commentId) {
   return callBoardCommentFunction({
     action: "delete",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_BLOCKED,
     commentId: Number(commentId),
   });
 }
@@ -1073,6 +1081,7 @@ async function updateBlockedCommentLike(postId, comment, shouldLike) {
   const data = await callBoardCommentFunction({
     action: "like",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_BLOCKED,
     commentId: Number(comment.id),
     shouldLike,
   });
@@ -1091,6 +1100,7 @@ async function createReviewComment(postId, content) {
   return callBoardCommentFunction({
     action: "create",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_REVIEW,
     content,
   });
 }
@@ -1099,6 +1109,7 @@ async function updateReviewComment(postId, commentId, content) {
   return callBoardCommentFunction({
     action: "update",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_REVIEW,
     commentId: Number(commentId),
     content,
   });
@@ -1108,6 +1119,7 @@ async function deleteReviewComment(postId, commentId) {
   return callBoardCommentFunction({
     action: "delete",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_REVIEW,
     commentId: Number(commentId),
   });
 }
@@ -1116,6 +1128,7 @@ async function updateReviewCommentLike(postId, comment, shouldLike) {
   const data = await callBoardCommentFunction({
     action: "like",
     boardId: Number(postId),
+    boardDcd: BOARD_DCD_REVIEW,
     commentId: Number(comment.id),
     shouldLike,
   });
@@ -1153,7 +1166,7 @@ const blockedCommentApi = {
 const reviewCommentApi = {
   postType: "review",
   likeStorageKey: REVIEW_COMMENT_LIKE_KEY,
-  fetchComments: fetchBoardComments,
+  fetchComments: (postId) => fetchBoardComments(postId, BOARD_DCD_REVIEW),
   createComment: createReviewComment,
   updateComment: updateReviewComment,
   deleteComment: deleteReviewComment,
