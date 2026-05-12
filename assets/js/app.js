@@ -146,7 +146,7 @@ async function loadHeader() {
 
   headerRoot.innerHTML = html;
   applyHeaderLinks(headerRoot);
-  renderHeaderAuth(headerRoot);
+  await renderHeaderAuth(headerRoot);
   initMenu();
 }
 
@@ -282,6 +282,39 @@ async function getAuthedSupabaseClient() {
   return supabaseClient;
 }
 
+async function getValidStoredUser() {
+  const storedUser = getStoredUser();
+  if (!storedUser) return null;
+
+  try {
+    const supabaseClient = await getAuthedSupabaseClient();
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabaseClient.auth.getSession();
+
+    if (sessionError || !session?.access_token) {
+      throw sessionError || new Error("로그인 세션이 만료되었습니다.");
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+      throw userError || new Error("사용자 정보를 확인할 수 없습니다.");
+    }
+
+    updateStoredUser(user);
+    return user;
+  } catch (error) {
+    console.error(error);
+    clearStoredAuth();
+    return null;
+  }
+}
+
 function clearStoredAuth() {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
@@ -289,11 +322,11 @@ function clearStoredAuth() {
   localStorage.removeItem("pendingVerifyEmail");
 }
 
-function renderHeaderAuth(headerRoot) {
+async function renderHeaderAuth(headerRoot) {
   const authActions = headerRoot.querySelector(".auth-actions");
   if (!authActions) return;
 
-  const user = getStoredUser();
+  const user = await getValidStoredUser();
 
   if (!user) {
     authActions.innerHTML = `
@@ -439,9 +472,10 @@ function resizeProfileImage(file) {
 async function initMyPage() {
   const profileForm = document.querySelector("[data-profile-form]");
   const withdrawButton = document.querySelector("[data-withdraw-button]");
-  const storedUser = getStoredUser();
 
   if (!profileForm && !withdrawButton) return;
+
+  const storedUser = await getValidStoredUser();
 
   if (!storedUser) {
     window.location.href = `${componentBase}front/login/login.html`;
@@ -850,20 +884,26 @@ async function callBoardCommentFunction(payload) {
     throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
   }
 
-  const response = await fetch(
-    `${APP_SUPABASE_URL}/functions/v1/board-comment`,
-    {
+  let response;
+  try {
+    response = await fetch(`${APP_SUPABASE_URL}/functions/v1/board-comment`, {
       method: "POST",
       headers: {
         apikey: APP_SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         ...payload,
         accessToken,
       }),
-    },
-  );
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error(
+      "댓글 함수에 연결하지 못했습니다. board-comment 함수 배포 상태를 확인해주세요.",
+    );
+  }
   const responseText = await response.text();
   const result = responseText ? JSON.parse(responseText) : {};
 
@@ -1092,7 +1132,6 @@ async function renderLearnedDetailPage() {
       <header class="learned-detail-head">
         <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
         <h1>${escapeHtml(post.title)}</h1>
-        ${createNotebookTabsMarkup("learned")}
         <p>${escapeHtml(post.summary)}</p>
         <div class="learned-tags">${createTagMarkup(post.tags)}</div>
       </header>
@@ -1199,7 +1238,6 @@ async function renderBlockedDetailPage() {
       <header class="learned-detail-head">
         <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
         <h1>${escapeHtml(post.title)}</h1>
-        ${createNotebookTabsMarkup("blocked")}
         <p>${escapeHtml(post.summary)}</p>
         <div class="learned-tags">${createTagMarkup(post.tags)}</div>
       </header>
@@ -1221,9 +1259,8 @@ async function initCommentPanel(postId, commentApi = learnedCommentApi) {
   const loginCallout = document.querySelector("[data-comment-login-callout]");
   if (!form || !list) return;
 
+  const storedUser = await getValidStoredUser();
   await renderComments(postId, commentApi);
-
-  const storedUser = getStoredUser();
 
   if (!storedUser) {
     form.hidden = true;
