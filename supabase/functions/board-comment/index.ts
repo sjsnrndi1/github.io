@@ -1,5 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+const BOARD_COMMENT_TABLE = "BOARD_COMMENT";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -78,7 +80,7 @@ Deno.serve(async (request) => {
 
     return createJsonResponse({ message: "알 수 없는 요청입니다." }, 400);
   } catch (err) {
-    console.error("BLOCKED_COMMENT FUNCTION ERROR:", err);
+    console.error("BOARD_COMMENT function error:", err);
     return createJsonResponse(
       { message: err instanceof Error ? err.message : "알 수 없는 오류" },
       500,
@@ -113,13 +115,19 @@ function requirePositiveNumber(value: unknown, name: string) {
   return numberValue;
 }
 
+function getBoardContext(body: Record<string, unknown>) {
+  return {
+    boardId: requirePositiveNumber(body.boardId, "boardId"),
+  };
+}
+
 async function createComment(
   supabaseAdmin: ReturnType<typeof createClient>,
   body: Record<string, unknown>,
   userId: string,
   clientIp: string,
 ) {
-  const blockedId = requirePositiveNumber(body.blockedId, "blockedId");
+  const { boardId } = getBoardContext(body);
   const content = String(body.content || "").trim();
 
   if (!content) {
@@ -127,9 +135,9 @@ async function createComment(
   }
 
   const { data: lastComments, error: lastError } = await supabaseAdmin
-    .from("BLOCKED_COMMENT")
+    .from(BOARD_COMMENT_TABLE)
     .select("id")
-    .eq("blocked_id", blockedId)
+    .eq("board_id", boardId)
     .order("id", { ascending: false })
     .limit(1);
 
@@ -137,10 +145,10 @@ async function createComment(
 
   const nextId = Number(lastComments?.[0]?.id || 0) + 1;
   const { data, error } = await supabaseAdmin
-    .from("BLOCKED_COMMENT")
+    .from(BOARD_COMMENT_TABLE)
     .insert({
       id: nextId,
-      blocked_id: blockedId,
+      board_id: boardId,
       content,
       reg_user_id: userId,
       created_user_id: userId,
@@ -149,7 +157,7 @@ async function createComment(
       updated_ip: clientIp,
       num_like_cnt: 0,
     })
-    .select("id,blocked_id")
+    .select("id,board_id")
     .single();
 
   if (error) throw error;
@@ -163,7 +171,7 @@ async function updateComment(
   userId: string,
   clientIp: string,
 ) {
-  const blockedId = requirePositiveNumber(body.blockedId, "blockedId");
+  const { boardId } = getBoardContext(body);
   const commentId = requirePositiveNumber(body.commentId, "commentId");
   const content = String(body.content || "").trim();
 
@@ -172,17 +180,17 @@ async function updateComment(
   }
 
   const { data, error } = await supabaseAdmin
-    .from("BLOCKED_COMMENT")
+    .from(BOARD_COMMENT_TABLE)
     .update({
       content,
       updated_at: new Date().toISOString(),
       updated_user_id: userId,
       updated_ip: clientIp,
     })
-    .eq("blocked_id", blockedId)
+    .eq("board_id", boardId)
     .eq("id", commentId)
     .eq("reg_user_id", userId)
-    .select("id,blocked_id")
+    .select("id,board_id")
     .single();
 
   if (error) throw error;
@@ -195,33 +203,33 @@ async function deleteComment(
   body: Record<string, unknown>,
   userId: string,
 ) {
-  const blockedId = requirePositiveNumber(body.blockedId, "blockedId");
+  const { boardId } = getBoardContext(body);
   const commentId = requirePositiveNumber(body.commentId, "commentId");
 
   const { error } = await supabaseAdmin
-    .from("BLOCKED_COMMENT")
+    .from(BOARD_COMMENT_TABLE)
     .delete()
-    .eq("blocked_id", blockedId)
+    .eq("board_id", boardId)
     .eq("id", commentId)
     .eq("reg_user_id", userId);
 
   if (error) throw error;
 
-  return createJsonResponse({ message: "댓글이 삭제되었습니다." });
+  return createJsonResponse({ message: "댓글을 삭제했습니다." });
 }
 
 async function updateLike(
   supabaseAdmin: ReturnType<typeof createClient>,
   body: Record<string, unknown>,
 ) {
-  const blockedId = requirePositiveNumber(body.blockedId, "blockedId");
+  const { boardId } = getBoardContext(body);
   const commentId = requirePositiveNumber(body.commentId, "commentId");
   const shouldLike = Boolean(body.shouldLike);
 
   const { data: comment, error: selectError } = await supabaseAdmin
-    .from("BLOCKED_COMMENT")
+    .from(BOARD_COMMENT_TABLE)
     .select("num_like_cnt")
-    .eq("blocked_id", blockedId)
+    .eq("board_id", boardId)
     .eq("id", commentId)
     .single();
 
@@ -233,11 +241,11 @@ async function updateLike(
   );
 
   const { data, error } = await supabaseAdmin
-    .from("BLOCKED_COMMENT")
+    .from(BOARD_COMMENT_TABLE)
     .update({ num_like_cnt: nextLikeCount })
-    .eq("blocked_id", blockedId)
+    .eq("board_id", boardId)
     .eq("id", commentId)
-    .select("id,blocked_id,num_like_cnt")
+    .select("id,board_id,num_like_cnt")
     .single();
 
   if (error) throw error;

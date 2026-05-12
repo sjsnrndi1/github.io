@@ -662,6 +662,11 @@ function initMenu() {
 const LEARNED_PAGE_SIZE = 4;
 const LEARNED_COMMENT_LIKE_KEY = "learnedCommentLikes";
 const BLOCKED_COMMENT_LIKE_KEY = "blockedCommentLikes";
+const BOARD_TABLE = "BOARD";
+const BOARD_HASHTAG_TABLE = "BOARD_HASHTAG";
+const BOARD_COMMENT_TABLE = "BOARD_COMMENT";
+const BOARD_DCD_LEARNED = "learned";
+const BOARD_DCD_BLOCKED = "blocked";
 
 function formatLearnedDate(date) {
   return String(date || "").replaceAll("-", ".");
@@ -689,114 +694,77 @@ async function getPublicSupabaseClient() {
   return window.supabase.createClient(APP_SUPABASE_URL, APP_SUPABASE_ANON_KEY);
 }
 
-async function fetchLearnedPosts() {
+async function fetchBoardPosts(boardDcd) {
   const supabaseClient = await getPublicSupabaseClient();
   const { data: posts, error: postsError } = await supabaseClient
-    .from("LEARNED")
+    .from(BOARD_TABLE)
     .select("id,title,summary,created_at")
+    .eq("board_dcd", boardDcd)
     .order("created_at", { ascending: false });
 
   if (postsError) throw postsError;
   if (!posts?.length) return [];
 
-  const learnedIds = posts.map((post) => post.id);
+  const boardIds = posts.map((post) => post.id);
   const { data: hashtags, error: hashtagsError } = await supabaseClient
-    .from("LEARNED_HASHTAG")
-    .select("learned_id,content")
-    .in("learned_id", learnedIds)
+    .from(BOARD_HASHTAG_TABLE)
+    .select("board_id,content")
+    .in("board_id", boardIds)
     .order("id", { ascending: true });
 
   if (hashtagsError) throw hashtagsError;
 
   const groupedHashtags = (hashtags || []).reduce((acc, tag) => {
-    const learnedId = String(tag.learned_id);
-    if (!acc[learnedId]) acc[learnedId] = [];
-    if (tag.content) acc[learnedId].push(tag.content);
+    const boardId = String(tag.board_id);
+    if (!acc[boardId]) acc[boardId] = [];
+    if (tag.content) acc[boardId].push(tag.content);
     return acc;
   }, {});
 
   return posts.map((post) =>
     normalizeLearnedPost(post, groupedHashtags[String(post.id)] || []),
   );
+}
+
+async function fetchBoardPost(id, boardDcd) {
+  const supabaseClient = await getPublicSupabaseClient();
+  const { data: post, error: postError } = await supabaseClient
+    .from(BOARD_TABLE)
+    .select("id,title,summary,content,created_at")
+    .eq("id", id)
+    .eq("board_dcd", boardDcd)
+    .single();
+
+  if (postError) throw postError;
+
+  const { data: hashtags, error: hashtagsError } = await supabaseClient
+    .from(BOARD_HASHTAG_TABLE)
+    .select("content")
+    .eq("board_id", id)
+    .order("id", { ascending: true });
+
+  if (hashtagsError) throw hashtagsError;
+
+  return normalizeLearnedPost(
+    post,
+    (hashtags || []).map((tag) => tag.content).filter(Boolean),
+  );
+}
+
+async function fetchLearnedPosts() {
+  return fetchBoardPosts(BOARD_DCD_LEARNED);
 }
 
 async function fetchLearnedPost(id) {
-  const supabaseClient = await getPublicSupabaseClient();
-  const { data: post, error: postError } = await supabaseClient
-    .from("LEARNED")
-    .select("id,title,summary,content,created_at")
-    .eq("id", id)
-    .single();
-
-  if (postError) throw postError;
-
-  const { data: hashtags, error: hashtagsError } = await supabaseClient
-    .from("LEARNED_HASHTAG")
-    .select("content")
-    .eq("learned_id", id)
-    .order("id", { ascending: true });
-
-  if (hashtagsError) throw hashtagsError;
-
-  return normalizeLearnedPost(
-    post,
-    (hashtags || []).map((tag) => tag.content).filter(Boolean),
-  );
+  return fetchBoardPost(id, BOARD_DCD_LEARNED);
 }
 
 async function fetchBlockedPosts() {
-  const supabaseClient = await getPublicSupabaseClient();
-  const { data: posts, error: postsError } = await supabaseClient
-    .from("BLOCKED")
-    .select("id,title,summary,created_at")
-    .order("created_at", { ascending: false });
-
-  if (postsError) throw postsError;
-  if (!posts?.length) return [];
-
-  const blockedIds = posts.map((post) => post.id);
-  const { data: hashtags, error: hashtagsError } = await supabaseClient
-    .from("BLOCKED_HASHTAG")
-    .select("blocked_id,content")
-    .in("blocked_id", blockedIds)
-    .order("id", { ascending: true });
-
-  if (hashtagsError) throw hashtagsError;
-
-  const groupedHashtags = (hashtags || []).reduce((acc, tag) => {
-    const blockedId = String(tag.blocked_id);
-    if (!acc[blockedId]) acc[blockedId] = [];
-    if (tag.content) acc[blockedId].push(tag.content);
-    return acc;
-  }, {});
-
-  return posts.map((post) =>
-    normalizeLearnedPost(post, groupedHashtags[String(post.id)] || []),
-  );
+  return fetchBoardPosts(BOARD_DCD_BLOCKED);
 }
 
 async function fetchBlockedPost(id) {
-  const supabaseClient = await getPublicSupabaseClient();
-  const { data: post, error: postError } = await supabaseClient
-    .from("BLOCKED")
-    .select("id,title,summary,content,created_at")
-    .eq("id", id)
-    .single();
-
-  if (postError) throw postError;
-
-  const { data: hashtags, error: hashtagsError } = await supabaseClient
-    .from("BLOCKED_HASHTAG")
-    .select("content")
-    .eq("blocked_id", id)
-    .order("id", { ascending: true });
-
-  if (hashtagsError) throw hashtagsError;
-
-  return normalizeLearnedPost(
-    post,
-    (hashtags || []).map((tag) => tag.content).filter(Boolean),
-  );
+  return fetchBoardPost(id, BOARD_DCD_BLOCKED);
 }
 
 function createContentParagraphs(content) {
@@ -846,9 +814,9 @@ function setLikedComment(postType, storageKey, postId, commentId, userId, isLike
 async function fetchLearnedComments(postId) {
   const supabaseClient = await getPublicSupabaseClient();
   const { data, error } = await supabaseClient
-    .from("LEARNED_COMMENT")
-    .select("id,learned_id,content,created_at,reg_user_id,num_like_cnt")
-    .eq("learned_id", Number(postId))
+    .from(BOARD_COMMENT_TABLE)
+    .select("id,board_id,content,created_at,reg_user_id,num_like_cnt")
+    .eq("board_id", Number(postId))
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -858,16 +826,16 @@ async function fetchLearnedComments(postId) {
 async function fetchBlockedComments(postId) {
   const supabaseClient = await getPublicSupabaseClient();
   const { data, error } = await supabaseClient
-    .from("BLOCKED_COMMENT")
-    .select("id,blocked_id,content,created_at,reg_user_id,num_like_cnt")
-    .eq("blocked_id", Number(postId))
+    .from(BOARD_COMMENT_TABLE)
+    .select("id,board_id,content,created_at,reg_user_id,num_like_cnt")
+    .eq("board_id", Number(postId))
     .order("created_at", { ascending: false });
 
   if (error) throw error;
   return data || [];
 }
 
-async function callLearnedCommentFunction(payload) {
+async function callBoardCommentFunction(payload) {
   const supabaseClient = await getAuthedSupabaseClient();
   const {
     data: { session },
@@ -883,7 +851,7 @@ async function callLearnedCommentFunction(payload) {
   }
 
   const response = await fetch(
-    `${APP_SUPABASE_URL}/functions/v1/learned-comment`,
+    `${APP_SUPABASE_URL}/functions/v1/board-comment`,
     {
       method: "POST",
       headers: {
@@ -909,34 +877,34 @@ async function callLearnedCommentFunction(payload) {
 }
 
 async function createLearnedComment(postId, content) {
-  return callLearnedCommentFunction({
+  return callBoardCommentFunction({
     action: "create",
-    learnedId: Number(postId),
+    boardId: Number(postId),
     content,
   });
 }
 
 async function updateLearnedComment(postId, commentId, content) {
-  return callLearnedCommentFunction({
+  return callBoardCommentFunction({
     action: "update",
-    learnedId: Number(postId),
+    boardId: Number(postId),
     commentId: Number(commentId),
     content,
   });
 }
 
 async function deleteLearnedComment(postId, commentId) {
-  return callLearnedCommentFunction({
+  return callBoardCommentFunction({
     action: "delete",
-    learnedId: Number(postId),
+    boardId: Number(postId),
     commentId: Number(commentId),
   });
 }
 
 async function updateLearnedCommentLike(postId, comment, shouldLike) {
-  const data = await callLearnedCommentFunction({
+  const data = await callBoardCommentFunction({
     action: "like",
-    learnedId: Number(postId),
+    boardId: Number(postId),
     commentId: Number(comment.id),
     shouldLike,
   });
@@ -951,76 +919,35 @@ async function updateLearnedCommentLike(postId, comment, shouldLike) {
   return data;
 }
 
-async function callBlockedCommentFunction(payload) {
-  const supabaseClient = await getAuthedSupabaseClient();
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabaseClient.auth.getSession();
-
-  if (sessionError) throw sessionError;
-
-  const accessToken = session?.access_token || localStorage.getItem("token");
-
-  if (!accessToken) {
-    throw new Error("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-  }
-
-  const response = await fetch(
-    `${APP_SUPABASE_URL}/functions/v1/blocked-comment`,
-    {
-      method: "POST",
-      headers: {
-        apikey: APP_SUPABASE_ANON_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...payload,
-        accessToken,
-      }),
-    },
-  );
-  const responseText = await response.text();
-  const result = responseText ? JSON.parse(responseText) : {};
-
-  if (!response.ok) {
-    throw new Error(
-      result.message || result.error || "댓글 요청 처리에 실패했습니다.",
-    );
-  }
-
-  return result.data;
-}
-
 async function createBlockedComment(postId, content) {
-  return callBlockedCommentFunction({
+  return callBoardCommentFunction({
     action: "create",
-    blockedId: Number(postId),
+    boardId: Number(postId),
     content,
   });
 }
 
 async function updateBlockedComment(postId, commentId, content) {
-  return callBlockedCommentFunction({
+  return callBoardCommentFunction({
     action: "update",
-    blockedId: Number(postId),
+    boardId: Number(postId),
     commentId: Number(commentId),
     content,
   });
 }
 
 async function deleteBlockedComment(postId, commentId) {
-  return callBlockedCommentFunction({
+  return callBoardCommentFunction({
     action: "delete",
-    blockedId: Number(postId),
+    boardId: Number(postId),
     commentId: Number(commentId),
   });
 }
 
 async function updateBlockedCommentLike(postId, comment, shouldLike) {
-  const data = await callBlockedCommentFunction({
+  const data = await callBoardCommentFunction({
     action: "like",
-    blockedId: Number(postId),
+    boardId: Number(postId),
     commentId: Number(comment.id),
     shouldLike,
   });

@@ -1,8 +1,5 @@
 [functions.delete-user]
 verify_jwt = false
 
-[functions.learned-comment]
-verify_jwt = false
-
-[functions.blocked-comment]
+[functions.board-comment]
 verify_jwt = false
