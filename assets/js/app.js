@@ -2056,6 +2056,11 @@ const localChangedTraces = [
   {
     date: "2026-10-28",
     content:
+      "AI 대화 저장·불러오기와 공개 메뉴 안내를 추가하고, 개인정보·AI 정확성 안내 및 Powered by Gemini API 문구를 반영했습니다.",
+  },
+  {
+    date: "2026-10-28",
+    content:
       "AI 대화에 Gemini 챗봇 화면과 로그인 인증·대화 문맥 유지·호출 횟수 제한을 추가했습니다. 최초 DB 설정과 함수 배포 후 이용할 수 있습니다.",
   },
   {
