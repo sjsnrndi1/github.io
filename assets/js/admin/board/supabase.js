@@ -47,7 +47,7 @@ async function requireBoardAdmin() {
 
 function getAdminBoardValues(title, content, summary, boardDcd, user) {
   if (!title.trim() || !content.trim()) throw new Error("제목과 내용을 입력하세요.");
-  if (!["learned", "blocked", "review"].includes(boardDcd)) throw new Error("게시글 분류를 선택하세요.");
+  if (!["notice", "learned", "blocked", "review"].includes(boardDcd)) throw new Error("게시글 분류를 선택하세요.");
   return {
     title: title.trim(),
     content: content.trim(),

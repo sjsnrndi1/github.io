@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initLearnedPages();
   initBlockedPages();
   initReviewPages();
+  initNoticePages();
 });
 
 function translateSupabaseMessage(message, fallbackMessage) {
@@ -704,6 +705,7 @@ const BOARD_REF_TABLE = "BOARD_REF";
 const BOARD_DCD_LEARNED = "learned";
 const BOARD_DCD_BLOCKED = "blocked";
 const BOARD_DCD_REVIEW = "review";
+const BOARD_DCD_NOTICE = "notice";
 
 function formatLearnedDate(date) {
   return String(date || "").replaceAll("-", ".");
@@ -790,6 +792,14 @@ async function fetchBoardPost(id, boardDcd) {
 
 async function fetchLearnedPosts() {
   return fetchBoardPosts(BOARD_DCD_LEARNED);
+}
+
+async function fetchNoticePosts() {
+  return fetchBoardPosts(BOARD_DCD_NOTICE);
+}
+
+async function fetchNoticePost(id) {
+  return fetchBoardPost(id, BOARD_DCD_NOTICE);
 }
 
 async function fetchLearnedPost(id) {
@@ -1196,6 +1206,119 @@ function initBlockedPages() {
 function initReviewPages() {
   renderReviewListPage();
   renderReviewDetailPage();
+}
+
+function initNoticePages() {
+  renderNoticeListPage();
+  renderNoticeDetailPage();
+}
+
+async function renderNoticeListPage() {
+  const list = document.querySelector("[data-notice-list]");
+  if (!list) return;
+
+  const count = document.querySelector("[data-notice-count]");
+  const pagination = document.querySelector("[data-notice-pagination]");
+
+  list.innerHTML = `<p class="learned-empty">공지사항을 불러오고 있습니다.</p>`;
+  if (pagination) pagination.innerHTML = "";
+
+  try {
+    const noticePosts = await fetchNoticePosts();
+    const totalPages = Math.max(
+      Math.ceil(noticePosts.length / LEARNED_PAGE_SIZE),
+      1,
+    );
+    const params = new URLSearchParams(window.location.search);
+    const requestedPage = Number(params.get("page") || "1");
+    const currentPage = Number.isSafeInteger(requestedPage) && requestedPage > 0
+      ? Math.min(requestedPage, totalPages)
+      : 1;
+    const pageStart = (currentPage - 1) * LEARNED_PAGE_SIZE;
+    const posts = noticePosts.slice(pageStart, pageStart + LEARNED_PAGE_SIZE);
+
+    if (count) {
+      count.textContent = `총 ${noticePosts.length}개의 공지`;
+    }
+
+    if (!posts.length) {
+      list.innerHTML = `<p class="learned-empty">아직 등록된 공지사항이 없습니다.</p>`;
+      return;
+    }
+
+    list.innerHTML = posts
+      .map(
+        (post) => `
+          <article class="learned-card">
+            <div class="learned-card-main">
+              <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+              <h2>
+                <a href="detail.html?id=${encodeURIComponent(post.id)}">${escapeHtml(post.title)}</a>
+              </h2>
+              <p>${escapeHtml(post.summary)}</p>
+            </div>
+            <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+          </article>
+        `,
+      )
+      .join("");
+
+    if (!pagination || totalPages <= 1) return;
+
+    pagination.innerHTML = Array.from({ length: totalPages }, (_, index) => {
+      const page = index + 1;
+      const isCurrent = page === currentPage;
+      return `
+        <a href="index.html?page=${page}" class="${isCurrent ? "is-current" : ""}" aria-label="${page}페이지"${isCurrent ? ' aria-current="page"' : ""}>
+          ${page}
+        </a>
+      `;
+    }).join("");
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<p class="learned-empty is-error">공지사항을 불러오지 못했습니다.</p>`;
+    if (count) count.textContent = "";
+  }
+}
+
+async function renderNoticeDetailPage() {
+  const detail = document.querySelector("[data-notice-detail]");
+  if (!detail) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const noticeId = params.get("id");
+
+  if (!noticeId) {
+    detail.innerHTML = `<p class="learned-empty is-error">게시글을 찾을 수 없습니다.</p>`;
+    return;
+  }
+
+  detail.innerHTML = `<p class="learned-empty">게시글을 불러오고 있습니다.</p>`;
+
+  try {
+    const post = await fetchNoticePost(noticeId);
+
+    document.title = `${post.title} | 연습장`;
+    detail.innerHTML = `
+      <nav class="detail-back" aria-label="이전 화면">
+        <a href="index.html">공지사항 목록</a>
+      </nav>
+      <header class="learned-detail-head">
+        <time datetime="${post.date}">${formatLearnedDate(post.date)}</time>
+        <h1>${escapeHtml(post.title)}</h1>
+        <p>${escapeHtml(post.summary)}</p>
+        <div class="learned-tags">${createTagMarkup(post.tags)}</div>
+      </header>
+      <div class="learned-detail-body">
+        ${createContentParagraphs(post.content)}
+      </div>
+    `;
+
+
+  } catch (error) {
+    console.error(error);
+    detail.innerHTML = `<p class="learned-empty is-error">게시글을 불러오지 못했습니다.</p>`;
+  }
 }
 
 async function renderLearnedListPage() {
@@ -1930,6 +2053,11 @@ const supabaseKey = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 
 // 화면을 수정할 때마다 변경 내용을 간단히 요약해 최신 날짜 순으로 추가합니다.
 const localChangedTraces = [
+  {
+    date: "2026-10-28",
+    content:
+      "연습장 소개와 실험실 사이에 공지사항 메뉴를 추가했습니다. 관리자가 작성한 공지는 사용자 화면에서 목록과 상세로 확인할 수 있습니다.",
+  },
   {
     date: "2026-10-28",
     content:

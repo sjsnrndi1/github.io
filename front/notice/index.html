@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>공지사항 | 연습장</title>
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+    <link rel="stylesheet" href="../../assets/css/app.css" />
+    <script src="../../assets/js/app.js"></script>
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <main class="learned-main">
+      <header class="page-head learned-head">
+        <p class="breadcrumb">
+          <a href="../../index.html">연습장</a>
+          <span>/</span>
+          <strong>공지사항</strong>
+        </p>
+        <h1>공지사항</h1>
+
+        <p>
+          연습장의 새로운 소식과 안내를 확인하세요.
+        </p>
+      </header>
+
+      <section class="learned-list-shell" aria-label="공지사항 게시글 목록">
+        <div class="learned-toolbar">
+          <p>관리자가 전하는 소식과 안내를 모았습니다.</p>
+          <span data-notice-count></span>
+        </div>
+
+        <div class="learned-list" data-notice-list></div>
+        <nav class="learned-pagination" data-notice-pagination aria-label="공지사항 페이지"></nav>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+  </body>
+</html>
