@@ -160,6 +160,42 @@ body {
   color: #386fa4;
 }
 
+.trace-table {
+  table-layout: fixed;
+}
+
+.trace-table th:first-child,
+.trace-table td:first-child {
+  width: 130px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.trace-table th:last-child,
+.trace-table td:last-child {
+  width: 180px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.trace-table td:nth-child(2) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.trace-table .btn-group {
+  margin-top: 0;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.trace-table .btn-group button {
+  flex: 0 0 auto;
+  min-width: 62px;
+  white-space: nowrap;
+}
+
 .admin-empty {
   padding: 46px 20px;
   border: 1px dashed #cbd5e1;

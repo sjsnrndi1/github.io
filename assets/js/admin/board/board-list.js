@@ -14,10 +14,21 @@ function renderPosts(posts) {
   table.style.display = "table";
   emptyMessage.style.display = "none";
 
+  const categoryLabels = {
+    notice: "공지사항",
+    learned: "배운 것들",
+    blocked: "막혔던 부분",
+    review: "다시 보기",
+  };
+
   posts.forEach((post) => {
     const row = document.createElement("tr");
     const idCell = document.createElement("td");
     idCell.textContent = post.id;
+    const categoryCell = document.createElement("td");
+    categoryCell.textContent = Object.hasOwn(categoryLabels, post.board_dcd)
+      ? categoryLabels[post.board_dcd]
+      : post.board_dcd || "-";
     const titleCell = document.createElement("td");
     const link = document.createElement("a");
     link.href = `/github.io/admin/board/detail.html?id=${encodeURIComponent(post.id)}`;
@@ -25,7 +36,7 @@ function renderPosts(posts) {
     titleCell.appendChild(link);
     const dateCell = document.createElement("td");
     dateCell.textContent = formatDate(post.createdAt);
-    row.append(idCell, titleCell, dateCell);
+    row.append(idCell, categoryCell, titleCell, dateCell);
     tbody.appendChild(row);
   });
 }

@@ -17,7 +17,7 @@ async function fetchAdminBoardPosts() {
   if (!admin) return null;
   const { data, error } = await admin.client
     .from(ADMIN_BOARD_TABLE)
-    .select("id,title,created_at")
+    .select("id,title,board_dcd,created_at")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data || []).map(normalizeAdminBoardPost);
