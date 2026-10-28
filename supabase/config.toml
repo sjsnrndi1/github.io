@@ -3,3 +3,6 @@ verify_jwt = false
 
 [functions.board-comment]
 verify_jwt = false
+
+[functions.gemini-chat]
+verify_jwt = false

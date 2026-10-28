@@ -6,7 +6,9 @@
     <title>AI 대화 | 실험실 | 연습장</title>
     <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
     <link rel="stylesheet" href="../../assets/css/app.css" />
+    <link rel="stylesheet" href="../../assets/css/chatbot.css?v=20261028-1" />
     <script src="../../assets/js/app.js"></script>
+    <script src="../../assets/js/chatbot.js?v=20261028-1" defer></script>
   </head>
   <body>
     <div id="header"></div>
@@ -28,9 +30,35 @@
         </nav>
       </header>
 
-      <section class="trace-board" aria-label="AI 대화 소개">
-        <p class="eyebrow">준비 중</p>
-        <p class="trace-intro">구글 API를 활용해 질문하고 답변을 나누는 챗봇을 준비하고 있습니다.</p>
+      <section class="trace-board chatbot" aria-label="AI 대화">
+        <div class="chatbot-heading">
+          <div>
+            <p class="eyebrow">Gemini</p>
+            <h2>궁금한 것을 편하게 물어보세요.</h2>
+          </div>
+          <button type="button" class="member-submit chatbot-reset" data-chat-reset disabled>새 대화</button>
+        </div>
+        <p class="chatbot-help">최근 대화의 흐름을 이어서 답변합니다. 새로고침하거나 새 대화를 시작하면 내용이 지워집니다.</p>
+        <p class="chatbot-help">대화 내용은 답변 생성을 위해 Google Gemini로 전달되며, 사이트 DB에는 저장하지 않습니다.</p>
+
+        <div class="comment-login-callout" data-chat-login hidden>
+          <p>로그인한 회원만 AI 대화를 이용할 수 있습니다.</p>
+          <a class="member-submit" href="../login/login.html?redirect=%2Fgithub.io%2Ffront%2Flab%2Fchatbot.html">로그인</a>
+        </div>
+
+        <div class="chatbot-messages" data-chat-messages role="log" aria-label="대화 내용" aria-live="polite" aria-relevant="additions">
+          <p class="chatbot-empty" data-chat-empty>첫 질문을 입력해 대화를 시작해보세요.</p>
+        </div>
+
+        <form class="chatbot-form" data-chat-form>
+          <label for="chat-message">질문</label>
+          <textarea id="chat-message" name="message" rows="3" maxlength="2000" placeholder="궁금한 내용을 입력하세요 (최대 2,000자)" required disabled></textarea>
+          <div class="chatbot-form-actions">
+            <small>AI 답변에는 오류가 있을 수 있습니다. 중요한 내용은 다시 확인하세요.</small>
+            <button type="submit" class="member-submit" data-chat-send disabled>보내기</button>
+          </div>
+          <p class="member-message" data-chat-status role="status" aria-live="polite">로그인 상태를 확인하고 있습니다.</p>
+        </form>
       </section>
     </main>
 

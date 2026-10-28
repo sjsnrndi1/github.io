@@ -1,0 +1,116 @@
+/* 기존 trace-board, member-submit, comment-login-callout 스타일을 사용합니다. */
+.chatbot-heading,
+.chatbot-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.chatbot-heading h2 {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+}
+
+.chatbot .chatbot-reset {
+  width: auto;
+  min-width: 100px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.chatbot-help,
+.chatbot-form-actions small {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.chatbot-messages {
+  display: grid;
+  gap: 16px;
+  max-height: 560px;
+  min-height: 180px;
+  margin: 24px 0;
+  padding: 18px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.9);
+}
+
+.chatbot-empty {
+  color: var(--muted);
+  text-align: center;
+}
+
+.chatbot-message {
+  max-width: 92%;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+}
+
+.chatbot-message.is-user {
+  justify-self: end;
+  background: rgba(79, 111, 82, 0.1);
+}
+
+.chatbot-message strong {
+  color: var(--green);
+  font-size: 13px;
+}
+
+.chatbot-message p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+
+.chatbot-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.chatbot-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.chatbot-form-actions {
+  margin-top: 12px;
+}
+
+.chatbot-form-actions .member-submit {
+  width: auto;
+  min-width: 100px;
+  margin: 0;
+}
+
+.chatbot button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .chatbot-heading,
+  .chatbot-form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .chatbot-message {
+    max-width: 100%;
+  }
+}
