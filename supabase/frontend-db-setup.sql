@@ -1,7 +1,65 @@
 -- 기존 changed-traces-setup.sql 적용 후 Supabase SQL Editor에서 한 번 실행합니다.
--- 게시글 관리와 첨부파일 권한을 설정하고, 오늘 변경 기록 4건을 중복 없이 등록합니다.
+-- 게시글 관리와 첨부파일 권한을 설정하고, 오늘 변경 기록 5건을 중복 없이 등록합니다.
 -- 사용자가 승인한 작업이며, 이 파일 자체는 자동 실행하지 않습니다.
 begin;
+
+-- API 요청은 전달된 IP 헤더를, SQL Editor 작업은 DB 연결 주소를 기록합니다.
+-- 둘 다 확인할 수 없을 때의 0.0.0.0은 주소 미확인을 나타냅니다.
+create or replace function public.content_request_ip()
+returns text
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  headers jsonb := coalesce(nullif(current_setting('request.headers', true), ''), '{}')::jsonb;
+  request_ip text;
+begin
+  request_ip := coalesce(
+    nullif(btrim(headers ->> 'cf-connecting-ip'), ''),
+    nullif(btrim(split_part(headers ->> 'x-forwarded-for', ',', 1)), '')
+  );
+  if request_ip is not null then
+    begin
+      return host(request_ip::inet);
+    exception when invalid_text_representation then
+      null;
+    end;
+  end if;
+  return coalesce(host(inet_client_addr()), '0.0.0.0');
+end;
+$$;
+revoke all on function public.content_request_ip() from public, anon, authenticated;
+
+create or replace function public.set_content_audit_ip()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  request_ip text := public.content_request_ip();
+begin
+  if tg_op = 'INSERT' then
+    new.created_ip := request_ip;
+  else
+    new.created_ip := old.created_ip;
+  end if;
+  new.updated_ip := request_ip;
+  return new;
+end;
+$$;
+revoke all on function public.set_content_audit_ip() from public, anon, authenticated;
+
+drop trigger if exists set_changed_traces_audit_ip on public."NOTE_CHANGED_TRACES";
+create trigger set_changed_traces_audit_ip
+  before insert or update on public."NOTE_CHANGED_TRACES"
+  for each row execute function public.set_content_audit_ip();
+
+drop trigger if exists set_board_audit_ip on public."BOARD";
+create trigger set_board_audit_ip
+  before insert or update on public."BOARD"
+  for each row execute function public.set_content_audit_ip();
 
 -- 기존 변경 기록 관리자와 동일한 계정만 게시글을 관리합니다.
 create or replace function public.can_manage_board()
@@ -79,7 +137,7 @@ create policy board_files_access_guard on storage.objects
   using (bucket_id <> 'board-attachments' or (select public.can_manage_board()))
   with check (bucket_id <> 'board-attachments' or (select public.can_manage_board()));
 
--- 소스에 있던 오늘 기록 3건과 이번 수정 요약 1건을 등록합니다.
+-- 소스에 있던 오늘 기록과 이번 수정 요약을 등록합니다.
 -- 같은 날짜·내용의 기록이 있으면 다시 넣지 않습니다. 기존 기록은 수정하지 않습니다.
 do $$
 declare
@@ -90,14 +148,15 @@ begin
   where lower(email) = 'sjsnrndi12@naver.com';
 
   insert into public."NOTE_CHANGED_TRACES"
-    (date, content, created_at, created_user_id, updated_at, updated_user_id)
+    (date, content, created_at, created_user_id, created_ip, updated_at, updated_user_id, updated_ip)
   select
-    date '2026-10-28', changes.content, now(), admin_id, now(), admin_id
+    date '2026-10-28', changes.content, now(), admin_id, public.content_request_ip(), now(), admin_id, public.content_request_ip()
   from (values
     ('공책·발자국·스크랩 메뉴를 정리하고, 실험실에 AI 대화·문서 내용 추출·방탈출 개발 노트 메뉴와 소개 화면을 추가했습니다.'),
     ('상단의 연습장 소개와 실험실 메뉴를 가운데 모으고 간격을 조정했습니다.'),
     ('별도 백엔드 없이 Supabase로 로그인하고 바뀐 흔적을 등록·수정·삭제할 수 있는 관리자 화면을 추가했습니다. 최초 관리자 권한 설정 후 이용할 수 있습니다.'),
-    ('관리자 화면의 사용자 화면 보기 버튼을 정렬하고, 게시글 목록·상세·등록·수정·삭제와 첨부파일을 Supabase로 전환했습니다.')
+    ('관리자 화면의 사용자 화면 보기 버튼을 정렬하고, 게시글 목록·상세·등록·수정·삭제와 첨부파일을 Supabase로 전환했습니다.'),
+    ('변경 기록과 게시글을 저장할 때 등록·수정 IP를 DB에서 자동 기록하도록 보완했습니다.')
   ) as changes(content)
   where not exists (
     select 1 from public."NOTE_CHANGED_TRACES" existing
@@ -109,7 +168,7 @@ $$;
 commit;
 
 -- 적용 후 오늘 기록이 들어갔는지 확인합니다.
-select id, date, content
+select id, date, content, created_ip, updated_ip
 from public."NOTE_CHANGED_TRACES"
 where date::text = '2026-10-28'
 order by id;
