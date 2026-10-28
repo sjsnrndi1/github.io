@@ -15,7 +15,7 @@ begin
   select
     date '2026-10-28', changes.content, now(), admin_id, public.content_request_ip(), now(), admin_id, public.content_request_ip()
   from (values
-    ('AI 대화 입력을 Enter로 보내고 Ctrl + Enter로 줄바꿈하도록 변경했습니다. 한글 조합 중에는 전송하지 않습니다.')
+    ('AI 대화 입력을 Enter 전송·Ctrl + Enter 줄바꿈으로 변경하고, 대화 저장·개인정보 안내를 문장마다 줄바꿈했습니다. 한글 조합 중에는 전송하지 않습니다.')
   ) as changes(content)
   where not exists (
     select 1 from public."NOTE_CHANGED_TRACES" existing

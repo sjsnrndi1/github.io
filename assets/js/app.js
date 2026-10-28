@@ -2056,7 +2056,7 @@ const localChangedTraces = [
   {
     date: "2026-10-28",
     content:
-      "AI 대화 입력을 Enter로 보내고 Ctrl + Enter로 줄바꿈하도록 변경했습니다. 한글 조합 중에는 전송하지 않습니다.",
+      "AI 대화 입력을 Enter 전송·Ctrl + Enter 줄바꿈으로 변경하고, 대화 저장·개인정보 안내를 문장마다 줄바꿈했습니다. 한글 조합 중에는 전송하지 않습니다.",
   },
   {
     date: "2026-10-28",
