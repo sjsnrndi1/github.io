@@ -148,6 +148,7 @@ Deno.serve(async (request) => {
     }
 
     let response: Response;
+    const geminiStartedAt = Date.now();
     try {
       response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
@@ -164,16 +165,16 @@ Deno.serve(async (request) => {
             })),
             generationConfig: { maxOutputTokens: 2048 },
           }),
-          signal: AbortSignal.timeout(45000),
+          signal: AbortSignal.timeout(90000),
         },
       );
-    } catch {
-      return createJsonResponse({ message: "AI 응답이 지연되거나 연결이 끊겼습니다. 잠시 후 다시 시도하세요." }, 504);
+    } catch (error) {
+      return createGeminiConnectionError(error, geminiStartedAt, model);
     }
 
     if (!response.ok) {
       // 외부 오류 원문에 설정 정보가 포함될 수 있어 상태 코드만 기록합니다.
-      console.error("Gemini status:", response.status);
+      console.error("Gemini status:", { status: response.status, model, elapsedMs: Date.now() - geminiStartedAt });
       if (response.status === 429) {
         return createJsonResponse({ message: "Gemini 사용 한도에 도달했습니다. 잠시 후 다시 시도하세요." }, 429);
       }
@@ -183,7 +184,12 @@ Deno.serve(async (request) => {
       return createJsonResponse({ message: "Gemini가 응답하지 못했습니다. 잠시 후 다시 시도하세요." }, 502);
     }
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (error) {
+      return createGeminiConnectionError(error, geminiStartedAt, model);
+    }
     const candidate = result.candidates?.[0];
     const reply = (candidate?.content?.parts || [])
       .filter((part: { text?: unknown; thought?: boolean }) => typeof part.text === "string" && !part.thought)
@@ -260,6 +266,18 @@ function validateMessages(value: unknown): ChatMessage[] {
 
 function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+function createGeminiConnectionError(error: unknown, startedAt: number, model: string) {
+  const errorName = error && typeof error === "object" && "name" in error ? String(error.name) : "UnknownError";
+  const timedOut = errorName === "TimeoutError" || errorName === "AbortError";
+  console.error("Gemini request failed:", {
+    kind: timedOut ? "timeout" : "connection_or_response",
+    errorName, model, elapsedMs: Date.now() - startedAt,
+  });
+  return createJsonResponse({ message: timedOut
+    ? "Gemini 응답 대기 시간(90초)을 초과했습니다. 잠시 후 다시 시도하세요."
+    : "Gemini 서버 연결 또는 응답 처리에 실패했습니다. 잠시 후 다시 시도하세요." }, timedOut ? 504 : 502);
 }
 
 function createJsonResponse(body: Record<string, unknown>, status = 200) {

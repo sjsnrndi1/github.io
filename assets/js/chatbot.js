@@ -41,6 +41,35 @@ async function initChatbot() {
     return article;
   }
 
+  function startGeneratingMessage() {
+    const article = addMessage("model", "답변을 생성하고 있습니다");
+    article.classList.add("is-generating");
+    const dots = document.createElement("span");
+    dots.className = "chatbot-dots";
+    dots.setAttribute("aria-hidden", "true");
+    for (let index = 0; index < 3; index += 1) {
+      const dot = document.createElement("span");
+      dot.textContent = ".";
+      dots.appendChild(dot);
+    }
+    article.querySelector("p").appendChild(dots);
+    const elapsed = document.createElement("small");
+    elapsed.className = "chatbot-elapsed";
+    elapsed.setAttribute("aria-hidden", "true");
+    elapsed.textContent = "0초 경과";
+    article.appendChild(elapsed);
+    const startedAt = Date.now();
+    const timer = setInterval(() => {
+      elapsed.textContent = `${Math.floor((Date.now() - startedAt) / 1000)}초 경과`;
+    }, 1000);
+    return {
+      remove() {
+        clearInterval(timer);
+        article.remove();
+      },
+    };
+  }
+
   async function callChat(payload) {
     const client = await getAuthedSupabaseClient();
     const { data: userData, error: userError } = await client.auth.getUser();
@@ -66,7 +95,7 @@ async function initChatbot() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(55000),
+      signal: AbortSignal.timeout(payload.action === "send" ? 110000 : 55000),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -193,18 +222,22 @@ async function initChatbot() {
 
     sending = true;
     setEnabled(false);
-    setPageMessage(status, "답변을 기다리고 있습니다.");
+    setPageMessage(status, "답변을 생성하고 있습니다.");
     let pendingMessage = null;
+    let generatingMessage = null;
     try {
       if (!pendingRequest || pendingRequest.message !== text
         || pendingRequest.conversationId !== conversationId || pendingRequest.lastMessageId !== lastMessageId) {
         pendingRequest = { action: "send", message: text, conversationId, lastMessageId, requestId: crypto.randomUUID() };
       }
       pendingMessage = addMessage("user", text);
+      generatingMessage = startGeneratingMessage();
       const result = await callChat(pendingRequest);
       if (typeof result.reply !== "string" || !result.reply.trim()) {
         throw new Error("답변이 비어 있습니다. 질문을 바꾸어 다시 시도하세요.");
       }
+      generatingMessage.remove();
+      generatingMessage = null;
       addMessage("model", result.reply);
       conversationId = result.conversationId;
       lastMessageId = result.lastMessageId;
@@ -225,6 +258,7 @@ async function initChatbot() {
         : networkError ? "AI 대화에 연결하지 못했습니다. 네트워크와 함수 배포 상태를 확인하세요."
         : error.message || "AI 대화 연결에 실패했습니다.", true);
     } finally {
+      generatingMessage?.remove();
       sending = false;
       setEnabled(Boolean(currentUserId));
       if (currentUserId) input.focus();
