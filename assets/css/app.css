@@ -1,4 +1,4 @@
-﻿/* Common and auth styles */
+/* Common and auth styles */
 
 * {
   box-sizing: border-box;
@@ -5139,6 +5139,8 @@ body {
       @media (min-width: 921px) {
         .nav-links {
           width: min(620px, calc(100vw - 430px));
+          justify-content: center;
+          gap: 32px;
         }
 
         .nav-btn {
