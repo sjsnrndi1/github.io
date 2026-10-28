@@ -1933,6 +1933,11 @@ const localChangedTraces = [
   {
     date: "2026-10-28",
     content:
+      "별도 백엔드 없이 Supabase로 로그인하고 바뀐 흔적을 등록·수정·삭제할 수 있는 관리자 화면을 추가했습니다. 최초 관리자 권한 설정 후 이용할 수 있습니다.",
+  },
+  {
+    date: "2026-10-28",
+    content:
       "상단의 연습장 소개와 실험실 메뉴를 가운데 모으고 간격을 조정했습니다.",
   },
   {
@@ -2012,7 +2017,7 @@ async function loadChangedTraces() {
                   </time>
 
                   <p class="trace-text">
-                    ${item.content}
+                    ${escapeHtml(item.content)}
                   </p>
                 </article>
               `;

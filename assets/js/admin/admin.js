@@ -6,24 +6,29 @@ form.addEventListener("submit", async (e) => {
 
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
+  const submitButton = form.querySelector('button[type="submit"]');
 
   try {
-    const response = await fetch("http://localhost:8081/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
+    submitButton.disabled = true;
+    message.textContent = "로그인 중입니다.";
+    const client = getAdminSupabaseClient();
+    const { error } = await client.auth.signInWithPassword({
+      email: username.trim(),
+      password,
     });
 
-    if (response.ok) {
-      localStorage.setItem("isAdminLoggedIn", "true");
-      window.location.href = "/github.io/admin/admin-dashboard.html";
-    } else {
-      message.textContent = "아이디 또는 비밀번호가 올바르지 않습니다.";
+    if (error) {
+      message.textContent = "이메일 또는 비밀번호를 확인하세요. 이메일 인증도 완료해야 합니다.";
+      return;
     }
+
+    await requireAdmin();
+    localStorage.removeItem("isAdminLoggedIn");
+    window.location.href = "/github.io/admin/admin-dashboard.html";
   } catch (error) {
-    message.textContent = "서버 연결에 실패했습니다.";
+    message.textContent = error.message || "로그인에 실패했습니다. 잠시 후 다시 시도하세요.";
     console.error(error);
+  } finally {
+    submitButton.disabled = false;
   }
 });
