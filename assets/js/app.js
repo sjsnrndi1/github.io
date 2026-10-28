@@ -1,4 +1,4 @@
-﻿// Common layout
+// Common layout
 
 const pathSegments = window.location.pathname.split("/").filter(Boolean);
 const frontSegmentIndex = pathSegments.indexOf("front");
@@ -1928,29 +1928,48 @@ async function renderComments(postId, commentApi = learnedCommentApi) {
 const supabaseUrl = "https://nrlkhbgeynmiqesglhgt.supabase.co";
 const supabaseKey = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 
+// 화면을 수정할 때마다 변경 내용을 간단히 요약해 최신 날짜 순으로 추가합니다.
+const localChangedTraces = [
+  {
+    date: "2026-10-28",
+    content:
+      "공책·발자국·스크랩 메뉴를 정리하고, 실험실에 AI 대화·문서 내용 추출·방탈출 개발 노트 메뉴와 소개 화면을 추가했습니다.",
+  },
+];
+
 document.addEventListener("DOMContentLoaded", loadChangedTraces);
 
 async function loadChangedTraces() {
   const traceBoard = document.getElementById("traceBoard");
   if (!traceBoard) return;
 
-  if (!window.supabase) {
+  let data = [...localChangedTraces];
+
+  if (window.supabase) {
+    try {
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      const { data: savedTraces, error } = await supabaseClient
+        .from("NOTE_CHANGED_TRACES")
+        .select("*")
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+      } else {
+        data.push(...(savedTraces || []));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
     console.error("Supabase client is not loaded.");
-    return;
   }
 
-  const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-  const { data, error } = await supabaseClient
-    .from("NOTE_CHANGED_TRACES")
-    .select("*")
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error(error);
-    return;
-  }
+  data.sort((a, b) =>
+    String(b.date).replaceAll("-", "").localeCompare(String(a.date).replaceAll("-", "")),
+  );
 
   const groupedByYear = data.reduce((acc, item) => {
     const rawDate = String(item.date);
