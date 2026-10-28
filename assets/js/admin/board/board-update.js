@@ -1,5 +1,3 @@
-const API_BASE = "http://localhost:8081";
-
 const params = new URLSearchParams(window.location.search);
 const postId = params.get("id");
 
@@ -8,22 +6,26 @@ const contentInput = document.getElementById("content");
 const fileInput = document.getElementById("file");
 const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
+const summaryInput = document.getElementById("summary");
+const boardDcdInput = document.getElementById("boardDcd");
+let originalPost = null;
+let savingPost = false;
+saveBtn.disabled = true;
 
 if (!postId) {
   alert("잘못된 접근입니다.");
   location.href = "/github.io/admin/board/list.html";
 }
 
-fetch(`${API_BASE}/posts/${postId}`)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("게시글 조회 실패");
-    }
-    return response.json();
-  })
+fetchAdminBoardPost(postId)
   .then((post) => {
+    if (!post) return;
+    originalPost = post;
     titleInput.value = post.title || "";
     contentInput.value = post.content || "";
+    summaryInput.value = post.summary || "";
+    boardDcdInput.value = post.board_dcd || "learned";
+    saveBtn.disabled = false;
   })
   .catch((error) => {
     console.error(error);
@@ -31,7 +33,8 @@ fetch(`${API_BASE}/posts/${postId}`)
     location.href = "/github.io/admin/board/list.html";
   });
 
-saveBtn.addEventListener("click", () => {
+saveBtn.addEventListener("click", async () => {
+  if (savingPost || !originalPost) return;
   const title = titleInput.value.trim();
   const content = contentInput.value.trim();
   const file = fileInput.files[0];
@@ -48,32 +51,28 @@ saveBtn.addEventListener("click", () => {
     return;
   }
 
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("content", content);
-
-  if (file) {
-    formData.append("file", file);
-  }
-
-  fetch(`${API_BASE}/posts/${postId}`, {
-    method: "PUT",
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("게시글 수정 실패");
-      }
-      return response.json();
-    })
-    .then(() => {
-      alert("수정되었습니다.");
-      location.href = `/github.io/admin/board/detail.html?id=${postId}`;
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("수정 중 오류가 발생했습니다.");
+  if (!confirm("게시글을 수정할까요?")) return;
+  savingPost = true;
+  saveBtn.disabled = true;
+  try {
+    const result = await saveAdminBoardPost({
+      id: postId,
+      original: originalPost,
+      title,
+      content,
+      summary: summaryInput.value,
+      boardDcd: boardDcdInput.value,
+      file,
     });
+    alert(result.cleanupWarning ? "수정되었습니다. 이전 첨부파일 정리는 Storage에서 확인하세요." : "수정되었습니다.");
+    location.href = `/github.io/admin/board/detail.html?id=${postId}`;
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "수정 중 오류가 발생했습니다.");
+  } finally {
+    savingPost = false;
+    saveBtn.disabled = false;
+  }
 });
 
 cancelBtn.addEventListener("click", () => {

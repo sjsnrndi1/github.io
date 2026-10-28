@@ -15,22 +15,24 @@ function renderPosts(posts) {
   emptyMessage.style.display = "none";
 
   posts.forEach((post) => {
-    const row = `
-      <tr>
-        <td>${post.id}</td>
-        <td>
-          <a href="/github.io/admin/board/detail.html?id=${post.id}">${post.title}</a>
-        </td>
-        <td>${formatDate(post.createdAt)}</td>
-      </tr>
-    `;
-    tbody.innerHTML += row;
+    const row = document.createElement("tr");
+    const idCell = document.createElement("td");
+    idCell.textContent = post.id;
+    const titleCell = document.createElement("td");
+    const link = document.createElement("a");
+    link.href = `/github.io/admin/board/detail.html?id=${encodeURIComponent(post.id)}`;
+    link.textContent = post.title;
+    titleCell.appendChild(link);
+    const dateCell = document.createElement("td");
+    dateCell.textContent = formatDate(post.createdAt);
+    row.append(idCell, titleCell, dateCell);
+    tbody.appendChild(row);
   });
 }
 
-fetch("http://localhost:8081/posts")
-  .then((res) => res.json())
+fetchAdminBoardPosts()
   .then((data) => {
+    if (!data) return;
     renderPosts(data);
   })
   .catch((err) => {

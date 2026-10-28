@@ -1933,6 +1933,11 @@ const localChangedTraces = [
   {
     date: "2026-10-28",
     content:
+      "관리자 화면의 사용자 화면 보기 버튼을 정렬하고, 게시글 목록·상세·등록·수정·삭제와 첨부파일을 Supabase로 전환했습니다.",
+  },
+  {
+    date: "2026-10-28",
+    content:
       "별도 백엔드 없이 Supabase로 로그인하고 바뀐 흔적을 등록·수정·삭제할 수 있는 관리자 화면을 추가했습니다. 최초 관리자 권한 설정 후 이용할 수 있습니다.",
   },
   {
@@ -1968,7 +1973,8 @@ async function loadChangedTraces() {
       if (error) {
         console.error(error);
       } else {
-        data.push(...(savedTraces || []));
+        // 정상 조회 시 DB를 기준으로 표시하여 등록한 기록이 중복되거나 되살아나지 않게 합니다.
+        data = savedTraces || [];
       }
     } catch (error) {
       console.error(error);

@@ -91,7 +91,13 @@ body {
 }
 
 .admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   padding: 0 18px;
+  text-decoration: none;
+  line-height: 1.4;
 }
 
 .admin-btn:hover,
@@ -179,6 +185,7 @@ body {
 }
 
 .admin-form input,
+.admin-form select,
 .admin-form textarea {
   width: 100%;
   padding: 14px 15px;
@@ -195,6 +202,7 @@ body {
 }
 
 .admin-form input:focus,
+.admin-form select:focus,
 .admin-form textarea:focus {
   border-color: #386fa4;
   box-shadow: 0 0 0 4px rgba(56, 111, 164, 0.14);

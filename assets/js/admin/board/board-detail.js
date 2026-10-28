@@ -1,5 +1,3 @@
-const API_BASE = "http://localhost:8081";
-
 const params = new URLSearchParams(window.location.search);
 const postId = params.get("id");
 
@@ -11,23 +9,22 @@ const listBtn = document.getElementById("list-btn");
 const editBtn = document.getElementById("edit-btn");
 const deleteBtn = document.getElementById("delete-btn");
 const attachmentWrapper = document.getElementById("attachment-wrapper");
+let loadedPost = null;
+let deletingPost = false;
+editBtn.disabled = true;
+deleteBtn.disabled = true;
 
 if (!postId) {
   alert("잘못된 접근입니다.");
   location.href = "/github.io/admin/board/list.html";
 }
 
-fetch(`${API_BASE}/posts/${postId}`)
-  .then(async (response) => {
-    const text = await response.text();
-
-    if (!response.ok) {
-      throw new Error(`게시글 조회 실패: ${response.status}`);
-    }
-
-    return JSON.parse(text);
-  })
+fetchAdminBoardPost(postId)
   .then((post) => {
+    if (!post) return;
+    loadedPost = post;
+    editBtn.disabled = false;
+    deleteBtn.disabled = false;
     titleEl.textContent = post.title || "제목 없음";
     contentEl.textContent = post.content || "내용 없음";
 
@@ -37,30 +34,29 @@ fetch(`${API_BASE}/posts/${postId}`)
       dateEl.textContent = "";
     }
 
-    if (post.attachmentUrl && post.attachmentOriginalName) {
-      attachmentEl.innerHTML = `
-        <div class="file-box">
-          <span class="file-name">${post.attachmentOriginalName}</span>
-          <button class="download-btn" id="download-btn">다운로드</button>
-        </div>
-      `;
+    if (post.attachmentPath && post.attachmentOriginalName) {
+      const fileBox = document.createElement("div");
+      fileBox.className = "file-box";
+      const fileName = document.createElement("span");
+      fileName.className = "file-name";
+      fileName.textContent = post.attachmentOriginalName;
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "download-btn";
+      downloadButton.id = "download-btn";
+      downloadButton.textContent = "다운로드";
+      fileBox.append(fileName, downloadButton);
+      attachmentEl.replaceChildren(fileBox);
 
-      document.getElementById("download-btn").addEventListener("click", () => {
-        fetch(post.attachmentUrl)
-          .then((res) => res.blob())
-          .then((blob) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = post.attachmentOriginalName;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-          })
-          .catch((err) => {
-            console.error(err);
-            alert("다운로드에 실패했습니다.");
-          });
+      downloadButton.addEventListener("click", async () => {
+        downloadButton.disabled = true;
+        try {
+          await downloadAdminBoardFile(post);
+        } catch (err) {
+          console.error(err);
+          alert("다운로드에 실패했습니다.");
+        } finally {
+          downloadButton.disabled = false;
+        }
       });
     } else {
       attachmentWrapper.style.display = "none";
@@ -80,22 +76,24 @@ editBtn.addEventListener("click", () => {
   location.href = `/github.io/admin/board/update.html?id=${postId}`;
 });
 
-deleteBtn.addEventListener("click", () => {
+deleteBtn.addEventListener("click", async () => {
+  if (deletingPost || !loadedPost) return;
   const confirmed = confirm("정말 삭제하시겠습니까?");
   if (!confirmed) return;
 
-  fetch(`${API_BASE}/posts/${postId}`, {
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("삭제 실패");
-      }
-      alert("삭제되었습니다.");
-      location.href = "/github.io/admin/board/list.html";
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("삭제 중 오류가 발생했습니다.");
-    });
+  deletingPost = true;
+  deleteBtn.disabled = true;
+  editBtn.disabled = true;
+  try {
+    const result = await deleteAdminBoardPost(loadedPost);
+    alert(result.cleanupWarning ? "삭제되었습니다. 첨부파일 정리는 Storage에서 확인하세요." : "삭제되었습니다.");
+    location.href = "/github.io/admin/board/list.html";
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "삭제 중 오류가 발생했습니다.");
+  } finally {
+    deletingPost = false;
+    deleteBtn.disabled = false;
+    editBtn.disabled = false;
+  }
 });
