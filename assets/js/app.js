@@ -2056,6 +2056,11 @@ const localChangedTraces = [
   {
     date: "2026-10-28",
     content:
+      "AI 대화 입력을 Enter로 보내고 Ctrl + Enter로 줄바꿈하도록 변경했습니다. 한글 조합 중에는 전송하지 않습니다.",
+  },
+  {
+    date: "2026-10-28",
+    content:
       "AI 대화 저장·불러오기와 공개 메뉴 안내를 추가하고, 개인정보·AI 정확성 안내 및 Powered by Gemini API 문구를 반영했습니다.",
   },
   {

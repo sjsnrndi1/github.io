@@ -167,6 +167,21 @@ async function initChatbot() {
     }
   });
 
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || event.isComposing || event.keyCode === 229) return;
+    event.preventDefault();
+    if (sending || input.disabled || event.repeat) return;
+    if (event.ctrlKey) {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      if (input.maxLength > 0 && input.value.length - (end - start) >= input.maxLength) return;
+      input.setRangeText("\n", start, end, "end");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      return;
+    }
+    form.requestSubmit();
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (sending) return;
