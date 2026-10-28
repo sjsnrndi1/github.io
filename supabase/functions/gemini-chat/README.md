@@ -21,7 +21,8 @@ GitHub 프론트 푸시만으로 Supabase 함수가 배포되지는 않습니다
 ## 설정과 동작
 
 - 필수 환경 변수: `GEMINI_API_KEY`, `SUPABASE_URL`, `SERVICE_ROLE_KEY` 또는 `SUPABASE_SERVICE_ROLE_KEY`. Supabase URL과 서비스 키는 기존 함수와 같은 방식을 사용합니다.
-- 선택 환경 변수: `GEMINI_MODEL`. 기본 모델은 `gemini-3.8-flash`입니다. AI Studio에서 해당 프로젝트가 사용할 수 있는 모델·요금·한도를 확인하고, 필요하면 Secrets에 허용된 모델 ID를 지정합니다. 무료 이용을 보장하지 않습니다.
+- 선택 환경 변수: `GEMINI_MODEL`. 기본 모델은 `gemini-3.1-flash-lite`입니다. 공식 요금표에서 무료 등급이 제공되는 모델이며, 일반 대화·메뉴 안내의 응답 지연을 줄이기 위한 선택입니다. Google 프로젝트의 무료 한도 안에서 이용하며 결제를 활성화하거나 한도 초과 시 다른 유료 모델로 자동 전환하지 않습니다. 모델 이름만으로 무료 과금 등급이 강제되지는 않으므로 AI Studio에서 프로젝트가 Free Tier인지 확인합니다.
+- 기존 `GEMINI_MODEL` Secret이 있으면 코드 기본값보다 우선합니다. `gemini-3.1-flash-lite`로 설정해야 이 모델을 사용합니다. 새 모델도 실제로 90초 안에 응답할지는 배포 후 확인해야 하며, 시간 초과 로그만으로 기존 모델의 지연 원인이 확정되지는 않습니다.
 - 계정별 분당 5회·UTC 하루 50회, 사이트 전체 분당 30회·UTC 하루 200회로 제한합니다. 제한은 SQL 함수에 정의되어 있습니다. UTC 날짜는 한국 시간 오전 9시에 바뀝니다.
 - Gemini 호출 직전에 횟수를 차감하므로 API 오류나 시간 초과도 횟수에 포함됩니다. 이 제한은 금액 기준의 결제 한도가 아닙니다.
 - 질문은 최대 2,000자입니다. Gemini에는 DB에 저장된 최근 6회 문답과 현재 질문을 전달하며, 전체 32,000자를 넘으면 서버가 오래된 문답부터 제외합니다. 외부 API 응답 대기 시간은 90초이고 프론트 전송 요청은 110초입니다. 기다리는 동안 생성 중 표시와 경과 시간을 보여줍니다.
@@ -39,6 +40,6 @@ GitHub 프론트 푸시만으로 Supabase 함수가 배포되지는 않습니다
 
 설정 오류 메시지가 나오면 Secrets와 모델 이용 권한을, 연결 오류가 나오면 함수 이름·배포·JWT 설정·CORS를 확인합니다. 키나 사용자 토큰을 로그에 출력하지 않습니다.
 
-이전의 ‘AI 응답이 지연되거나 연결이 끊겼습니다’ 메시지는 Gemini 호출의 시간 초과와 연결 실패를 함께 표시하던 문구입니다. 약 45초 후 발생했다면 기존 제한에 걸렸을 가능성이 있지만 실제 원인은 함수 로그로 확인해야 합니다. 최신 함수는 시간 초과와 연결·응답 오류를 구분하고 `Gemini request failed` 로그에 `kind`, `errorName`, `model`, `elapsedMs`만 기록합니다. 프론트 푸시와 별도로 최신 `index.ts`를 다시 배포해야 90초 제한과 진단 로그가 적용됩니다. 이 변경은 실제 응답 지연 원인의 해결을 보장하지 않습니다.
+이전의 ‘AI 응답이 지연되거나 연결이 끊겼습니다’ 메시지는 Gemini 호출의 시간 초과와 연결 실패를 함께 표시하던 문구입니다. 약 45초 후 발생했다면 기존 제한에 걸렸을 가능성이 있지만 실제 원인은 함수 로그로 확인해야 합니다. 최신 함수는 시간 초과와 연결·응답 오류를 구분하고 `Gemini request failed` 로그에 `kind`, `errorName`, `model`, `stage`, `elapsedMs`를 기록합니다. `stage=request`는 응답 헤더를 기다리는 구간, `stage=response_body`는 응답 본문을 읽는 구간입니다. 프론트 푸시와 별도로 최신 `index.ts`를 다시 배포해야 90초 제한과 진단 로그가 적용됩니다. 이 변경은 실제 응답 지연 원인의 해결을 보장하지 않습니다.
 
-참고: [Gemini 모델](https://ai.google.dev/gemini-api/docs/models), [콘텐츠 생성 API](https://ai.google.dev/api/generate-content), [Supabase 함수 인증](https://supabase.com/docs/guides/functions/auth), [대시보드 배포](https://supabase.com/docs/guides/functions/quickstart-dashboard), [함수 시간 제한](https://supabase.com/docs/guides/functions/limits).
+참고: [Gemini 요금표](https://ai.google.dev/gemini-api/docs/pricing), [Gemini 모델](https://ai.google.dev/gemini-api/docs/models), [콘텐츠 생성 API](https://ai.google.dev/api/generate-content), [Supabase 함수 인증](https://supabase.com/docs/guides/functions/auth), [대시보드 배포](https://supabase.com/docs/guides/functions/quickstart-dashboard), [함수 시간 제한](https://supabase.com/docs/guides/functions/limits).

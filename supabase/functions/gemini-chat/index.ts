@@ -43,7 +43,7 @@ Deno.serve(async (request) => {
     const serviceRoleKey = Deno.env.get("SERVICE_ROLE_KEY") ||
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
-    const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
+    const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite";
     if (!supabaseUrl || !serviceRoleKey) {
       return createJsonResponse({ message: "AI 대화 설정이 완료되지 않았습니다." }, 503);
     }
@@ -149,6 +149,7 @@ Deno.serve(async (request) => {
 
     let response: Response;
     const geminiStartedAt = Date.now();
+    console.info("Gemini request started:", { model });
     try {
       response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
@@ -169,8 +170,10 @@ Deno.serve(async (request) => {
         },
       );
     } catch (error) {
-      return createGeminiConnectionError(error, geminiStartedAt, model);
+      return createGeminiConnectionError(error, geminiStartedAt, model, "request");
     }
+
+    console.info("Gemini response headers:", { model, status: response.status, elapsedMs: Date.now() - geminiStartedAt });
 
     if (!response.ok) {
       // 외부 오류 원문에 설정 정보가 포함될 수 있어 상태 코드만 기록합니다.
@@ -188,7 +191,7 @@ Deno.serve(async (request) => {
     try {
       result = await response.json();
     } catch (error) {
-      return createGeminiConnectionError(error, geminiStartedAt, model);
+      return createGeminiConnectionError(error, geminiStartedAt, model, "response_body");
     }
     const candidate = result.candidates?.[0];
     const reply = (candidate?.content?.parts || [])
@@ -268,12 +271,12 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
-function createGeminiConnectionError(error: unknown, startedAt: number, model: string) {
+function createGeminiConnectionError(error: unknown, startedAt: number, model: string, stage: "request" | "response_body") {
   const errorName = error && typeof error === "object" && "name" in error ? String(error.name) : "UnknownError";
   const timedOut = errorName === "TimeoutError" || errorName === "AbortError";
   console.error("Gemini request failed:", {
     kind: timedOut ? "timeout" : "connection_or_response",
-    errorName, model, elapsedMs: Date.now() - startedAt,
+    errorName, model, stage, elapsedMs: Date.now() - startedAt,
   });
   return createJsonResponse({ message: timedOut
     ? "Gemini 응답 대기 시간(90초)을 초과했습니다. 잠시 후 다시 시도하세요."
