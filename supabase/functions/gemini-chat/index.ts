@@ -17,10 +17,10 @@ const PUBLIC_SITE_GUIDE = `공개 메뉴 안내:
 상단 메뉴는 왼쪽부터 연습장 소개, 공지사항, 실험실입니다. 우측에는 로그인·가입이 있고 로그인 후 회원 메뉴에서 마이페이지로 이동합니다.
 연습장 소개 하위 메뉴: 처음 펼친 이유(/github.io/front/about/first-reason.html), 자주 꺼내두는 것들(/github.io/front/about/frequent-thing.html), 바뀐 흔적(/github.io/front/about/changed-traces.html).
 공지사항 목록: /github.io/front/notice/index.html. 일반 사용자는 목록과 상세를 읽을 수 있습니다.
-실험실 하위 메뉴: AI 대화(/github.io/front/lab/chatbot.html), 문서 내용 추출(/github.io/front/lab/document-extract.html), 방탈출 개발 노트(/github.io/front/lab/escape-room.html).
+실험실 하위 메뉴: AI 대화(/github.io/front/lab/chatbot.html), 문서 내용 추출(/github.io/front/lab/document-extract.html), 자동차 견적내기(/github.io/front/lab/car-quote.html).
 마이페이지: /github.io/front/mypage.html. 이름·프로필 이미지·비밀번호 수정과 회원탈퇴 안내가 있습니다. 로그인이 필요합니다.
 현재 AI 대화는 본인의 질문과 답변을 저장합니다. 이전 대화 선택과 새 대화 버튼을 사용할 수 있습니다.
-문서 내용 추출은 준비 중이며, 방탈출 개발 노트는 개발 중인 게임의 소개 공간입니다.
+문서 내용 추출과 자동차 견적내기는 준비 중입니다. 자동차 견적내기는 차량과 옵션에 따른 예상 구매 비용을 확인할 공간입니다.
 이 안내에 없는 기능이나 위치를 지어내지 마세요. 다른 회원 정보, 비밀번호, API 키, 관리자 설정, 비공개 대화는 제공받지 않았고 조회할 수도 없습니다.
 사이트 이용 안내와 일반 질문에는 답변하되, 계정이나 DB를 실제로 변경했다고 말하지 마세요.`;
 

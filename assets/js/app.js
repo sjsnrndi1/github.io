@@ -2054,6 +2054,11 @@ const supabaseKey = "sb_publishable_xoEN2afiedAx0kZBd2022w_KFeCqecX";
 // 화면을 수정할 때마다 변경 내용을 간단히 요약해 최신 날짜 순으로 추가합니다.
 const localChangedTraces = [
   {
+    date: "2026-10-30",
+    content:
+      "실험실의 방탈출 개발 노트 메뉴를 자동차 견적내기로 변경하고, 관련 소개 화면과 챗봇 메뉴 안내를 갱신했습니다.",
+  },
+  {
     date: "2026-10-28",
     content:
       "AI 대화의 기본 모델을 무료 등급이 제공되는 Gemini Flash-Lite로 조정하고, 호출·응답 수신 단계별 진단 로그를 추가했습니다.",
