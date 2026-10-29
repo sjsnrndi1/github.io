@@ -43,6 +43,7 @@ window.adminReady = (async () => {
 
     if (currentPath.includes("dashboard")) currentPage = "dashboard";
     else if (currentPath.includes("board")) currentPage = "board";
+    else if (currentPath.includes("members")) currentPage = "members";
     else if (currentPath.includes("changed-traces")) currentPage = "changed-traces";
 
     document.querySelectorAll(".admin-nav a").forEach((menu) => {

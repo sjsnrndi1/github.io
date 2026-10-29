@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/github.io/favicon.svg" />
+    <title>회원관리</title>
+    <link rel="stylesheet" href="/github.io/assets/css/admin/style.css" />
+    <link rel="stylesheet" href="/github.io/assets/css/admin/board/style.css" />
+    <link rel="stylesheet" href="/github.io/assets/css/admin/members.css" />
+  </head>
+  <body class="admin-app-page">
+    <div id="header-container"></div>
+
+    <main class="admin-main board-main">
+      <section class="board-page-head">
+        <div>
+          <p class="dashboard-eyebrow">Member Management</p>
+          <h2>회원관리</h2>
+          <p>이름과 이메일은 일부를 가려 표시합니다. 회원별로 저장된 Gemini 대화 내역을 조회할 수 있습니다.</p>
+        </div>
+        <button id="refreshMembers" type="button" class="admin-btn">새로고침</button>
+      </section>
+
+      <section class="admin-card board-table-card">
+        <div class="admin-topbar">
+          <div>
+            <span class="section-label">Members</span>
+            <h3>회원 목록</h3>
+          </div>
+        </div>
+        <p id="memberStatus" role="status" aria-live="polite">회원을 불러오는 중입니다.</p>
+        <div class="table-scroll">
+          <table class="admin-table" id="memberTable" hidden>
+            <thead>
+              <tr>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>가입일</th>
+                <th>최근 로그인</th>
+                <th>대화 수</th>
+                <th>조회</th>
+              </tr>
+            </thead>
+            <tbody id="memberTableBody"></tbody>
+          </table>
+        </div>
+        <div class="member-pagination">
+          <button id="previousMembers" type="button" class="admin-btn" disabled>이전</button>
+          <span id="memberPage">1페이지</span>
+          <button id="nextMembers" type="button" class="admin-btn" disabled>다음</button>
+        </div>
+      </section>
+
+      <section id="memberChats" class="admin-card board-table-card" hidden>
+        <div class="admin-topbar">
+          <div>
+            <span class="section-label">Gemini Conversations</span>
+            <h3 id="chatMemberHeading">대화 내역</h3>
+          </div>
+          <button id="closeMemberChats" type="button" class="admin-btn">닫기</button>
+        </div>
+        <p>대화 본문은 저장된 원문입니다. 운영에 필요한 경우에만 확인해 주세요.</p>
+        <p id="conversationStatus" role="status" aria-live="polite"></p>
+        <div id="conversationList" class="member-conversations"></div>
+        <button id="moreConversations" type="button" class="admin-btn" hidden>대화 더 보기</button>
+        <div id="messagePanel" hidden>
+          <h3 id="messageHeading">질문과 답변</h3>
+          <p id="messageStatus" role="status" aria-live="polite"></p>
+          <div id="messageList" class="member-messages"></div>
+          <button id="olderMessages" type="button" class="admin-btn" hidden>이전 메시지 더 보기</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="/github.io/assets/js/admin/common.js"></script>
+    <script src="/github.io/assets/js/admin/header.js"></script>
+    <script src="/github.io/assets/js/admin/members.js"></script>
+  </body>
+</html>

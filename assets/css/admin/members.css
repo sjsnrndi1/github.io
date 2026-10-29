@@ -1,0 +1,57 @@
+.member-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.member-conversations,
+.member-messages {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.member-conversation,
+.member-message {
+  padding: 18px;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #344054;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.member-conversation {
+  cursor: pointer;
+}
+
+.member-conversation[aria-pressed="true"] {
+  border-color: #386fa4;
+  background: #eef6ff;
+}
+
+.member-message p {
+  margin-bottom: 0;
+  white-space: pre-wrap;
+}
+
+.member-message.is-model {
+  background: #eef6ff;
+}
+
+#memberChats {
+  scroll-margin-top: 24px;
+}
+
+.board-main [hidden] {
+  display: none !important;
+}
+
+.board-main button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
